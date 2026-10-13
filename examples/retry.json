@@ -1,0 +1,265 @@
+[
+  {
+    "parts": [
+      {
+        "content": "You book restaurant tables.",
+        "timestamp": "2026-10-13T16:15:17.154414Z",
+        "dynamic_ref": null,
+        "part_kind": "system-prompt"
+      },
+      {
+        "content": "Book a table for 4 next Tuesday under Scholz.",
+        "timestamp": "2026-10-13T16:15:17.154417Z",
+        "part_kind": "user-prompt"
+      }
+    ],
+    "timestamp": "2026-10-13T16:15:17.154614Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
+    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "book_table",
+        "args": {
+          "date": "next tuesday",
+          "guests": 40
+        },
+        "tool_call_id": "call_book_1",
+        "tool_kind": null,
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "tool-call"
+      }
+    ],
+    "usage": {
+      "input_tokens": 610,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 31,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-13T16:15:17.154974Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "tool_call",
+    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
+    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": [
+          {
+            "type": "less_than_equal",
+            "loc": [
+              "guests"
+            ],
+            "msg": "Input should be less than or equal to 12",
+            "input": 40
+          },
+          {
+            "type": "missing",
+            "loc": [
+              "name"
+            ],
+            "msg": "Field required",
+            "input": {
+              "date": "next tuesday",
+              "guests": 40
+            }
+          }
+        ],
+        "tool_name": "book_table",
+        "tool_call_id": "call_book_1",
+        "timestamp": "2026-10-13T16:15:17.155570Z",
+        "part_kind": "retry-prompt"
+      }
+    ],
+    "timestamp": "2026-10-13T16:15:17.155845Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
+    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "book_table",
+        "args": {
+          "date": "2026-10-20",
+          "guests": 4,
+          "name": "Scholz"
+        },
+        "tool_call_id": "call_book_2",
+        "tool_kind": null,
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "tool-call"
+      }
+    ],
+    "usage": {
+      "input_tokens": 730,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 40,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-13T16:15:17.156112Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "tool_call",
+    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
+    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "book_table",
+        "content": {
+          "confirmation": "RSV-7781",
+          "booking": {
+            "date": "2026-10-20",
+            "guests": 4,
+            "name": "Scholz"
+          }
+        },
+        "tool_call_id": "call_book_2",
+        "tool_kind": null,
+        "metadata": null,
+        "timestamp": "2026-10-13T16:15:17.156618Z",
+        "outcome": "success",
+        "part_kind": "tool-return"
+      }
+    ],
+    "timestamp": "2026-10-13T16:15:17.156813Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
+    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "Done, your table is booked.",
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "text"
+      }
+    ],
+    "usage": {
+      "input_tokens": 810,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 9,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-13T16:15:17.157036Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "stop",
+    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
+    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "Always include the confirmation number (it starts with RSV-) in the final answer.",
+        "tool_name": null,
+        "tool_call_id": "pyd_ai_8a84f11d51bf453e8f949cc7b7cde861",
+        "timestamp": "2026-10-13T16:15:17.157398Z",
+        "part_kind": "retry-prompt"
+      }
+    ],
+    "timestamp": "2026-10-13T16:15:17.157544Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
+    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "Your table for 4 is booked for 2026-10-20 under the name Scholz. Confirmation: RSV-7781.",
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "text"
+      }
+    ],
+    "usage": {
+      "input_tokens": 880,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 33,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-13T16:15:17.157776Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "stop",
+    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
+    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  }
+]

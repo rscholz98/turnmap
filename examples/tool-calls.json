@@ -1,0 +1,292 @@
+[
+  {
+    "parts": [
+      {
+        "content": "You are an order assistant. Use tools to look things up.",
+        "timestamp": "2026-10-13T16:15:17.146961Z",
+        "dynamic_ref": null,
+        "part_kind": "system-prompt"
+      },
+      {
+        "content": "Where is my order A-1042 and what is the weather like there?",
+        "timestamp": "2026-10-13T16:15:17.146966Z",
+        "part_kind": "user-prompt"
+      }
+    ],
+    "timestamp": "2026-10-13T16:15:17.147114Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a1360b-fa9a-70a2-a2d2-17f7cf36fa2a",
+    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "get_order",
+        "args": {
+          "order_id": "A-1042"
+        },
+        "tool_call_id": "call_order_1",
+        "tool_kind": null,
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "tool-call"
+      },
+      {
+        "tool_name": "get_weather",
+        "args": {
+          "city": "Berlin",
+          "unit": "celsius"
+        },
+        "tool_call_id": "call_weather_1",
+        "tool_kind": null,
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "tool-call"
+      }
+    ],
+    "usage": {
+      "input_tokens": 402,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 36,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-13T16:15:17.147621Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "tool_call",
+    "run_id": "01a1360b-fa9a-70a2-a2d2-17f7cf36fa2a",
+    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "get_order",
+        "content": {
+          "order_id": "A-1042",
+          "status": "shipped",
+          "carrier": "DHL",
+          "shipped_at": "2026-10-12",
+          "items": [
+            {
+              "sku": "ACME-500",
+              "name": "Acme 500 Gas Grill",
+              "qty": 1,
+              "price": 499.0
+            },
+            {
+              "sku": "COVER-500",
+              "name": "Weather cover",
+              "qty": 1,
+              "price": 39.9
+            }
+          ],
+          "address": {
+            "city": "Berlin",
+            "country": "DE"
+          }
+        },
+        "tool_call_id": "call_order_1",
+        "tool_kind": null,
+        "metadata": null,
+        "timestamp": "2026-10-13T16:15:17.148590Z",
+        "outcome": "success",
+        "part_kind": "tool-return"
+      },
+      {
+        "tool_name": "get_weather",
+        "content": {
+          "city": "Berlin",
+          "temperature": 24,
+          "unit": "celsius",
+          "condition": "sunny"
+        },
+        "tool_call_id": "call_weather_1",
+        "tool_kind": null,
+        "metadata": null,
+        "timestamp": "2026-10-13T16:15:17.148630Z",
+        "outcome": "success",
+        "part_kind": "tool-return"
+      }
+    ],
+    "timestamp": "2026-10-13T16:15:17.148877Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a1360b-fa9a-70a2-a2d2-17f7cf36fa2a",
+    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "Your order #A-1042 shipped on Monday with DHL and should arrive tomorrow. The weather at the destination is sunny, 24 C.",
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "text"
+      }
+    ],
+    "usage": {
+      "input_tokens": 512,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 41,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-13T16:15:17.149187Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "stop",
+    "run_id": "01a1360b-fa9a-70a2-a2d2-17f7cf36fa2a",
+    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "Is the Acme 500 still in stock?",
+        "timestamp": "2026-10-13T16:15:17.150339Z",
+        "part_kind": "user-prompt"
+      }
+    ],
+    "timestamp": "2026-10-13T16:15:17.150480Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a1360b-fa9d-758b-b635-1e6e5d09fba3",
+    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "get_stock",
+        "args": {
+          "sku": "ACME-500"
+        },
+        "tool_call_id": "call_stock_1",
+        "tool_kind": null,
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "tool-call"
+      }
+    ],
+    "usage": {
+      "input_tokens": 590,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 18,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-13T16:15:17.150819Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "tool_call",
+    "run_id": "01a1360b-fa9d-758b-b635-1e6e5d09fba3",
+    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "get_stock",
+        "content": {
+          "sku": "ACME-500",
+          "available": 12,
+          "warehouse": "Hamburg",
+          "lead_time_days": 2
+        },
+        "tool_call_id": "call_stock_1",
+        "tool_kind": null,
+        "metadata": null,
+        "timestamp": "2026-10-13T16:15:17.151441Z",
+        "outcome": "success",
+        "part_kind": "tool-return"
+      }
+    ],
+    "timestamp": "2026-10-13T16:15:17.151678Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a1360b-fa9d-758b-b635-1e6e5d09fba3",
+    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "The Acme 500 is in stock (12 units) and ships in 2 days.",
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "text"
+      }
+    ],
+    "usage": {
+      "input_tokens": 640,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 28,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-13T16:15:17.151982Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "stop",
+    "run_id": "01a1360b-fa9d-758b-b635-1e6e5d09fba3",
+    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  }
+]

@@ -1,0 +1,112 @@
+[
+  {
+    "parts": [
+      {
+        "content": "You are the friendly support assistant for Acme Grills. Answer briefly.",
+        "timestamp": "2026-10-13T16:15:17.128357Z",
+        "dynamic_ref": null,
+        "part_kind": "system-prompt"
+      },
+      {
+        "content": "Hello, who are you?",
+        "timestamp": "2026-10-13T16:15:17.128365Z",
+        "part_kind": "user-prompt"
+      }
+    ],
+    "timestamp": "2026-10-13T16:15:17.128621Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a1360b-fa83-721b-80b0-9aa0be484f0c",
+    "conversation_id": "01a1360b-fa83-721b-80b0-9aa1cad7782c",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "Hi! I am a support assistant for Acme Grills. How can I help?",
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "text"
+      }
+    ],
+    "usage": {
+      "input_tokens": 66,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 13,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "test",
+    "timestamp": "2026-10-13T16:15:17.129100Z",
+    "kind": "response",
+    "provider_name": "test",
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": null,
+    "run_id": "01a1360b-fa83-721b-80b0-9aa0be484f0c",
+    "conversation_id": "01a1360b-fa83-721b-80b0-9aa1cad7782c",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "How long does shipping take for the Acme 500?",
+        "timestamp": "2026-10-13T16:15:17.131220Z",
+        "part_kind": "user-prompt"
+      }
+    ],
+    "timestamp": "2026-10-13T16:15:17.131365Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a1360b-fa8a-757b-bc26-be5f4f6b02a6",
+    "conversation_id": "01a1360b-fa83-721b-80b0-9aa1cad7782c",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "The Acme 500 ships in 2 to 3 business days within the EU.",
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "text"
+      }
+    ],
+    "usage": {
+      "input_tokens": 75,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 27,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "test",
+    "timestamp": "2026-10-13T16:15:17.131545Z",
+    "kind": "response",
+    "provider_name": "test",
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": null,
+    "run_id": "01a1360b-fa8a-757b-bc26-be5f4f6b02a6",
+    "conversation_id": "01a1360b-fa83-721b-80b0-9aa1cad7782c",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  }
+]

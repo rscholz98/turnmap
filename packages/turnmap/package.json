@@ -1,0 +1,80 @@
+{
+  "name": "turnmap",
+  "version": "0.1.0",
+  "description": "React component that renders a Pydantic AI message history (all_messages_json) as an interactive React Flow graph",
+  "keywords": [
+    "pydantic-ai",
+    "pydantic",
+    "agent",
+    "llm",
+    "react",
+    "react-flow",
+    "visualizer",
+    "trace",
+    "message-history"
+  ],
+  "license": "MIT",
+  "author": "Richard Scholz",
+  "homepage": "https://turnmap.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rscholz98/turnmap.git",
+    "directory": "packages/turnmap"
+  },
+  "bugs": "https://github.com/rscholz98/turnmap/issues",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/turnmap.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "@dagrejs/dagre": "^3.1.1",
+    "@xyflow/react": "^12.12.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.56.0",
+    "radix-ui": "^1.8.1",
+    "tailwind-merge": "^3.7.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "jsdom": "^27.4.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "vite": "^7.3.7",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.1.11"
+  }
+}

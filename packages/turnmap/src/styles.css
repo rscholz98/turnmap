@@ -1,0 +1,174 @@
+/*
+ * turnmap stylesheet. Consumers import it once:
+ *
+ *   import "turnmap/styles.css"
+ *
+ * Library-safe Tailwind: no preflight (the host page keeps its own base
+ * styles), every utility prefixed with `tm:`, and all colors as `--tm-*`
+ * variables scoped on the `.turnmap` root so a host can retheme by overriding
+ * the variables.
+ */
+/* Declare the full Tailwind layer order first, so a host page's own Tailwind
+   build (imported before or after this file) keeps base below utilities. */
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme) prefix(tm);
+@import "tailwindcss/utilities.css" layer(utilities) prefix(tm);
+@import "@xyflow/react/dist/style.css";
+
+@source "./";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.turnmap {
+  --tm-background: oklch(0.99 0 0);
+  --tm-foreground: oklch(0.2 0 0);
+  --tm-card: oklch(1 0 0);
+  --tm-muted: oklch(0.96 0 0);
+  --tm-muted-foreground: oklch(0.5 0 0);
+  --tm-border: oklch(0.9 0 0);
+  --tm-ring: oklch(0.6 0.03 260);
+  --tm-group: oklch(0.97 0.004 260 / 0.75);
+  --tm-group-border: oklch(0.88 0.01 260);
+  --tm-code: oklch(0.965 0.004 260);
+
+  --tm-accent-system: oklch(0.55 0.02 260);
+  --tm-accent-user: oklch(0.58 0.17 255);
+  --tm-accent-response: oklch(0.6 0.16 150);
+  --tm-accent-thinking: oklch(0.72 0.14 80);
+  --tm-accent-tool-call: oklch(0.58 0.2 295);
+  --tm-accent-builtin: oklch(0.6 0.12 200);
+  --tm-accent-tool-return: oklch(0.62 0.02 260);
+  --tm-accent-retry: oklch(0.6 0.2 25);
+  --tm-accent-media: oklch(0.6 0.1 230);
+  --tm-accent-note: oklch(0.65 0.06 180);
+  --tm-accent-unknown: oklch(0.65 0.03 260);
+  --tm-edge-flow: oklch(0.7 0.01 260);
+
+  color: var(--tm-foreground);
+  background: var(--tm-background);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  box-sizing: border-box;
+}
+
+.turnmap *,
+.turnmap *::before,
+.turnmap *::after {
+  box-sizing: border-box;
+}
+
+.turnmap.dark,
+.dark .turnmap {
+  --tm-background: oklch(0.17 0.005 260);
+  --tm-foreground: oklch(0.93 0 0);
+  --tm-card: oklch(0.22 0.005 260);
+  --tm-muted: oklch(0.27 0.005 260);
+  --tm-muted-foreground: oklch(0.68 0 0);
+  --tm-border: oklch(0.32 0.005 260);
+  --tm-ring: oklch(0.7 0.03 260);
+  --tm-group: oklch(0.2 0.006 260 / 0.7);
+  --tm-group-border: oklch(0.3 0.01 260);
+  --tm-code: oklch(0.19 0.005 260);
+
+  --tm-accent-system: oklch(0.7 0.02 260);
+  --tm-accent-user: oklch(0.72 0.14 255);
+  --tm-accent-response: oklch(0.74 0.15 150);
+  --tm-accent-thinking: oklch(0.8 0.13 80);
+  --tm-accent-tool-call: oklch(0.74 0.17 295);
+  --tm-accent-builtin: oklch(0.74 0.11 200);
+  --tm-accent-tool-return: oklch(0.72 0.02 260);
+  --tm-accent-retry: oklch(0.72 0.18 25);
+  --tm-accent-media: oklch(0.74 0.1 230);
+  --tm-accent-note: oklch(0.76 0.06 180);
+  --tm-accent-unknown: oklch(0.75 0.03 260);
+  --tm-edge-flow: oklch(0.5 0.01 260);
+}
+
+@theme inline {
+  --color-background: var(--tm-background);
+  --color-foreground: var(--tm-foreground);
+  --color-card: var(--tm-card);
+  --color-muted: var(--tm-muted);
+  --color-muted-foreground: var(--tm-muted-foreground);
+  --color-border: var(--tm-border);
+  --color-ring: var(--tm-ring);
+  --color-code: var(--tm-code);
+  --color-group: var(--tm-group);
+  --color-group-border: var(--tm-group-border);
+  --color-accent-system: var(--tm-accent-system);
+  --color-accent-user: var(--tm-accent-user);
+  --color-accent-response: var(--tm-accent-response);
+  --color-accent-thinking: var(--tm-accent-thinking);
+  --color-accent-tool-call: var(--tm-accent-tool-call);
+  --color-accent-builtin: var(--tm-accent-builtin);
+  --color-accent-tool-return: var(--tm-accent-tool-return);
+  --color-accent-retry: var(--tm-accent-retry);
+  --color-accent-media: var(--tm-accent-media);
+  --color-accent-note: var(--tm-accent-note);
+  --color-accent-unknown: var(--tm-accent-unknown);
+}
+
+/* React Flow canvas theming, tied to the same tokens. */
+.turnmap .react-flow {
+  --xy-background-color: var(--tm-background);
+  --xy-background-pattern-color: color-mix(
+    in oklch,
+    var(--tm-muted-foreground) 35%,
+    transparent
+  );
+  --xy-edge-stroke: var(--tm-edge-flow);
+  --xy-edge-stroke-selected: var(--tm-foreground);
+  --xy-controls-button-background-color: var(--tm-card);
+  --xy-controls-button-background-color-hover: var(--tm-muted);
+  --xy-controls-button-color: var(--tm-foreground);
+  --xy-controls-button-color-hover: var(--tm-foreground);
+  --xy-controls-button-border-color: var(--tm-border);
+  --xy-minimap-background-color: var(--tm-card);
+  --xy-minimap-mask-background-color: color-mix(
+    in oklch,
+    var(--tm-muted) 60%,
+    transparent
+  );
+  --xy-attribution-background-color: transparent;
+  --xy-node-boxshadow-selected: 0 0 0 2px var(--tm-ring);
+}
+
+.turnmap .react-flow__node {
+  font-size: inherit;
+}
+
+.turnmap .react-flow__node.selected .tm-node {
+  box-shadow: 0 0 0 2px var(--tm-ring);
+}
+
+.turnmap .react-flow__handle {
+  width: 8px;
+  height: 8px;
+  background: var(--tm-muted-foreground);
+  border: 2px solid var(--tm-card);
+}
+
+.turnmap .react-flow__node-messageGroup {
+  pointer-events: none;
+}
+
+.turnmap pre {
+  margin: 0;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
