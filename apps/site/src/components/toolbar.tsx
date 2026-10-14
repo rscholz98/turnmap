@@ -112,7 +112,7 @@ export function Toolbar({
     <header className="flex h-12 shrink-0 items-center gap-2 border-b bg-card px-3">
       {!sidebarOpen && (
         <>
-          <Logo className="size-6" />
+          <Logo />
           <Tip label="Show sidebar">
             <Button
               variant="ghost"

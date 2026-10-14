@@ -35,7 +35,7 @@ export function SessionSidebar({
     <aside className="flex h-full w-72 shrink-0 flex-col border-r bg-card">
       {/* Same height as the toolbar, so the two header rows line up. */}
       <div className="flex h-12 shrink-0 items-center gap-2.5 border-b px-3">
-        <Logo />
+        <Logo className="ml-1" />
         <div className="min-w-0 leading-tight">
           <div className="text-sm font-semibold">turnmap</div>
           <div className="truncate text-[11px] text-muted-foreground">

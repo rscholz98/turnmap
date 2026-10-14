@@ -1,16 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#18181b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <style>
-    .bg { fill: #18181b; }
-    .edge { stroke: #a1a1aa; }
     @media (prefers-color-scheme: dark) {
-      .bg { fill: #fafafa; }
-      .edge { stroke: #52525b; }
+      svg { stroke: #fafafa; }
     }
   </style>
-  <rect class="bg" width="64" height="64" rx="14"/>
-  <path class="edge" d="M32 20v6M28 24l-7 6M36 24l7 6M20 40l9 8M44 40l-9 8" stroke-width="3" stroke-linecap="round" fill="none"/>
-  <circle cx="32" cy="14" r="6" fill="#60a5fa"/>
-  <circle cx="18" cy="34" r="6" fill="#a78bfa"/>
-  <circle cx="46" cy="34" r="6" fill="#a78bfa"/>
-  <circle cx="32" cy="52" r="6" fill="#4ade80"/>
+  <rect width="8" height="8" x="3" y="3" rx="2"/>
+  <path d="M7 11v4a2 2 0 0 0 2 2h4"/>
+  <rect width="8" height="8" x="13" y="13" rx="2"/>
 </svg>
