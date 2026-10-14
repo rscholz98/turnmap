@@ -61,6 +61,10 @@ export { tokenizeJson } from "./nodes/format"
 export type { JsonToken, JsonTokenKind } from "./nodes/format"
 
 export { nodeTypes } from "./nodes"
+export { SidePanel } from "./panel"
+export { describeNode } from "./nodes/describe"
+export type { PanelSide } from "./panel"
+export { NodeNav } from "./nav"
 export { ACCENTS } from "./accents"
 export type { AccentKey } from "./accents"
 

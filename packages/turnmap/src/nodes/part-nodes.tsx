@@ -110,12 +110,13 @@ function Attachment({ item }: { item: Exclude<UserContentItem, string> }) {
 
 // ---------------------------------------------------------------------------
 
-export function PromptNodeView({ data }: NodeProps<PromptNode>) {
+export function PromptNodeView({ id, data }: NodeProps<PromptNode>) {
   const isUser = data.role === "user"
   const accent = isUser ? ACCENTS.user : ACCENTS.system
   const attachments = data.attachments.length
   return (
     <NodeShell
+      nodeId={id}
       accent={accent}
       icon={isUser ? <User className={ICON} /> : <Cog className={ICON} />}
       title={isUser ? "User prompt" : "System prompt"}
@@ -134,12 +135,6 @@ export function PromptNodeView({ data }: NodeProps<PromptNode>) {
         </>
       }
       footer={formatTime(data.timestamp)}
-      expand={
-        <div className="tm:flex tm:flex-col tm:gap-3">
-          <p className="tm:m-0 tm:whitespace-pre-wrap">{data.text}</p>
-          {attachments > 0 && <RawJson value={data.attachments} />}
-        </div>
-      }
     >
       <TextBlock text={data.text} limit={400} />
       {attachments > 0 && (
@@ -153,24 +148,25 @@ export function PromptNodeView({ data }: NodeProps<PromptNode>) {
   )
 }
 
-export function ResponseNodeView({ data }: NodeProps<ResponseNode>) {
+export function ResponseNodeView({ id, data }: NodeProps<ResponseNode>) {
   return (
     <NodeShell
+      nodeId={id}
       accent={ACCENTS.response}
       icon={<Bot className={ICON} />}
       title="Model response"
       summary={oneLine(data.text) || "(empty)"}
-      expand={<p className="tm:m-0 tm:whitespace-pre-wrap">{data.text}</p>}
     >
       <TextBlock text={data.text} limit={400} />
     </NodeShell>
   )
 }
 
-export function ThinkingNodeView({ data }: NodeProps<ThinkingNode>) {
+export function ThinkingNodeView({ id, data }: NodeProps<ThinkingNode>) {
   const compaction = data.variant === "compaction"
   return (
     <NodeShell
+      nodeId={id}
       accent={ACCENTS.thinking}
       icon={
         compaction ? <Layers className={ICON} /> : <Brain className={ICON} />
@@ -178,7 +174,6 @@ export function ThinkingNodeView({ data }: NodeProps<ThinkingNode>) {
       title={compaction ? "Compaction" : "Thinking"}
       summary={oneLine(data.text) || `${data.text.length} chars`}
       badges={data.signature ? <Badge>signed</Badge> : undefined}
-      expand={<p className="tm:m-0 tm:whitespace-pre-wrap">{data.text}</p>}
     >
       <TextBlock text={data.text} limit={400} />
     </NodeShell>
@@ -193,11 +188,12 @@ const OUTCOME_TONE: Record<ToolReturnOutcome | "retry", BadgeTone> = {
   retry: "danger",
 }
 
-export function ToolCallNodeView({ data }: NodeProps<ToolCallNode>) {
+export function ToolCallNodeView({ id, data }: NodeProps<ToolCallNode>) {
   const accent = data.builtin ? ACCENTS.builtinTool : ACCENTS.toolCall
   const argsText = data.args == null ? "" : stringify(data.args)
   return (
     <NodeShell
+      nodeId={id}
       accent={accent}
       icon={
         data.builtin ? <Globe className={ICON} /> : <Wrench className={ICON} />
@@ -218,8 +214,6 @@ export function ToolCallNodeView({ data }: NodeProps<ToolCallNode>) {
         </>
       }
       footer={<span className="tm:truncate">id {data.toolCallId}</span>}
-      expandTitle={`Tool call: ${data.toolName}`}
-      expand={<RawJson value={data.args ?? data.rawArgs} />}
     >
       {argsText ? (
         <CodeBlock text={argsText} limit={500} />
@@ -232,7 +226,7 @@ export function ToolCallNodeView({ data }: NodeProps<ToolCallNode>) {
   )
 }
 
-export function ToolReturnNodeView({ data }: NodeProps<ToolReturnNode>) {
+export function ToolReturnNodeView({ id, data }: NodeProps<ToolReturnNode>) {
   const { collapseThreshold } = useTurnMapSettings()
   const text = stringify(data.content)
   const large = text.length > collapseThreshold
@@ -240,6 +234,7 @@ export function ToolReturnNodeView({ data }: NodeProps<ToolReturnNode>) {
   const time = formatTime(data.timestamp)
   return (
     <NodeShell
+      nodeId={id}
       accent={accent}
       icon={<Undo2 className={ICON} />}
       title={data.toolName}
@@ -261,18 +256,6 @@ export function ToolReturnNodeView({ data }: NodeProps<ToolReturnNode>) {
           <span>{formatBytes(text.length)}</span>
         </>
       }
-      expandTitle={`Tool return: ${data.toolName}`}
-      expand={
-        <div className="tm:flex tm:flex-col tm:gap-3">
-          <RawJson value={data.content} />
-          {data.metadata != null && (
-            <>
-              <h4 className="tm:m-0 tm:text-sm tm:font-semibold">metadata</h4>
-              <RawJson value={data.metadata} />
-            </>
-          )}
-        </div>
-      }
     >
       {large ? (
         <CollapsibleBlock
@@ -288,11 +271,12 @@ export function ToolReturnNodeView({ data }: NodeProps<ToolReturnNode>) {
   )
 }
 
-export function RetryNodeView({ data }: NodeProps<RetryNode>) {
+export function RetryNodeView({ id, data }: NodeProps<RetryNode>) {
   const outputValidation = data.toolName == null
   const first = data.errors?.[0]
   return (
     <NodeShell
+      nodeId={id}
       accent={ACCENTS.retry}
       icon={<AlertTriangle className={ICON} />}
       title={
@@ -318,7 +302,6 @@ export function RetryNodeView({ data }: NodeProps<RetryNode>) {
         </>
       }
       footer={<span className="tm:truncate">id {data.toolCallId}</span>}
-      expand={<RawJson value={data.errors ?? data.text} />}
     >
       {data.errors ? (
         <ul className="tm:m-0 tm:flex tm:list-none tm:flex-col tm:gap-1.5 tm:p-0">
@@ -346,12 +329,13 @@ export function RetryNodeView({ data }: NodeProps<RetryNode>) {
   )
 }
 
-export function MediaNodeView({ data }: NodeProps<MediaNode>) {
+export function MediaNodeView({ id, data }: NodeProps<MediaNode>) {
   const isSpeech = data.variant === "speech"
   const isImage = data.mediaType?.startsWith("image/") && data.dataUrl
   const isAudio = data.mediaType?.startsWith("audio/") && data.dataUrl
   return (
     <NodeShell
+      nodeId={id}
       accent={ACCENTS.media}
       icon={
         isSpeech ? <Mic className={ICON} /> : <Paperclip className={ICON} />
@@ -371,20 +355,6 @@ export function MediaNodeView({ data }: NodeProps<MediaNode>) {
         data.interruptedAtMs != null ? (
           <Badge tone="warning">interrupted</Badge>
         ) : undefined
-      }
-      expand={
-        <div className="tm:flex tm:flex-col tm:gap-3">
-          {isImage && (
-            <img src={data.dataUrl!} alt="" className="tm:max-w-full" />
-          )}
-          {isAudio && <audio controls src={data.dataUrl!} />}
-          {data.transcript && (
-            <p className="tm:m-0 tm:whitespace-pre-wrap">{data.transcript}</p>
-          )}
-          <RawJson
-            value={{ ...data.raw, content: undefined, audio: undefined }}
-          />
-        </div>
       }
     >
       {isImage && (
@@ -407,14 +377,14 @@ export function MediaNodeView({ data }: NodeProps<MediaNode>) {
   )
 }
 
-export function NoteNodeView({ data }: NodeProps<NoteNode>) {
+export function NoteNodeView({ id, data }: NodeProps<NoteNode>) {
   return (
     <NodeShell
+      nodeId={id}
       accent={ACCENTS.note}
       icon={<Info className={ICON} />}
       title={data.title}
       summary={data.lines.join(", ")}
-      expand={<RawJson value={data.raw} />}
     >
       {data.lines.length > 0 ? (
         <ul className="tm:m-0 tm:list-disc tm:pl-4">
@@ -427,14 +397,14 @@ export function NoteNodeView({ data }: NodeProps<NoteNode>) {
   )
 }
 
-export function UnknownNodeView({ data }: NodeProps<UnknownNode>) {
+export function UnknownNodeView({ id, data }: NodeProps<UnknownNode>) {
   return (
     <NodeShell
+      nodeId={id}
       accent={ACCENTS.unknown}
       icon={<FileQuestion className={ICON} />}
       title={data.title}
       summary="unknown part kind"
-      expand={<RawJson value={data.raw} />}
     >
       <CodeBlock text={stringify(data.raw)} limit={400} />
     </NodeShell>

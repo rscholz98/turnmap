@@ -119,7 +119,12 @@ node has handles on all four sides and the layout picks the pair per edge, so sw
 layouts never leaves an edge on a stale anchor. Nodes are compact: an icon, a title, a
 one-line summary and the outcome badge; the details open underneath on click (or everywhere
 with `expandNodes`). Long text and JSON are cut in the details and expand in place ("Show
-more"); the dialog button opens the full content. JSON is syntax colored.
+more"). The panel button on a node opens a side panel over the canvas with the full content,
+the part and message metadata (ids, outcome, model, tokens, run id) and the raw part; it
+opens on the side away from the node and pans the node clear if needed. The navigation
+control in the top-right corner (and the arrow keys, Home, End, Enter to open, Escape to
+close, once the canvas has focus) steps through the nodes in order and keeps the panel in
+sync. JSON is syntax colored.
 
 | Node           | Part kinds                                                                           |
 | -------------- | ------------------------------------------------------------------------------------ |

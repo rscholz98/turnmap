@@ -45,3 +45,47 @@ describe("TurnMap", () => {
     expect(container.querySelector(".turnmap.dark")).not.toBeNull()
   })
 })
+
+describe("navigation and side panel", () => {
+  it("steps through nodes with the control and the arrow keys", async () => {
+    const { fireEvent } = await import("@testing-library/react")
+    const { container } = render(
+      <div style={{ width: 800, height: 600 }}>
+        <TurnMap messages={FIXTURES["simple-chat"]} theme="light" />
+      </div>
+    )
+    const counter = () =>
+      screen.getByRole("group", { name: "Node navigation" }).textContent
+    expect(counter()).toContain("– / 5")
+    fireEvent.click(screen.getByRole("button", { name: /Next node/ }))
+    expect(counter()).toContain("1 / 5")
+    fireEvent.click(screen.getByRole("button", { name: /Last node/ }))
+    expect(counter()).toContain("5 / 5")
+    const canvas = container.querySelector("[tabindex='0']") as HTMLElement
+    fireEvent.keyDown(canvas, { key: "ArrowUp" })
+    expect(counter()).toContain("4 / 5")
+    fireEvent.keyDown(canvas, { key: "Home" })
+    expect(counter()).toContain("1 / 5")
+    expect(container.querySelector(".tm-node-active")).not.toBeNull()
+  })
+
+  it("opens the side panel from a node and closes it with Escape", async () => {
+    const { fireEvent } = await import("@testing-library/react")
+    const { container } = render(
+      <div style={{ width: 800, height: 600 }}>
+        <TurnMap messages={FIXTURES["tool-calls"]} theme="light" />
+      </div>
+    )
+    expect(screen.queryByRole("dialog")).toBeNull()
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Open in side panel" })[2]
+    )
+    const panel = screen.getByRole("dialog")
+    expect(panel).toHaveAttribute("aria-label", "Tool call: get_order")
+    expect(panel.textContent).toContain("Arguments")
+    expect(panel.textContent).toContain("tool call id")
+    const canvas = container.querySelector("[tabindex='0']") as HTMLElement
+    fireEvent.keyDown(canvas, { key: "Escape" })
+    expect(screen.queryByRole("dialog")).toBeNull()
+  })
+})

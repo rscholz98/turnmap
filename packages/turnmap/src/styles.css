@@ -149,8 +149,14 @@
   font-size: inherit;
 }
 
-.turnmap .react-flow__node.selected .tm-node {
+.turnmap .react-flow__node.selected .tm-node,
+.turnmap .tm-node-active {
   box-shadow: 0 0 0 2px var(--tm-ring);
+}
+
+/* The navigation control sits above the minimap / controls. */
+.turnmap .react-flow__panel.top.right {
+  margin: 10px;
 }
 
 .turnmap .react-flow__handle.tm-handle {

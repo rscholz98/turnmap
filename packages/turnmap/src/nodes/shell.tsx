@@ -1,16 +1,17 @@
 import { Handle, Position } from "@xyflow/react"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, PanelRightOpen } from "lucide-react"
 import { useState, type CSSProperties, type ReactNode } from "react"
 
 import { cn } from "../cn"
 import { useTurnMapSettings } from "../context"
 import { HANDLE, NODE_WIDTH } from "../layout"
 import { IconButton } from "../ui/button"
-import { ExpandDialog } from "../ui/dialog"
 
 export { CodeBlock, TextBlock } from "./blocks"
 
 interface NodeShellProps {
+  /** React Flow node id; enables the "open in panel" button. */
+  nodeId: string
   accent: string
   icon: ReactNode
   title: ReactNode
@@ -22,9 +23,6 @@ interface NodeShellProps {
   children?: ReactNode
   /** Footer line inside the details (timestamps, ids). */
   footer?: ReactNode
-  /** Full, untruncated content for the dialog; omit to hide the button. */
-  expand?: ReactNode
-  expandTitle?: ReactNode
   className?: string
   style?: CSSProperties
 }
@@ -72,6 +70,7 @@ function Handles() {
  * node height, which the canvas re-measures and lays out again.
  */
 export function NodeShell({
+  nodeId,
   accent,
   icon,
   title,
@@ -79,19 +78,19 @@ export function NodeShell({
   badges,
   children,
   footer,
-  expand,
-  expandTitle,
   className,
   style,
 }: NodeShellProps) {
-  const { dark, expandNodes } = useTurnMapSettings()
+  const { expandNodes, activeId, openNode } = useTurnMapSettings()
   const [toggled, setToggled] = useState<boolean | null>(null)
   const open = toggled ?? expandNodes
   const hasDetails = children != null || footer != null
+  const active = activeId === nodeId
   return (
     <div
       className={cn(
         "tm-node tm:relative tm:rounded-lg tm:border tm:border-border tm:bg-card tm:text-foreground tm:shadow-sm",
+        active && "tm-node-active",
         className
       )}
       style={{
@@ -100,6 +99,7 @@ export function NodeShell({
         borderLeftColor: accent,
         ...style,
       }}
+      data-active={active || undefined}
     >
       <Handles />
       <div
@@ -137,14 +137,13 @@ export function NodeShell({
           className="tm:flex tm:shrink-0 tm:items-center"
           onClick={(e) => e.stopPropagation()}
         >
-          {expand && (
-            <ExpandDialog
-              title={expandTitle ?? title}
-              rootClassName={dark ? "dark" : undefined}
-            >
-              {expand}
-            </ExpandDialog>
-          )}
+          <IconButton
+            className="nodrag tm:h-5 tm:w-5"
+            aria-label="Open in side panel"
+            onClick={() => openNode(nodeId)}
+          >
+            <PanelRightOpen className="tm:h-3 tm:w-3" />
+          </IconButton>
           {hasDetails && (
             <IconButton
               className="nodrag tm:h-5 tm:w-5"

@@ -39,6 +39,9 @@ npm run lint && npm run typecheck && npm run format:check
   (those would force the DOM size). The canvas relayouts from measured sizes.
 - `layoutGraph` returns `{ nodes, edges }`: nodes have positions, edges have the handle pair
   (`s-top` / `t-left` and so on, see `HANDLE`). Every node renders all eight handles.
+- Node full content lives in `src/nodes/describe.tsx` (`describeNode`), shared by the side
+  panel (`src/panel.tsx`); the node views only render the compact header and details.
+  Navigation state (`activeId`, `openNode`) travels through `TurnMapContext`.
 - The site's `?layout=spine|TB|LR` query parameter sets the initial layout (handy for headless
   screenshots: `chrome --headless=new --screenshot <url>`).
 
