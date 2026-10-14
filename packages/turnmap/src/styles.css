@@ -177,6 +177,18 @@
   font-size: 11px;
 }
 
+/* Panel previews: one line per JSON line, cut at the right edge with an
+   ellipsis instead of wrapping; the dialog scrolls horizontally instead. */
+.turnmap .tm-panel pre {
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.turnmap .tm-json-full {
+  white-space: pre;
+}
+
 .turnmap pre {
   margin: 0;
   font-family:

@@ -89,7 +89,7 @@ export function SessionSidebar({
                       active && "bg-accent"
                     )}
                   >
-                    <span className="flex w-full items-center gap-1.5 pr-6">
+                    <span className="flex w-full items-center gap-1.5 pr-9">
                       <FileJson2 className="size-3.5 shrink-0 text-muted-foreground" />
                       <span className="truncate">{session.name}</span>
                     </span>
@@ -103,12 +103,12 @@ export function SessionSidebar({
                   </button>
                   <Button
                     variant="ghost"
-                    size="icon-sm"
-                    className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                    size="icon"
+                    className="absolute top-1/2 right-1.5 -translate-y-1/2 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive focus-visible:opacity-100"
                     aria-label={`Delete ${session.name}`}
                     onClick={() => onRemove(session.id)}
                   >
-                    <Trash2 className="size-3.5" />
+                    <Trash2 />
                   </Button>
                 </li>
               )

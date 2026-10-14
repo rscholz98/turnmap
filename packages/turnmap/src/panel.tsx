@@ -179,7 +179,7 @@ export function SidePanel({
   return (
     <aside
       className={cn(
-        "tm-panel tm:absolute tm:top-0 tm:bottom-0 tm:z-20 tm:flex tm:w-[min(420px,92%)] tm:flex-col tm:border-border tm:bg-card tm:text-foreground tm:shadow-2xl",
+        "tm-panel tm:absolute tm:top-0 tm:bottom-0 tm:z-20 tm:flex tm:w-[min(520px,92%)] tm:flex-col tm:border-border tm:bg-card tm:text-foreground tm:shadow-2xl",
         side === "right" ? "tm:right-0 tm:border-l" : "tm:left-0 tm:border-r"
       )}
       role="dialog"

@@ -74,7 +74,7 @@ export function JsonDialog({
                 </DialogPrimitive.Close>
               </span>
             </div>
-            <pre className="tm:min-h-0 tm:flex-1 tm:overflow-auto tm:rounded-md tm:bg-code tm:p-4 tm:text-[12px]">
+            <pre className="tm-json-full tm:min-h-0 tm:flex-1 tm:overflow-auto tm:rounded-md tm:bg-code tm:p-4 tm:text-[12px]">
               <HighlightedJson text={text} />
             </pre>
           </DialogPrimitive.Content>

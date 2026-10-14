@@ -222,7 +222,7 @@ interface CanvasProps {
   onSelect?: (node: PartNode) => void
 }
 
-const PANEL_WIDTH = 420
+const PANEL_WIDTH = 520
 
 function Canvas({
   graph,
@@ -341,7 +341,6 @@ function Canvas({
             : 0
       void setCenter(node.position.x + w / 2 + shift, node.position.y + h / 2, {
         zoom,
-        duration: 250,
       })
     },
     [getNode, setCenter, getZoom]
@@ -398,7 +397,7 @@ function Canvas({
       }
       if (dx !== 0) {
         const vp = getViewport()
-        void setViewport({ ...vp, x: vp.x + dx }, { duration: 250 })
+        void setViewport({ ...vp, x: vp.x + dx })
       }
     },
     [nodeBox, getViewport, setViewport]
