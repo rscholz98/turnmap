@@ -81,7 +81,9 @@ import { parseMessages, buildGraph, layoutGraph } from "turnmap"
 
 const { messages, warnings } = parseMessages(json)
 const { nodes, edges, groups } = buildGraph(messages)
-const positioned = layoutGraph(nodes, edges, groups, { direction: "TB" })
+const laid = layoutGraph(nodes, edges, groups, { mode: "spine" })
+// laid.nodes carry positions (parts via initialWidth / initialHeight, message
+// groups with explicit sizes); laid.edges carry the handle pair to use.
 ```
 
 The TypeScript types of the pydantic-ai message schema (`ModelMessage`, `ModelRequest`,
@@ -109,6 +111,14 @@ off the call it answers (matched by `tool_call_id`) and takes over as the chain 
 next response follows the result. A message's leaves feed the next message. Each
 `ModelRequest` / `ModelResponse` is drawn as a translucent group with its model name,
 finish reason, token usage and timestamp.
+
+Three layouts: `spine` (default) keeps prompts and responses in one column and puts each
+tool call in a column to the right with its return one column further, so a run reads top
+to bottom with the tool work beside it; `TB` and `LR` hand the whole graph to dagre. Every
+node has handles on all four sides and the layout picks the pair per edge, so switching
+layouts never leaves an edge on a stale anchor. Long text and JSON are cut in the node and
+expand in place ("Show more"); the expand button opens the full content in a dialog. JSON
+is syntax colored.
 
 | Node           | Part kinds                                                                           |
 | -------------- | ------------------------------------------------------------------------------------ |

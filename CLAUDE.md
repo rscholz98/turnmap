@@ -37,6 +37,10 @@ npm run lint && npm run typecheck && npm run format:check
   host page's Tailwind build keeps the standard layer order. Keep that line.
 - Part nodes get `initialWidth` / `initialHeight` from the layout, never `width` / `height`
   (those would force the DOM size). The canvas relayouts from measured sizes.
+- `layoutGraph` returns `{ nodes, edges }`: nodes have positions, edges have the handle pair
+  (`s-top` / `t-left` and so on, see `HANDLE`). Every node renders all eight handles.
+- The site's `?layout=spine|TB|LR` query parameter sets the initial layout (handy for headless
+  screenshots: `chrome --headless=new --screenshot <url>`).
 
 ## Release
 

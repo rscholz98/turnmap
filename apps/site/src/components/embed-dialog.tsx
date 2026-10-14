@@ -1,6 +1,6 @@
-import { Check, Code2, Copy } from "lucide-react"
-import { useState } from "react"
+import { Code2 } from "lucide-react"
 
+import { Code } from "@/components/code"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -13,7 +13,8 @@ import {
 
 const INSTALL = "npm install turnmap"
 
-const USAGE = `import { TurnMap } from "turnmap"
+const USAGE = `import { useState } from "react"
+import { TurnMap } from "turnmap"
 import "turnmap/styles.css"
 
 // sessions: your own list of histories, e.g. loaded from a database
@@ -29,30 +30,11 @@ export function Trace({ sessions }) {
         ))}
       </aside>
       <div style={{ flex: 1 }}>
-        <TurnMap messages={current.messages} theme="system" />
+        <TurnMap messages={current.messages} layout="spine" theme="system" />
       </div>
     </div>
   )
 }`
-
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false)
-  return (
-    <Button
-      variant="ghost"
-      size="icon-sm"
-      className="absolute top-1.5 right-1.5"
-      aria-label="Copy"
-      onClick={async () => {
-        await navigator.clipboard.writeText(text)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 1500)
-      }}
-    >
-      {copied ? <Check /> : <Copy />}
-    </Button>
-  )
-}
 
 export function EmbedDialog() {
   return (
@@ -70,23 +52,13 @@ export function EmbedDialog() {
             graph. Switching sessions is your call: pass a different history.
           </DialogDescription>
         </DialogHeader>
-        <div className="relative">
-          <pre className="overflow-x-auto rounded-md bg-muted p-3 text-xs">
-            {INSTALL}
-          </pre>
-          <CopyButton text={INSTALL} />
-        </div>
-        <div className="relative">
-          <pre className="max-h-[50vh] overflow-auto rounded-md bg-muted p-3 text-xs">
-            {USAGE}
-          </pre>
-          <CopyButton text={USAGE} />
-        </div>
+        <Code code={INSTALL} language="bash" />
+        <Code code={USAGE} language="tsx" className="max-h-[50vh]" />
         <p className="text-xs text-muted-foreground">
-          Props: <code>messages</code>, <code>direction</code> (TB or LR),{" "}
-          <code>theme</code>, <code>collapseThreshold</code>,{" "}
-          <code>onSelect</code>, <code>showMinimap</code>,{" "}
-          <code>showControls</code>. Full docs in the{" "}
+          Props: <code>messages</code>, <code>layout</code> (spine, TB or LR),{" "}
+          <code>theme</code>, <code>palette</code>,{" "}
+          <code>collapseThreshold</code>, <code>onSelect</code>,{" "}
+          <code>showMinimap</code>, <code>showControls</code>. Full docs in the{" "}
           <a
             className="underline"
             href="https://github.com/rscholz98/turnmap#readme"

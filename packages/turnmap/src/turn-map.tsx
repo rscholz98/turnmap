@@ -28,8 +28,9 @@ import {
   type TurnMapGraph,
   type TurnMapNode,
 } from "./graph"
-import { layoutGraph, type Direction } from "./layout"
+import { layoutGraph, type Direction, type LayoutMode } from "./layout"
 import { nodeTypes } from "./nodes"
+import { paletteStyle, type Palette } from "./palette"
 import { parseMessages, TurnMapParseError } from "./parse"
 import type { ModelMessage } from "./schema"
 
@@ -42,10 +43,18 @@ export interface TurnMapProps {
    * renders a new graph, which is how consumers switch between sessions.
    */
   messages: unknown
-  /** Layout direction: top-down (default) or left-right. */
+  /**
+   * `spine` (default): prompts and responses in a center column, tool calls
+   * to the right, their returns further right. `TB` / `LR`: dagre top-down
+   * or left-right.
+   */
+  layout?: LayoutMode
+  /** @deprecated use `layout`. */
   direction?: Direction
   /** Color theme; `system` follows `prefers-color-scheme`. */
   theme?: TurnMapTheme
+  /** Accent colors per node family; unspecified keys keep the defaults. */
+  palette?: Palette
   /** Characters above which a tool return starts collapsed. */
   collapseThreshold?: number
   showMinimap?: boolean
@@ -128,8 +137,10 @@ function prepare(messages: unknown): Prepared {
  */
 export function TurnMap({
   messages,
-  direction = "TB",
+  layout,
+  direction,
   theme = "system",
+  palette,
   collapseThreshold = 600,
   showMinimap = true,
   showControls = true,
@@ -139,17 +150,25 @@ export function TurnMap({
   className,
   style,
 }: TurnMapProps) {
+  const mode: LayoutMode = layout ?? direction ?? "spine"
   const dark = useDark(theme)
   const prepared = useMemo(() => prepare(messages), [messages])
   const settings = useMemo(
-    () => ({ direction, collapseThreshold, dark }),
-    [direction, collapseThreshold, dark]
+    () => ({ collapseThreshold, dark }),
+    [collapseThreshold, dark]
   )
+  const colors = useMemo(() => paletteStyle(palette), [palette])
 
   return (
     <div
       className={cn("turnmap", dark && "dark", className)}
-      style={{ position: "relative", width: "100%", height: "100%", ...style }}
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        ...colors,
+        ...style,
+      }}
       data-theme={dark ? "dark" : "light"}
     >
       <TurnMapContext.Provider value={settings}>
@@ -163,7 +182,7 @@ export function TurnMap({
           <ReactFlowProvider key={graphKey(prepared.graph!)}>
             <Canvas
               graph={prepared.graph!}
-              direction={direction}
+              mode={mode}
               dark={dark}
               showMinimap={showMinimap}
               showControls={showControls}
@@ -191,7 +210,7 @@ function graphKey(graph: TurnMapGraph): number {
 
 interface CanvasProps {
   graph: TurnMapGraph
-  direction: Direction
+  mode: LayoutMode
   dark: boolean
   showMinimap: boolean
   showControls: boolean
@@ -202,7 +221,7 @@ interface CanvasProps {
 
 function Canvas({
   graph,
-  direction,
+  mode,
   dark,
   showMinimap,
   showControls,
@@ -210,22 +229,25 @@ function Canvas({
   fitViewPadding,
   onSelect,
 }: CanvasProps) {
-  const initialNodes = useMemo(
+  const initial = useMemo(
     () =>
-      layoutGraph(graph.nodes, graph.edges, graph.groups, { direction: "TB" }),
+      layoutGraph(graph.nodes, graph.edges, graph.groups, { mode: "spine" }),
     [graph]
   )
-  const [nodes, setNodes, onNodesChange] =
-    useNodesState<TurnMapNode>(initialNodes)
-  const [edges, , onEdgesChange] = useEdgesState(graph.edges)
+  const [nodes, setNodes, onNodesChange] = useNodesState<TurnMapNode>(
+    initial.nodes
+  )
+  const [edges, setEdges, onEdgesChange] = useEdgesState<TurnMapEdge>(
+    initial.edges
+  )
   const { getNodes, fitView } = useReactFlow<TurnMapNode, TurnMapEdge>()
-  // Direction the view was last fitted for; a switch refits once.
-  const fittedFor = useRef<Direction | null>(null)
+  // Layout mode the view was last fitted for; a switch refits once.
+  const fittedFor = useRef<LayoutMode | null>(null)
 
   // React Flow reports each node's DOM size through `measured`. Whenever the
-  // set of measured sizes changes (first measurement, a collapsed tool return,
-  // a direction switch), run the layout again with the real sizes. The
-  // signature only reflects sizes, so repositioning never re-triggers it.
+  // set of measured sizes changes (first measurement, an expanded block, a
+  // layout switch), run the layout again with the real sizes. The signature
+  // only reflects sizes, so repositioning never re-triggers it.
   const sizeSignature = useMemo(
     () =>
       nodes
@@ -248,11 +270,14 @@ function Canvas({
     }
     const parts = current.filter((n) => n.type !== "messageGroup") as PartNode[]
     const frame = requestAnimationFrame(() => {
-      setNodes(
-        layoutGraph(parts, graph.edges, graph.groups, { direction, sizes })
-      )
-      if (fittedFor.current !== direction) {
-        fittedFor.current = direction
+      const result = layoutGraph(parts, graph.edges, graph.groups, {
+        mode,
+        sizes,
+      })
+      setNodes(result.nodes)
+      setEdges(result.edges)
+      if (fittedFor.current !== mode) {
+        fittedFor.current = mode
         requestAnimationFrame(() => {
           void fitView({ padding: fitViewPadding })
         })
@@ -261,10 +286,11 @@ function Canvas({
     return () => cancelAnimationFrame(frame)
   }, [
     sizeSignature,
-    direction,
+    mode,
     graph,
     getNodes,
     setNodes,
+    setEdges,
     fitView,
     fitViewPadding,
   ])

@@ -47,6 +47,7 @@
 
   color: var(--tm-foreground);
   background: var(--tm-background);
+  color-scheme: light;
   font-family:
     ui-sans-serif,
     system-ui,
@@ -69,6 +70,7 @@
 
 .turnmap.dark,
 .dark .turnmap {
+  color-scheme: dark;
   --tm-background: oklch(0.17 0.005 260);
   --tm-foreground: oklch(0.93 0 0);
   --tm-card: oklch(0.22 0.005 260);
@@ -151,11 +153,15 @@
   box-shadow: 0 0 0 2px var(--tm-ring);
 }
 
-.turnmap .react-flow__handle {
-  width: 8px;
-  height: 8px;
+.turnmap .react-flow__handle.tm-handle {
+  width: 6px;
+  height: 6px;
+  min-width: 0;
+  min-height: 0;
   background: var(--tm-muted-foreground);
-  border: 2px solid var(--tm-card);
+  border: 1px solid var(--tm-card);
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .turnmap .react-flow__node-messageGroup {

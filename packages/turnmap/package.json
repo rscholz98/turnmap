@@ -1,6 +1,6 @@
 {
   "name": "turnmap",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React component that renders a Pydantic AI message history (all_messages_json) as an interactive React Flow graph",
   "keywords": [
     "pydantic-ai",

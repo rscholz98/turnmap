@@ -1,6 +1,12 @@
-import { FileJson2, Plus, Trash2, Workflow } from "lucide-react"
+import { FileJson2, PanelLeftClose, Plus, Trash2 } from "lucide-react"
 
+import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import type { Session } from "@/sessions"
 
@@ -11,11 +17,8 @@ interface SessionSidebarProps {
   onRemove: (id: string) => void
   onClear: () => void
   onNew: () => void
+  onCollapse: () => void
   showingInput: boolean
-}
-
-function messageCount(session: Session) {
-  return session.messages.length
 }
 
 export function SessionSidebar({
@@ -25,18 +28,34 @@ export function SessionSidebar({
   onRemove,
   onClear,
   onNew,
+  onCollapse,
   showingInput,
 }: SessionSidebarProps) {
   return (
     <aside className="flex h-full w-72 shrink-0 flex-col border-r bg-card">
-      <div className="flex items-center gap-2 border-b px-4 py-3">
-        <Workflow className="size-5" />
-        <div className="leading-tight">
-          <div className="font-semibold">turnmap</div>
-          <div className="text-[11px] text-muted-foreground">
+      {/* Same height as the toolbar, so the two header rows line up. */}
+      <div className="flex h-12 shrink-0 items-center gap-2.5 border-b px-3">
+        <Logo />
+        <div className="min-w-0 leading-tight">
+          <div className="text-sm font-semibold">turnmap</div>
+          <div className="truncate text-[11px] text-muted-foreground">
             Pydantic AI history visualizer
           </div>
         </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="ml-auto"
+              aria-label="Hide sidebar"
+              onClick={onCollapse}
+            >
+              <PanelLeftClose />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Hide sidebar</TooltipContent>
+        </Tooltip>
       </div>
       <div className="flex items-center justify-between px-4 pt-3 pb-1">
         <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
@@ -75,7 +94,7 @@ export function SessionSidebar({
                       <span className="truncate">{session.name}</span>
                     </span>
                     <span className="text-[11px] text-muted-foreground">
-                      {messageCount(session)} messages ·{" "}
+                      {session.messages.length} messages ·{" "}
                       {new Date(session.createdAt).toLocaleString(undefined, {
                         dateStyle: "short",
                         timeStyle: "short",

@@ -2,33 +2,52 @@ import {
   ArrowDownUp,
   ArrowLeftRight,
   Check,
+  GitFork,
   Link2,
   Moon,
+  PanelLeftOpen,
   Pencil,
   Sun,
 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
-import type { Direction } from "turnmap"
+import type { LayoutMode } from "turnmap"
 
 import { EmbedDialog } from "@/components/embed-dialog"
+import { Logo } from "@/components/logo"
+import { PaletteMenu } from "@/components/palette-menu"
 import { Button } from "@/components/ui/button"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
+import type { usePalettes } from "@/palettes"
 import type { Session } from "@/sessions"
 import { SHARE_LINK_SOFT_LIMIT, shareUrl } from "@/share"
 
 interface ToolbarProps {
   session: Session | null
-  direction: Direction
-  onDirection: (d: Direction) => void
+  layout: LayoutMode
+  onLayout: (m: LayoutMode) => void
   dark: boolean
   onToggleTheme: () => void
   onRename: (id: string, name: string) => void
+  palettes: ReturnType<typeof usePalettes>
+  sidebarOpen: boolean
+  onOpenSidebar: () => void
 }
+
+const LAYOUTS: { mode: LayoutMode; label: string; icon: typeof GitFork }[] = [
+  {
+    mode: "spine",
+    label: "Spine: tools beside the conversation",
+    icon: GitFork,
+  },
+  { mode: "TB", label: "Top-down", icon: ArrowDownUp },
+  { mode: "LR", label: "Left-right", icon: ArrowLeftRight },
+]
 
 function GithubIcon() {
   return (
@@ -55,11 +74,14 @@ function Tip({
 
 export function Toolbar({
   session,
-  direction,
-  onDirection,
+  layout,
+  onLayout,
   dark,
   onToggleTheme,
   onRename,
+  palettes,
+  sidebarOpen,
+  onOpenSidebar,
 }: ToolbarProps) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState("")
@@ -88,6 +110,22 @@ export function Toolbar({
 
   return (
     <header className="flex h-12 shrink-0 items-center gap-2 border-b bg-card px-3">
+      {!sidebarOpen && (
+        <>
+          <Logo className="size-6" />
+          <Tip label="Show sidebar">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Show sidebar"
+              onClick={onOpenSidebar}
+            >
+              <PanelLeftOpen />
+            </Button>
+          </Tip>
+          <span className="mx-1 h-5 w-px bg-border" />
+        </>
+      )}
       <div className="flex min-w-0 flex-1 items-center gap-2">
         {session && editing ? (
           <form
@@ -140,22 +178,30 @@ export function Toolbar({
       <div className="flex items-center gap-1">
         {session && (
           <>
-            <Tip
-              label={
-                direction === "TB"
-                  ? "Switch to left-right layout"
-                  : "Switch to top-down layout"
-              }
+            <div
+              className="mr-1 flex items-center rounded-md border p-0.5"
+              role="group"
+              aria-label="Layout"
             >
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Toggle layout direction"
-                onClick={() => onDirection(direction === "TB" ? "LR" : "TB")}
-              >
-                {direction === "TB" ? <ArrowLeftRight /> : <ArrowDownUp />}
-              </Button>
-            </Tip>
+              {LAYOUTS.map(({ mode, label, icon: Icon }) => (
+                <Tip key={mode} label={label}>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className={cn(
+                      "size-7",
+                      layout === mode && "bg-accent text-accent-foreground"
+                    )}
+                    aria-label={label}
+                    aria-pressed={layout === mode}
+                    onClick={() => onLayout(mode)}
+                  >
+                    <Icon />
+                  </Button>
+                </Tip>
+              ))}
+            </div>
+            <PaletteMenu palettes={palettes} />
             <Tip label="Copy a share link (the history is encoded in the URL)">
               <Button
                 variant="ghost"

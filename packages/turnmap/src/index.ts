@@ -41,8 +41,24 @@ export type {
   MessageGroupData,
 } from "./graph"
 
-export { layoutGraph, fallbackSize, NODE_WIDTH } from "./layout"
-export type { Direction, LayoutOptions } from "./layout"
+export { layoutGraph, fallbackSize, NODE_WIDTH, HANDLE } from "./layout"
+export type {
+  Direction,
+  LayoutMode,
+  LayoutOptions,
+  LayoutResult,
+} from "./layout"
+
+export {
+  DEFAULT_PALETTE,
+  PALETTE_KEYS,
+  PALETTE_PRESETS,
+  paletteStyle,
+} from "./palette"
+export type { Palette } from "./palette"
+
+export { tokenizeJson } from "./nodes/format"
+export type { JsonToken, JsonTokenKind } from "./nodes/format"
 
 export { nodeTypes } from "./nodes"
 export { ACCENTS } from "./accents"

@@ -3,9 +3,10 @@ import type { CSSProperties, ReactNode } from "react"
 
 import { cn } from "../cn"
 import { useTurnMapSettings } from "../context"
-import { NODE_WIDTH } from "../layout"
+import { HANDLE, NODE_WIDTH } from "../layout"
 import { ExpandDialog } from "../ui/dialog"
-import { preview } from "./format"
+
+export { CodeBlock, TextBlock } from "./blocks"
 
 interface NodeShellProps {
   accent: string
@@ -23,6 +24,43 @@ interface NodeShellProps {
   style?: CSSProperties
 }
 
+const SIDES = [
+  { pos: Position.Top, s: HANDLE.source.top, t: HANDLE.target.top },
+  { pos: Position.Bottom, s: HANDLE.source.bottom, t: HANDLE.target.bottom },
+  { pos: Position.Left, s: HANDLE.source.left, t: HANDLE.target.left },
+  { pos: Position.Right, s: HANDLE.source.right, t: HANDLE.target.right },
+]
+
+/**
+ * Every node renders a source and a target handle on each side. The layout
+ * decides per edge which pair to use, so a layout switch only re-routes
+ * edges and never leaves them on a stale anchor.
+ */
+function Handles() {
+  return (
+    <>
+      {SIDES.map(({ pos, s, t }) => (
+        <span key={pos}>
+          <Handle
+            type="source"
+            id={s}
+            position={pos}
+            isConnectable={false}
+            className="tm-handle"
+          />
+          <Handle
+            type="target"
+            id={t}
+            position={pos}
+            isConnectable={false}
+            className="tm-handle"
+          />
+        </span>
+      ))}
+    </>
+  )
+}
+
 export function NodeShell({
   accent,
   icon,
@@ -35,8 +73,7 @@ export function NodeShell({
   className,
   style,
 }: NodeShellProps) {
-  const { direction, dark } = useTurnMapSettings()
-  const vertical = direction === "TB"
+  const { dark } = useTurnMapSettings()
   return (
     <div
       className={cn(
@@ -50,11 +87,7 @@ export function NodeShell({
         ...style,
       }}
     >
-      <Handle
-        type="target"
-        position={vertical ? Position.Top : Position.Left}
-        isConnectable={false}
-      />
+      <Handles />
       <div className="tm:flex tm:min-w-0 tm:items-center tm:gap-2 tm:pr-6">
         <span
           className="tm:flex tm:h-6 tm:w-6 tm:shrink-0 tm:items-center tm:justify-center tm:rounded-md"
@@ -88,30 +121,6 @@ export function NodeShell({
           {expand}
         </ExpandDialog>
       )}
-      <Handle
-        type="source"
-        position={vertical ? Position.Bottom : Position.Right}
-        isConnectable={false}
-      />
     </div>
-  )
-}
-
-export function TextBlock({ text, limit }: { text: string; limit?: number }) {
-  if (!text.trim()) {
-    return <p className="tm:m-0 tm:text-muted-foreground tm:italic">(empty)</p>
-  }
-  return (
-    <p className="tm:m-0 tm:break-words tm:whitespace-pre-wrap">
-      {preview(text, limit)}
-    </p>
-  )
-}
-
-export function CodeBlock({ text, limit }: { text: string; limit?: number }) {
-  return (
-    <pre className="tm:overflow-hidden tm:rounded-md tm:bg-code tm:p-2">
-      {limit ? preview(text, limit) : text}
-    </pre>
   )
 }

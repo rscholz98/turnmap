@@ -33,13 +33,14 @@ import { stringify } from "../parse"
 import type { ToolReturnOutcome, UserContentItem } from "../schema"
 import { Badge, type BadgeTone } from "../ui/badge"
 import { CollapsibleBlock } from "../ui/collapsible"
+import { CodeBlock, TextBlock } from "./blocks"
 import { formatBytes, formatTime } from "./format"
-import { CodeBlock, NodeShell, TextBlock } from "./shell"
+import { NodeShell } from "./shell"
 
 const ICON = "tm:h-3.5 tm:w-3.5"
 
 function RawJson({ value }: { value: unknown }) {
-  return <CodeBlock text={stringify(value)} />
+  return <CodeBlock text={stringify(value)} limit={Infinity} />
 }
 
 function Attachment({ item }: { item: Exclude<UserContentItem, string> }) {

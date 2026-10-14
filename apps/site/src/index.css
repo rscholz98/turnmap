@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  color-scheme: light;
   --background: oklch(0.99 0 0);
   --foreground: oklch(0.2 0 0);
   --card: oklch(1 0 0);
@@ -26,6 +27,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.15 0.005 260);
   --foreground: oklch(0.93 0 0);
   --card: oklch(0.2 0.005 260);
@@ -83,4 +85,61 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+}
+
+/* Code highlighting (prismjs tokens) on the design tokens, both themes. */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--muted-foreground);
+}
+.token.punctuation,
+.token.operator {
+  color: var(--muted-foreground);
+}
+.token.keyword,
+.token.tag,
+.token.builtin {
+  color: oklch(0.55 0.2 295);
+}
+.dark .token.keyword,
+.dark .token.tag,
+.dark .token.builtin {
+  color: oklch(0.76 0.16 295);
+}
+.token.string,
+.token.attr-value,
+.token.char {
+  color: oklch(0.55 0.15 150);
+}
+.dark .token.string,
+.dark .token.attr-value,
+.dark .token.char {
+  color: oklch(0.75 0.14 150);
+}
+.token.function,
+.token.class-name,
+.token.attr-name,
+.token.property {
+  color: oklch(0.52 0.17 255);
+}
+.dark .token.function,
+.dark .token.class-name,
+.dark .token.attr-name,
+.dark .token.property {
+  color: oklch(0.74 0.13 255);
+}
+.token.number,
+.token.boolean,
+.token.constant {
+  color: oklch(0.6 0.15 60);
+}
+.dark .token.number,
+.dark .token.boolean,
+.dark .token.constant {
+  color: oklch(0.8 0.13 70);
+}
+.token.plain-text {
+  color: var(--foreground);
 }
