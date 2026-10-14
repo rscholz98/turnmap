@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 
 import type { PartNode } from "../graph"
 import { Section, Text } from "../panel"
-import { stringify } from "../parse"
+import { stringify, truncateJson } from "../parse"
 import { CodeBlock } from "./blocks"
 import { formatBytes } from "./format"
 
@@ -21,9 +21,12 @@ export function describeNode(node: PartNode): {
               <Text text={node.data.text} />
             </Section>
             {node.data.attachments.length > 0 && (
-              <Section title={`Attachments (${node.data.attachments.length})`}>
+              <Section
+                title={`Attachments (${node.data.attachments.length})`}
+                json={stringify(node.data.attachments)}
+              >
                 <CodeBlock
-                  text={stringify(node.data.attachments)}
+                  text={stringify(truncateJson(node.data.attachments))}
                   limit={Infinity}
                 />
               </Section>
@@ -53,13 +56,21 @@ export function describeNode(node: PartNode): {
       return {
         title: `Tool call: ${node.data.toolName}`,
         content: (
-          <Section title="Arguments">
+          <Section
+            title="Arguments"
+            json={
+              node.data.args == null ? undefined : stringify(node.data.args)
+            }
+          >
             {node.data.args == null ? (
               <p className="tm:m-0 tm:text-muted-foreground tm:italic">
                 no arguments
               </p>
             ) : (
-              <CodeBlock text={stringify(node.data.args)} limit={Infinity} />
+              <CodeBlock
+                text={stringify(truncateJson(node.data.args))}
+                limit={Infinity}
+              />
             )}
           </Section>
         ),
@@ -70,11 +81,20 @@ export function describeNode(node: PartNode): {
         title: `Tool return: ${node.data.toolName}`,
         content: (
           <>
-            <Section title={`Output · ${formatBytes(text.length)}`}>
-              <CodeBlock text={text} limit={Infinity} />
+            <Section title={`Output · ${formatBytes(text.length)}`} json={text}>
+              <CodeBlock
+                text={
+                  typeof node.data.content === "string"
+                    ? stringify(
+                        truncateJson(node.data.content, { maxString: 2000 })
+                      )
+                    : stringify(truncateJson(node.data.content))
+                }
+                limit={Infinity}
+              />
             </Section>
             {node.data.metadata != null && (
-              <Section title="Metadata">
+              <Section title="Metadata" json={stringify(node.data.metadata)}>
                 <CodeBlock
                   text={stringify(node.data.metadata)}
                   limit={Infinity}

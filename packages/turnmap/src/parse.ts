@@ -172,3 +172,41 @@ export function stringify(value: unknown): string {
     return String(value)
   }
 }
+
+export interface TruncateOptions {
+  /** Longest string value kept intact; longer ones are cut at the end with an ellipsis. */
+  maxString?: number
+  /** Longest array kept intact; longer ones keep the first items plus a marker. */
+  maxItems?: number
+}
+
+/**
+ * Deep copy of a JSON value with long string values cut at the end and long
+ * arrays shortened, so a preview keeps the structure (every key, every
+ * nesting level) readable while the full value lives elsewhere.
+ */
+export function truncateJson(
+  value: unknown,
+  { maxString = 300, maxItems = 25 }: TruncateOptions = {}
+): unknown {
+  if (typeof value === "string") {
+    return value.length > maxString
+      ? `${value.slice(0, maxString)}… (${value.length - maxString} more chars)`
+      : value
+  }
+  if (Array.isArray(value)) {
+    const items = value
+      .slice(0, maxItems)
+      .map((v) => truncateJson(v, { maxString, maxItems }))
+    if (value.length > maxItems)
+      items.push(`… (${value.length - maxItems} more items)`)
+    return items
+  }
+  if (isObject(value)) {
+    const out: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(value))
+      out[k] = truncateJson(v, { maxString, maxItems })
+    return out
+  }
+  return value
+}

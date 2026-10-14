@@ -5,24 +5,31 @@ import { cn } from "./cn"
 import type { MessageGroupData, PartNode } from "./graph"
 import { describeNode } from "./nodes/describe"
 import { CodeBlock } from "./nodes/blocks"
-import { stringify } from "./parse"
-import { Badge } from "./ui/badge"
+import { stringify, truncateJson } from "./parse"
+import { Badge, type BadgeTone } from "./ui/badge"
 import { IconButton } from "./ui/button"
+import { JsonDialog } from "./ui/json-dialog"
 
 export type PanelSide = "left" | "right"
 
 export function Section({
   title,
+  json,
   children,
 }: {
   title: string
+  /** Full text for the expand dialog; shows the expand button when set. */
+  json?: string
   children: ReactNode
 }) {
   return (
     <section className="tm:flex tm:flex-col tm:gap-1.5">
-      <h4 className="tm:m-0 tm:text-[11px] tm:font-semibold tm:tracking-wide tm:text-muted-foreground tm:uppercase">
-        {title}
-      </h4>
+      <div className="tm:flex tm:items-center tm:justify-between tm:gap-2">
+        <h4 className="tm:m-0 tm:text-[11px] tm:font-semibold tm:tracking-wide tm:text-muted-foreground tm:uppercase">
+          {title}
+        </h4>
+        {json != null && <JsonDialog title={title} text={json} />}
+      </div>
       {children}
     </section>
   )
@@ -49,6 +56,23 @@ export function Text({ text }: { text: string }) {
   ) : (
     <p className="tm:m-0 tm:text-muted-foreground tm:italic">(empty)</p>
   )
+}
+
+const OUTCOME_TONE: Record<string, BadgeTone> = {
+  success: "success",
+  return: "success",
+  failed: "danger",
+  retry: "danger",
+  denied: "warning",
+  interrupted: "warning",
+}
+
+const FINISH_TONE: Record<string, BadgeTone> = {
+  stop: "success",
+  tool_call: "info",
+  length: "warning",
+  content_filter: "warning",
+  error: "danger",
 }
 
 function usageRows(usage: MessageGroupData["usage"]): [string, ReactNode][] {
@@ -93,7 +117,7 @@ export function SidePanel({
   const { title, content } = describeNode(node)
   const d = node.data as Record<string, unknown>
   const partRows: [string, ReactNode][] = [
-    ["part", node.data.partKind],
+    ["part", <Badge key="kind">{node.data.partKind}</Badge>],
     ["position", `${index + 1} of ${total}`],
     [
       "message",
@@ -113,21 +137,40 @@ export function SidePanel({
         <code className="tm:text-[11px]">{d.toolCallId}</code>
       ) : null,
     ],
-    ["tool kind", typeof d.toolKind === "string" ? d.toolKind : null],
+    [
+      "tool kind",
+      typeof d.toolKind === "string" ? <Badge>{d.toolKind}</Badge> : null,
+    ],
     [
       "outcome",
-      typeof d.outcome === "string" ? <Badge>{d.outcome}</Badge> : null,
+      typeof d.outcome === "string" ? (
+        <Badge tone={OUTCOME_TONE[d.outcome] ?? "neutral"}>{d.outcome}</Badge>
+      ) : null,
     ],
-    ["provider", typeof d.providerName === "string" ? d.providerName : null],
+    [
+      "provider",
+      typeof d.providerName === "string" ? (
+        <Badge tone="info">{d.providerName}</Badge>
+      ) : null,
+    ],
   ]
   const messageRows: [string, ReactNode][] = group
     ? [
         ["model", group.modelName],
         ["provider", group.providerName],
-        ["finish reason", group.finishReason],
+        [
+          "finish reason",
+          group.finishReason ? (
+            <Badge tone={FINISH_TONE[group.finishReason] ?? "neutral"}>
+              {group.finishReason}
+            </Badge>
+          ) : null,
+        ],
         [
           "state",
-          group.state && group.state !== "complete" ? group.state : null,
+          group.state && group.state !== "complete" ? (
+            <Badge tone="warning">{group.state}</Badge>
+          ) : null,
         ],
         ["run id", group.runId],
         ...usageRows(group.usage),
@@ -171,8 +214,11 @@ export function SidePanel({
             <Text text={group.instructions} />
           </Section>
         )}
-        <Section title="Raw part">
-          <CodeBlock text={stringify(node.data.raw)} limit={2000} />
+        <Section title="Raw part" json={stringify(node.data.raw)}>
+          <CodeBlock
+            text={stringify(truncateJson(node.data.raw))}
+            limit={Infinity}
+          />
         </Section>
       </div>
     </aside>

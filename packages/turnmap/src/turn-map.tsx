@@ -556,6 +556,7 @@ function Canvas({
           colorMode={dark ? "dark" : "light"}
           nodesConnectable={false}
           nodesDraggable={false}
+          elementsSelectable={false}
           elevateNodesOnSelect={false}
           fitView
           fitViewOptions={{ padding: fitViewPadding }}

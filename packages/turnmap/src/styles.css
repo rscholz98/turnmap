@@ -149,7 +149,6 @@
   font-size: inherit;
 }
 
-.turnmap .react-flow__node.selected .tm-node,
 .turnmap .tm-node-active {
   box-shadow: 0 0 0 2px var(--tm-ring);
 }

@@ -124,8 +124,10 @@ node and keeps the active node in the uncovered area. The control in the top-rig
 steps through the nodes in order (Home and End jump to the ends); the arrow keys move
 spatially, up and down along a column, left and right across to the neighbouring column
 at the same row, so a stack of tool calls is walked with up and down and a call's return is
-one press to the right. Enter opens the active node, Escape closes the panel. JSON is
-syntax colored.
+one press to the right. Enter opens the active node, Escape closes the panel. In the panel, JSON keeps its
+structure: long string values are cut at the end and long arrays shortened with a marker
+(`truncateJson`), and every JSON section has an expand button that opens the full value in a
+large dialog with a copy button. JSON is syntax colored.
 
 | Node           | Part kinds                                                                           |
 | -------------- | ------------------------------------------------------------------------------------ |

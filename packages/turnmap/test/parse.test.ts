@@ -4,6 +4,7 @@ import {
   contentToText,
   parseMessages,
   parseToolArgs,
+  truncateJson,
   TurnMapParseError,
 } from "../src/parse"
 import { FIXTURES } from "./fixtures"
@@ -93,5 +94,31 @@ describe("contentToText", () => {
     ).toBe("Look at this\nand this")
     expect(contentToText("plain")).toBe("plain")
     expect(contentToText(null)).toBe("")
+  })
+})
+
+describe("truncateJson", () => {
+  it("cuts long strings at the end and keeps every key and nesting level", () => {
+    const long = "x".repeat(500)
+    const out = truncateJson(
+      { a: { b: long, c: [1, long] }, d: 5 },
+      { maxString: 10 }
+    ) as {
+      a: { b: string; c: [number, string] }
+      d: number
+    }
+    expect(out.a.b).toBe("xxxxxxxxxx… (490 more chars)")
+    expect(out.a.c[0]).toBe(1)
+    expect(out.a.c[1]).toMatch(/^xxxxxxxxxx…/)
+    expect(out.d).toBe(5)
+  })
+
+  it("shortens long arrays with a marker", () => {
+    const out = truncateJson(
+      Array.from({ length: 150 }, (_, i) => i),
+      { maxItems: 100 }
+    ) as unknown[]
+    expect(out).toHaveLength(101)
+    expect(out[100]).toBe("… (50 more items)")
   })
 })
