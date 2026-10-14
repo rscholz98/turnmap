@@ -3,8 +3,9 @@ import { ChevronDown, ChevronUp, ChevronsDown, ChevronsUp } from "lucide-react"
 import { IconButton } from "./ui/button"
 
 /**
- * Prev / next / first / last node control, shown in the canvas corner. The
- * same moves are bound to the arrow keys, Home and End on the container.
+ * First / previous / next / last node control (document order), shown in
+ * the canvas corner. Home and End do the same; the arrow keys move spatially
+ * between neighbouring nodes.
  */
 export function NodeNav({
   index,
@@ -39,7 +40,7 @@ export function NodeNav({
       </IconButton>
       <IconButton
         className="tm:h-7 tm:w-7"
-        aria-label="Previous node (Arrow up)"
+        aria-label="Previous node"
         disabled={atStart}
         onClick={onPrev}
       >
@@ -53,7 +54,7 @@ export function NodeNav({
       </span>
       <IconButton
         className="tm:h-7 tm:w-7"
-        aria-label="Next node (Arrow down)"
+        aria-label="Next node"
         disabled={atEnd}
         onClick={onNext}
       >

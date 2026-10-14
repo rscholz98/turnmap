@@ -51,9 +51,6 @@ export function App() {
     () => stored(SIDEBAR_KEY, ["open", "closed"] as const, "open") === "open"
   )
   const [showingInput, setShowingInput] = useState(() => !selected)
-  const [expandNodes, setExpandNodes] = useState(
-    () => new URLSearchParams(location.search).get("expand") === "1"
-  )
 
   const setLayout = useCallback((m: LayoutMode) => {
     setLayoutState(m)
@@ -113,8 +110,6 @@ export function App() {
             dark={dark}
             onToggleTheme={toggle}
             onRename={rename}
-            expandNodes={expandNodes}
-            onExpandNodes={setExpandNodes}
             palettes={palettes}
             sidebarOpen={sidebarOpen}
             onOpenSidebar={() => setSidebarOpen(true)}
@@ -128,7 +123,6 @@ export function App() {
                 layout={layout}
                 theme={dark ? "dark" : "light"}
                 palette={palettes.active}
-                expandNodes={expandNodes}
               />
             )}
           </div>

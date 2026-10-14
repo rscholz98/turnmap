@@ -61,10 +61,6 @@ export interface TurnMapProps {
   theme?: TurnMapTheme
   /** Accent colors per node family; unspecified keys keep the defaults. */
   palette?: Palette
-  /** Characters above which a tool return starts collapsed. */
-  collapseThreshold?: number
-  /** Open every node's details by default (else header and summary only). */
-  expandNodes?: boolean
   showMinimap?: boolean
   showControls?: boolean
   showBackground?: boolean
@@ -151,8 +147,6 @@ export function TurnMap({
   direction,
   theme = "system",
   palette,
-  collapseThreshold = 600,
-  expandNodes = false,
   showMinimap = true,
   showControls = true,
   showBackground = true,
@@ -192,8 +186,6 @@ export function TurnMap({
             graph={prepared.graph!}
             mode={mode}
             dark={dark}
-            collapseThreshold={collapseThreshold}
-            expandNodes={expandNodes}
             showMinimap={showMinimap}
             showControls={showControls}
             showBackground={showBackground}
@@ -222,8 +214,6 @@ interface CanvasProps {
   graph: TurnMapGraph
   mode: LayoutMode
   dark: boolean
-  collapseThreshold: number
-  expandNodes: boolean
   showMinimap: boolean
   showControls: boolean
   showBackground: boolean
@@ -238,8 +228,6 @@ function Canvas({
   graph,
   mode,
   dark,
-  collapseThreshold,
-  expandNodes,
   showMinimap,
   showControls,
   showBackground,
@@ -331,15 +319,28 @@ function Canvas({
     fitViewPadding,
   ])
 
-  /** Center the viewport on a node, keeping the zoom. */
+  /**
+   * Center the viewport on a node, keeping the zoom. With the side panel open
+   * the node is centered in the uncovered part of the canvas instead.
+   */
   const centerOn = useCallback(
-    (id: string) => {
+    (id: string, panelSide: PanelSide | null) => {
       const node = getNode(id)
       if (!node) return
       const w = node.measured?.width ?? node.initialWidth ?? 0
       const h = node.measured?.height ?? node.initialHeight ?? 0
-      void setCenter(node.position.x + w / 2, node.position.y + h / 2, {
-        zoom: getZoom(),
+      const zoom = getZoom()
+      const width = containerRef.current?.clientWidth ?? 0
+      const covered = panelSide ? Math.min(PANEL_WIDTH, width * 0.92) : 0
+      // Shift in flow units that puts the node at the center of the free region.
+      const shift =
+        panelSide === "left"
+          ? -covered / 2 / zoom
+          : panelSide === "right"
+            ? covered / 2 / zoom
+            : 0
+      void setCenter(node.position.x + w / 2 + shift, node.position.y + h / 2, {
+        zoom,
         duration: 250,
       })
     },
@@ -403,15 +404,76 @@ function Canvas({
     [nodeBox, getViewport, setViewport]
   )
 
+  const activate = useCallback(
+    (id: string) => {
+      setActiveId(id)
+      centerOn(id, panel?.side ?? null)
+      setPanel((p) => (p ? { ...p, id } : p))
+    },
+    [centerOn, panel?.side]
+  )
+
+  /** Step in document order (the control's prev / next / first / last). */
   const goTo = useCallback(
     (index: number) => {
       const id = order[Math.max(0, Math.min(order.length - 1, index))]
-      if (!id) return
-      setActiveId(id)
-      centerOn(id)
-      setPanel((p) => (p ? { ...p, id } : p))
+      if (id) activate(id)
     },
-    [order, centerOn]
+    [order, activate]
+  )
+
+  /**
+   * Spatial step: the nearest node in the arrow's direction, preferring the
+   * same column (up / down) or row (left / right), so a column of tool calls
+   * is walked with up and down and a call's return is reached with right.
+   */
+  const goSpatial = useCallback(
+    (direction: "up" | "down" | "left" | "right") => {
+      if (!activeId) {
+        goTo(0)
+        return
+      }
+      const current = getNode(activeId)
+      if (!current) return
+      const center = (n: TurnMapNode) => ({
+        x: n.position.x + (n.measured?.width ?? n.initialWidth ?? 0) / 2,
+        y: n.position.y + (n.measured?.height ?? n.initialHeight ?? 0) / 2,
+      })
+      const from = center(current)
+      let best: { id: string; score: number } | null = null
+      for (const n of getNodes()) {
+        if (n.id === activeId || n.type === "messageGroup") continue
+        const c = center(n)
+        const dx = c.x - from.x
+        const dy = c.y - from.y
+        let primary: number
+        let lateral: number
+        switch (direction) {
+          case "down":
+            primary = dy
+            lateral = Math.abs(dx)
+            break
+          case "up":
+            primary = -dy
+            lateral = Math.abs(dx)
+            break
+          case "right":
+            primary = dx
+            lateral = Math.abs(dy)
+            break
+          case "left":
+            primary = -dx
+            lateral = Math.abs(dy)
+            break
+        }
+        // Must lie in the arrow's direction, and more along it than across.
+        if (primary < 8 || lateral > primary * 1.5) continue
+        const score = primary + lateral * 3
+        if (!best || score < best.score) best = { id: n.id, score }
+      }
+      if (best) activate(best.id)
+    },
+    [activeId, getNode, getNodes, goTo, activate]
   )
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -426,12 +488,16 @@ function Canvas({
     let handled = true
     switch (event.key) {
       case "ArrowDown":
-      case "ArrowRight":
-        goTo(activeIndex < 0 ? 0 : activeIndex + 1)
+        goSpatial("down")
         break
       case "ArrowUp":
+        goSpatial("up")
+        break
+      case "ArrowRight":
+        goSpatial("right")
+        break
       case "ArrowLeft":
-        goTo(activeIndex < 0 ? 0 : activeIndex - 1)
+        goSpatial("left")
         break
       case "Home":
         goTo(0)
@@ -461,8 +527,8 @@ function Canvas({
   }
 
   const settings = useMemo<TurnMapSettings>(
-    () => ({ collapseThreshold, dark, expandNodes, activeId, openNode }),
-    [collapseThreshold, dark, expandNodes, activeId, openNode]
+    () => ({ dark, activeId, openNode }),
+    [dark, activeId, openNode]
   )
 
   const panelNode = panel

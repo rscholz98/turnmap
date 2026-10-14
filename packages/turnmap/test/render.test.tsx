@@ -62,9 +62,12 @@ describe("navigation and side panel", () => {
     fireEvent.click(screen.getByRole("button", { name: /Last node/ }))
     expect(counter()).toContain("5 / 5")
     const canvas = container.querySelector("[tabindex='0']") as HTMLElement
-    fireEvent.keyDown(canvas, { key: "ArrowUp" })
-    expect(counter()).toContain("4 / 5")
     fireEvent.keyDown(canvas, { key: "Home" })
+    expect(counter()).toContain("1 / 5")
+    // Spatial: the user prompt sits directly below the system prompt.
+    fireEvent.keyDown(canvas, { key: "ArrowDown" })
+    expect(counter()).toContain("2 / 5")
+    fireEvent.keyDown(canvas, { key: "ArrowUp" })
     expect(counter()).toContain("1 / 5")
     expect(container.querySelector(".tm-node-active")).not.toBeNull()
   })
@@ -77,9 +80,7 @@ describe("navigation and side panel", () => {
       </div>
     )
     expect(screen.queryByRole("dialog")).toBeNull()
-    fireEvent.click(
-      screen.getAllByRole("button", { name: "Open in side panel" })[2]
-    )
+    fireEvent.click(screen.getAllByRole("button", { name: "get_order" })[0])
     const panel = screen.getByRole("dialog")
     expect(panel).toHaveAttribute("aria-label", "Tool call: get_order")
     expect(panel.textContent).toContain("Arguments")

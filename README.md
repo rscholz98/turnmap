@@ -117,14 +117,15 @@ tool call in a column to the right with its return one column further, so a run 
 to bottom with the tool work beside it; `TB` and `LR` hand the whole graph to dagre. Every
 node has handles on all four sides and the layout picks the pair per edge, so switching
 layouts never leaves an edge on a stale anchor. Nodes are compact: an icon, a title, a
-one-line summary and the outcome badge; the details open underneath on click (or everywhere
-with `expandNodes`). Long text and JSON are cut in the details and expand in place ("Show
-more"). The panel button on a node opens a side panel over the canvas with the full content,
-the part and message metadata (ids, outcome, model, tokens, run id) and the raw part; it
-opens on the side away from the node and pans the node clear if needed. The navigation
-control in the top-right corner (and the arrow keys, Home, End, Enter to open, Escape to
-close, once the canvas has focus) steps through the nodes in order and keeps the panel in
-sync. JSON is syntax colored.
+one-line summary and the outcome badge. Nothing opens inside the canvas: a click on a node
+opens a side panel over it with the full content, the part and message metadata (ids,
+outcome, model, tokens, run id) and the raw part. The panel opens on the side away from the
+node and keeps the active node in the uncovered area. The control in the top-right corner
+steps through the nodes in order (Home and End jump to the ends); the arrow keys move
+spatially, up and down along a column, left and right across to the neighbouring column
+at the same row, so a stack of tool calls is walked with up and down and a call's return is
+one press to the right. Enter opens the active node, Escape closes the panel. JSON is
+syntax colored.
 
 | Node           | Part kinds                                                                           |
 | -------------- | ------------------------------------------------------------------------------------ |

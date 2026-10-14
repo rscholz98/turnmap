@@ -6,7 +6,6 @@ import {
   Cog,
   FileQuestion,
   Globe,
-  Image as ImageIcon,
   Info,
   Layers,
   Mic,
@@ -17,7 +16,6 @@ import {
 } from "lucide-react"
 
 import { ACCENTS } from "../accents"
-import { useTurnMapSettings } from "../context"
 import type {
   MediaNode,
   NoteNode,
@@ -29,12 +27,9 @@ import type {
   ToolReturnNode,
   UnknownNode,
 } from "../graph"
-import { stringify } from "../parse"
-import type { ToolReturnOutcome, UserContentItem } from "../schema"
+import type { ToolReturnOutcome } from "../schema"
 import { Badge, type BadgeTone } from "../ui/badge"
-import { CollapsibleBlock } from "../ui/collapsible"
-import { CodeBlock, TextBlock } from "./blocks"
-import { formatBytes, formatTime } from "./format"
+import { formatBytes } from "./format"
 import { NodeShell } from "./shell"
 
 const ICON = "tm:h-3.5 tm:w-3.5"
@@ -47,64 +42,6 @@ function oneLine(value: unknown): string {
     return JSON.stringify(value)
   } catch {
     return String(value)
-  }
-}
-
-function RawJson({ value }: { value: unknown }) {
-  return <CodeBlock text={stringify(value)} limit={Infinity} />
-}
-
-function Attachment({ item }: { item: Exclude<UserContentItem, string> }) {
-  switch (item.kind) {
-    case "image-url":
-    case "audio-url":
-    case "video-url":
-    case "document-url":
-      return (
-        <a
-          className="nodrag tm:inline-flex tm:max-w-full tm:items-center tm:gap-1 tm:rounded-md tm:bg-muted tm:px-1.5 tm:py-0.5 tm:text-[11px] tm:text-foreground tm:no-underline tm:hover:underline"
-          href={item.url}
-          target="_blank"
-          rel="noreferrer"
-          title={item.url}
-        >
-          <Globe className="tm:h-3 tm:w-3 tm:shrink-0" />
-          <span className="tm:truncate">
-            {item.kind.replace("-url", "")}: {item.url}
-          </span>
-        </a>
-      )
-    case "binary": {
-      const bytes = Math.floor(((item.data?.length ?? 0) * 3) / 4)
-      const isImage = item.media_type?.startsWith("image/")
-      return (
-        <span className="tm:inline-flex tm:max-w-full tm:items-center tm:gap-1 tm:rounded-md tm:bg-muted tm:px-1.5 tm:py-0.5 tm:text-[11px]">
-          {isImage ? (
-            <ImageIcon className="tm:h-3 tm:w-3 tm:shrink-0" />
-          ) : (
-            <Paperclip className="tm:h-3 tm:w-3 tm:shrink-0" />
-          )}
-          <span className="tm:truncate">
-            {item.media_type} · {formatBytes(bytes)}
-          </span>
-        </span>
-      )
-    }
-    case "uploaded-file":
-      return (
-        <span className="tm:inline-flex tm:items-center tm:gap-1 tm:rounded-md tm:bg-muted tm:px-1.5 tm:py-0.5 tm:text-[11px]">
-          <Paperclip className="tm:h-3 tm:w-3" /> uploaded file {item.file_id}
-        </span>
-      )
-    case "cache-point":
-      return (
-        <span className="tm:inline-flex tm:items-center tm:gap-1 tm:rounded-md tm:bg-muted tm:px-1.5 tm:py-0.5 tm:text-[11px]">
-          <Layers className="tm:h-3 tm:w-3" /> cache point
-          {item.ttl ? ` (${item.ttl})` : ""}
-        </span>
-      )
-    default:
-      return <RawJson value={item} />
   }
 }
 
@@ -134,17 +71,7 @@ export function PromptNodeView({ id, data }: NodeProps<PromptNode>) {
           {data.dynamicRef && <Badge>dynamic</Badge>}
         </>
       }
-      footer={formatTime(data.timestamp)}
-    >
-      <TextBlock text={data.text} limit={400} />
-      {attachments > 0 && (
-        <div className="tm:flex tm:flex-wrap tm:gap-1">
-          {data.attachments.map((item, i) => (
-            <Attachment key={i} item={item} />
-          ))}
-        </div>
-      )}
-    </NodeShell>
+    />
   )
 }
 
@@ -156,9 +83,7 @@ export function ResponseNodeView({ id, data }: NodeProps<ResponseNode>) {
       icon={<Bot className={ICON} />}
       title="Model response"
       summary={oneLine(data.text) || "(empty)"}
-    >
-      <TextBlock text={data.text} limit={400} />
-    </NodeShell>
+    />
   )
 }
 
@@ -174,9 +99,7 @@ export function ThinkingNodeView({ id, data }: NodeProps<ThinkingNode>) {
       title={compaction ? "Compaction" : "Thinking"}
       summary={oneLine(data.text) || `${data.text.length} chars`}
       badges={data.signature ? <Badge>signed</Badge> : undefined}
-    >
-      <TextBlock text={data.text} limit={400} />
-    </NodeShell>
+    />
   )
 }
 
@@ -190,7 +113,6 @@ const OUTCOME_TONE: Record<ToolReturnOutcome | "retry", BadgeTone> = {
 
 export function ToolCallNodeView({ id, data }: NodeProps<ToolCallNode>) {
   const accent = data.builtin ? ACCENTS.builtinTool : ACCENTS.toolCall
-  const argsText = data.args == null ? "" : stringify(data.args)
   return (
     <NodeShell
       nodeId={id}
@@ -213,25 +135,12 @@ export function ToolCallNodeView({ id, data }: NodeProps<ToolCallNode>) {
           )}
         </>
       }
-      footer={<span className="tm:truncate">id {data.toolCallId}</span>}
-    >
-      {argsText ? (
-        <CodeBlock text={argsText} limit={500} />
-      ) : (
-        <p className="tm:m-0 tm:text-muted-foreground tm:italic">
-          no arguments
-        </p>
-      )}
-    </NodeShell>
+    />
   )
 }
 
 export function ToolReturnNodeView({ id, data }: NodeProps<ToolReturnNode>) {
-  const { collapseThreshold } = useTurnMapSettings()
-  const text = stringify(data.content)
-  const large = text.length > collapseThreshold
   const accent = data.builtin ? ACCENTS.builtinTool : ACCENTS.toolReturn
-  const time = formatTime(data.timestamp)
   return (
     <NodeShell
       nodeId={id}
@@ -249,25 +158,7 @@ export function ToolReturnNodeView({ id, data }: NodeProps<ToolReturnNode>) {
           )}
         </>
       }
-      footer={
-        <>
-          {time && <span>{time}</span>}
-          <span className="tm:truncate">id {data.toolCallId}</span>
-          <span>{formatBytes(text.length)}</span>
-        </>
-      }
-    >
-      {large ? (
-        <CollapsibleBlock
-          label={`output · ${formatBytes(text.length)}`}
-          defaultOpen={false}
-        >
-          <CodeBlock text={text} limit={600} />
-        </CollapsibleBlock>
-      ) : (
-        <CodeBlock text={text} limit={600} />
-      )}
-    </NodeShell>
+    />
   )
 }
 
@@ -301,38 +192,12 @@ export function RetryNodeView({ id, data }: NodeProps<RetryNode>) {
           )}
         </>
       }
-      footer={<span className="tm:truncate">id {data.toolCallId}</span>}
-    >
-      {data.errors ? (
-        <ul className="tm:m-0 tm:flex tm:list-none tm:flex-col tm:gap-1.5 tm:p-0">
-          {data.errors.slice(0, 5).map((err, i) => (
-            <li
-              key={i}
-              className="tm:rounded-md tm:bg-accent-retry/10 tm:px-2 tm:py-1"
-            >
-              <div className="tm:font-mono tm:text-[11px] tm:text-accent-retry">
-                {err.loc?.length ? err.loc.join(".") : "(root)"} · {err.type}
-              </div>
-              <div className="tm:text-[12px]">{err.msg}</div>
-            </li>
-          ))}
-          {data.errors.length > 5 && (
-            <li className="tm:text-[11px] tm:text-muted-foreground">
-              and {data.errors.length - 5} more
-            </li>
-          )}
-        </ul>
-      ) : (
-        <TextBlock text={data.text ?? ""} />
-      )}
-    </NodeShell>
+    />
   )
 }
 
 export function MediaNodeView({ id, data }: NodeProps<MediaNode>) {
   const isSpeech = data.variant === "speech"
-  const isImage = data.mediaType?.startsWith("image/") && data.dataUrl
-  const isAudio = data.mediaType?.startsWith("audio/") && data.dataUrl
   return (
     <NodeShell
       nodeId={id}
@@ -356,24 +221,7 @@ export function MediaNodeView({ id, data }: NodeProps<MediaNode>) {
           <Badge tone="warning">interrupted</Badge>
         ) : undefined
       }
-    >
-      {isImage && (
-        <img
-          src={data.dataUrl!}
-          alt=""
-          className="tm:max-h-40 tm:w-full tm:rounded-md tm:object-contain"
-        />
-      )}
-      {isAudio && (
-        <audio controls src={data.dataUrl!} className="nodrag tm:w-full" />
-      )}
-      {data.transcript && <TextBlock text={data.transcript} limit={300} />}
-      {!isImage && !isAudio && !data.transcript && (
-        <p className="tm:m-0 tm:text-muted-foreground">
-          {data.mediaType ?? "binary"}
-        </p>
-      )}
-    </NodeShell>
+    />
   )
 }
 
@@ -385,15 +233,7 @@ export function NoteNodeView({ id, data }: NodeProps<NoteNode>) {
       icon={<Info className={ICON} />}
       title={data.title}
       summary={data.lines.join(", ")}
-    >
-      {data.lines.length > 0 ? (
-        <ul className="tm:m-0 tm:list-disc tm:pl-4">
-          {data.lines.map((line, i) => (
-            <li key={i}>{line}</li>
-          ))}
-        </ul>
-      ) : null}
-    </NodeShell>
+    />
   )
 }
 
@@ -405,8 +245,6 @@ export function UnknownNodeView({ id, data }: NodeProps<UnknownNode>) {
       icon={<FileQuestion className={ICON} />}
       title={data.title}
       summary="unknown part kind"
-    >
-      <CodeBlock text={stringify(data.raw)} limit={400} />
-    </NodeShell>
+    />
   )
 }
