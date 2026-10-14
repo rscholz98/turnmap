@@ -39,6 +39,17 @@ import { NodeShell } from "./shell"
 
 const ICON = "tm:h-3.5 tm:w-3.5"
 
+/** Single-line rendering for the header summary. */
+function oneLine(value: unknown): string {
+  if (value == null) return ""
+  if (typeof value === "string") return value.replace(/\s+/g, " ").trim()
+  try {
+    return JSON.stringify(value)
+  } catch {
+    return String(value)
+  }
+}
+
 function RawJson({ value }: { value: unknown }) {
   return <CodeBlock text={stringify(value)} limit={Infinity} />
 }
@@ -102,24 +113,37 @@ function Attachment({ item }: { item: Exclude<UserContentItem, string> }) {
 export function PromptNodeView({ data }: NodeProps<PromptNode>) {
   const isUser = data.role === "user"
   const accent = isUser ? ACCENTS.user : ACCENTS.system
-  const time = formatTime(data.timestamp)
+  const attachments = data.attachments.length
   return (
     <NodeShell
       accent={accent}
       icon={isUser ? <User className={ICON} /> : <Cog className={ICON} />}
       title={isUser ? "User prompt" : "System prompt"}
-      badges={data.dynamicRef ? <Badge>dynamic</Badge> : undefined}
-      footer={time}
+      summary={
+        oneLine(data.text) ||
+        (attachments ? `${attachments} attachment(s)` : "(empty)")
+      }
+      badges={
+        <>
+          {attachments > 0 && (
+            <Badge tone="info">
+              {attachments} file{attachments === 1 ? "" : "s"}
+            </Badge>
+          )}
+          {data.dynamicRef && <Badge>dynamic</Badge>}
+        </>
+      }
+      footer={formatTime(data.timestamp)}
       expand={
         <div className="tm:flex tm:flex-col tm:gap-3">
           <p className="tm:m-0 tm:whitespace-pre-wrap">{data.text}</p>
-          {data.attachments.length > 0 && <RawJson value={data.attachments} />}
+          {attachments > 0 && <RawJson value={data.attachments} />}
         </div>
       }
     >
-      <TextBlock text={data.text} />
-      {data.attachments.length > 0 && (
-        <div className="tm:mt-2 tm:flex tm:flex-wrap tm:gap-1">
+      <TextBlock text={data.text} limit={400} />
+      {attachments > 0 && (
+        <div className="tm:flex tm:flex-wrap tm:gap-1">
           {data.attachments.map((item, i) => (
             <Attachment key={i} item={item} />
           ))}
@@ -135,9 +159,10 @@ export function ResponseNodeView({ data }: NodeProps<ResponseNode>) {
       accent={ACCENTS.response}
       icon={<Bot className={ICON} />}
       title="Model response"
+      summary={oneLine(data.text) || "(empty)"}
       expand={<p className="tm:m-0 tm:whitespace-pre-wrap">{data.text}</p>}
     >
-      <TextBlock text={data.text} />
+      <TextBlock text={data.text} limit={400} />
     </NodeShell>
   )
 }
@@ -151,12 +176,11 @@ export function ThinkingNodeView({ data }: NodeProps<ThinkingNode>) {
         compaction ? <Layers className={ICON} /> : <Brain className={ICON} />
       }
       title={compaction ? "Compaction" : "Thinking"}
+      summary={oneLine(data.text) || `${data.text.length} chars`}
       badges={data.signature ? <Badge>signed</Badge> : undefined}
       expand={<p className="tm:m-0 tm:whitespace-pre-wrap">{data.text}</p>}
     >
-      <CollapsibleBlock label={`${data.text.length} chars`} defaultOpen={false}>
-        <TextBlock text={data.text} limit={400} />
-      </CollapsibleBlock>
+      <TextBlock text={data.text} limit={400} />
     </NodeShell>
   )
 }
@@ -179,6 +203,7 @@ export function ToolCallNodeView({ data }: NodeProps<ToolCallNode>) {
         data.builtin ? <Globe className={ICON} /> : <Wrench className={ICON} />
       }
       title={data.toolName}
+      summary={data.args == null ? "no arguments" : oneLine(data.args)}
       badges={
         <>
           {data.builtin && (
@@ -218,6 +243,7 @@ export function ToolReturnNodeView({ data }: NodeProps<ToolReturnNode>) {
       accent={accent}
       icon={<Undo2 className={ICON} />}
       title={data.toolName}
+      summary={oneLine(data.content) || "(empty)"}
       badges={
         <>
           {!data.linked && <Badge tone="warning">unmatched</Badge>}
@@ -232,6 +258,7 @@ export function ToolReturnNodeView({ data }: NodeProps<ToolReturnNode>) {
         <>
           {time && <span>{time}</span>}
           <span className="tm:truncate">id {data.toolCallId}</span>
+          <span>{formatBytes(text.length)}</span>
         </>
       }
       expandTitle={`Tool return: ${data.toolName}`}
@@ -247,18 +274,23 @@ export function ToolReturnNodeView({ data }: NodeProps<ToolReturnNode>) {
         </div>
       }
     >
-      <CollapsibleBlock
-        label={`output · ${formatBytes(text.length)}`}
-        defaultOpen={!large}
-      >
+      {large ? (
+        <CollapsibleBlock
+          label={`output · ${formatBytes(text.length)}`}
+          defaultOpen={false}
+        >
+          <CodeBlock text={text} limit={600} />
+        </CollapsibleBlock>
+      ) : (
         <CodeBlock text={text} limit={600} />
-      </CollapsibleBlock>
+      )}
     </NodeShell>
   )
 }
 
 export function RetryNodeView({ data }: NodeProps<RetryNode>) {
   const outputValidation = data.toolName == null
+  const first = data.errors?.[0]
   return (
     <NodeShell
       accent={ACCENTS.retry}
@@ -267,6 +299,11 @@ export function RetryNodeView({ data }: NodeProps<RetryNode>) {
         outputValidation
           ? "Retry: output validation"
           : `Retry: ${data.toolName}`
+      }
+      summary={
+        first
+          ? `${first.loc?.length ? first.loc.join(".") + ": " : ""}${first.msg}`
+          : oneLine(data.text)
       }
       badges={
         <>
@@ -320,16 +357,20 @@ export function MediaNodeView({ data }: NodeProps<MediaNode>) {
         isSpeech ? <Mic className={ICON} /> : <Paperclip className={ICON} />
       }
       title={isSpeech ? `Speech (${data.speaker ?? "unknown"})` : "File"}
-      badges={
-        <>
-          {data.mediaType && <Badge>{data.mediaType}</Badge>}
-          {data.interruptedAtMs != null && (
-            <Badge tone="warning">interrupted</Badge>
-          )}
-        </>
+      summary={
+        data.transcript
+          ? oneLine(data.transcript)
+          : [
+              data.mediaType,
+              data.byteLength != null ? formatBytes(data.byteLength) : null,
+            ]
+              .filter(Boolean)
+              .join(" · ")
       }
-      footer={
-        data.byteLength != null ? formatBytes(data.byteLength) : undefined
+      badges={
+        data.interruptedAtMs != null ? (
+          <Badge tone="warning">interrupted</Badge>
+        ) : undefined
       }
       expand={
         <div className="tm:flex tm:flex-col tm:gap-3">
@@ -357,6 +398,11 @@ export function MediaNodeView({ data }: NodeProps<MediaNode>) {
         <audio controls src={data.dataUrl!} className="nodrag tm:w-full" />
       )}
       {data.transcript && <TextBlock text={data.transcript} limit={300} />}
+      {!isImage && !isAudio && !data.transcript && (
+        <p className="tm:m-0 tm:text-muted-foreground">
+          {data.mediaType ?? "binary"}
+        </p>
+      )}
     </NodeShell>
   )
 }
@@ -367,6 +413,7 @@ export function NoteNodeView({ data }: NodeProps<NoteNode>) {
       accent={ACCENTS.note}
       icon={<Info className={ICON} />}
       title={data.title}
+      summary={data.lines.join(", ")}
       expand={<RawJson value={data.raw} />}
     >
       {data.lines.length > 0 ? (
@@ -386,7 +433,7 @@ export function UnknownNodeView({ data }: NodeProps<UnknownNode>) {
       accent={ACCENTS.unknown}
       icon={<FileQuestion className={ICON} />}
       title={data.title}
-      badges={<Badge>unknown part</Badge>}
+      summary="unknown part kind"
       expand={<RawJson value={data.raw} />}
     >
       <CodeBlock text={stringify(data.raw)} limit={400} />

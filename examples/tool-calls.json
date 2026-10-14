@@ -3,21 +3,21 @@
     "parts": [
       {
         "content": "You are an order assistant. Use tools to look things up.",
-        "timestamp": "2026-10-13T16:15:17.146961Z",
+        "timestamp": "2026-10-14T07:18:09.056571Z",
         "dynamic_ref": null,
         "part_kind": "system-prompt"
       },
       {
         "content": "Where is my order A-1042 and what is the weather like there?",
-        "timestamp": "2026-10-13T16:15:17.146966Z",
+        "timestamp": "2026-10-14T07:18:09.056574Z",
         "part_kind": "user-prompt"
       }
     ],
-    "timestamp": "2026-10-13T16:15:17.147114Z",
+    "timestamp": "2026-10-14T07:18:09.056735Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a1360b-fa9a-70a2-a2d2-17f7cf36fa2a",
-    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "run_id": "01a13946-939f-7177-a7ce-00a81e854817",
+    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
     "metadata": null,
     "state": "complete"
   },
@@ -62,15 +62,15 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-13T16:15:17.147621Z",
+    "timestamp": "2026-10-14T07:18:09.057168Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "tool_call",
-    "run_id": "01a1360b-fa9a-70a2-a2d2-17f7cf36fa2a",
-    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "run_id": "01a13946-939f-7177-a7ce-00a81e854817",
+    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
     "metadata": null,
     "workspace_ref": null,
     "state": "complete"
@@ -106,7 +106,7 @@
         "tool_call_id": "call_order_1",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-13T16:15:17.148590Z",
+        "timestamp": "2026-10-14T07:18:09.058307Z",
         "outcome": "success",
         "part_kind": "tool-return"
       },
@@ -121,16 +121,16 @@
         "tool_call_id": "call_weather_1",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-13T16:15:17.148630Z",
+        "timestamp": "2026-10-14T07:18:09.058345Z",
         "outcome": "success",
         "part_kind": "tool-return"
       }
     ],
-    "timestamp": "2026-10-13T16:15:17.148877Z",
+    "timestamp": "2026-10-14T07:18:09.058576Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a1360b-fa9a-70a2-a2d2-17f7cf36fa2a",
-    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "run_id": "01a13946-939f-7177-a7ce-00a81e854817",
+    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
     "metadata": null,
     "state": "complete"
   },
@@ -157,15 +157,15 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-13T16:15:17.149187Z",
+    "timestamp": "2026-10-14T07:18:09.058918Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "stop",
-    "run_id": "01a1360b-fa9a-70a2-a2d2-17f7cf36fa2a",
-    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "run_id": "01a13946-939f-7177-a7ce-00a81e854817",
+    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
     "metadata": null,
     "workspace_ref": null,
     "state": "complete"
@@ -174,15 +174,15 @@
     "parts": [
       {
         "content": "Is the Acme 500 still in stock?",
-        "timestamp": "2026-10-13T16:15:17.150339Z",
+        "timestamp": "2026-10-14T07:18:09.060092Z",
         "part_kind": "user-prompt"
       }
     ],
-    "timestamp": "2026-10-13T16:15:17.150480Z",
+    "timestamp": "2026-10-14T07:18:09.060243Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a1360b-fa9d-758b-b635-1e6e5d09fba3",
-    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "run_id": "01a13946-93a3-721c-ae2c-144d00be5db8",
+    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
     "metadata": null,
     "state": "complete"
   },
@@ -214,15 +214,15 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-13T16:15:17.150819Z",
+    "timestamp": "2026-10-14T07:18:09.060601Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "tool_call",
-    "run_id": "01a1360b-fa9d-758b-b635-1e6e5d09fba3",
-    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "run_id": "01a13946-93a3-721c-ae2c-144d00be5db8",
+    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
     "metadata": null,
     "workspace_ref": null,
     "state": "complete"
@@ -240,16 +240,16 @@
         "tool_call_id": "call_stock_1",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-13T16:15:17.151441Z",
+        "timestamp": "2026-10-14T07:18:09.061130Z",
         "outcome": "success",
         "part_kind": "tool-return"
       }
     ],
-    "timestamp": "2026-10-13T16:15:17.151678Z",
+    "timestamp": "2026-10-14T07:18:09.061344Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a1360b-fa9d-758b-b635-1e6e5d09fba3",
-    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "run_id": "01a13946-93a3-721c-ae2c-144d00be5db8",
+    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
     "metadata": null,
     "state": "complete"
   },
@@ -276,15 +276,15 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-13T16:15:17.151982Z",
+    "timestamp": "2026-10-14T07:18:09.061636Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "stop",
-    "run_id": "01a1360b-fa9d-758b-b635-1e6e5d09fba3",
-    "conversation_id": "01a1360b-fa9a-70a2-a2d2-17f8fba70eed",
+    "run_id": "01a13946-93a3-721c-ae2c-144d00be5db8",
+    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
     "metadata": null,
     "workspace_ref": null,
     "state": "complete"

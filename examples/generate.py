@@ -17,7 +17,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from pydantic_ai import Agent, BinaryContent, ImageUrl, ModelRetry, RunContext
+from pydantic_ai import Agent, BinaryContent, DeferredToolRequests, DeferredToolResults, ImageUrl, ModelRetry, RunContext, ToolDenied
 from pydantic_ai.messages import (
     ModelMessage,
     ModelRequest,
@@ -273,9 +273,191 @@ def builtin_tools() -> None:
             finish_reason='stop',
         )
 
-    agent = Agent(FunctionModel(model, model_name='demo-search-1'))
+    agent = Agent(FunctionModel(model, model_name='demo-search-1'), system_prompt='You are a shopping assistant. Search the web when asked about reviews.')
     result = agent.run_sync('What do reviewers say about the Acme 500?')
     write('builtin-tools', result.all_messages_json())
+
+
+# ---------------------------------------------------------------------------
+# 6. structured-output: output_type=Invoice, delivered through the final_result tool
+# ---------------------------------------------------------------------------
+class InvoiceLine(BaseModel):
+    sku: str
+    description: str
+    qty: int
+    unit_price: float
+
+
+class Invoice(BaseModel):
+    invoice_number: str
+    customer: str
+    lines: list[InvoiceLine]
+    total: float
+
+
+def structured_output() -> None:
+    def model(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        last = messages[-1]
+        if isinstance(last, ModelRequest) and any(p.part_kind == 'tool-return' and p.tool_name == 'lookup_order' for p in last.parts):
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        'final_result',
+                        {
+                            'invoice_number': 'INV-2026-0419',
+                            'customer': 'Scholz',
+                            'lines': [
+                                {'sku': 'ACME-500', 'description': 'Acme 500 Gas Grill', 'qty': 1, 'unit_price': 499.0},
+                                {'sku': 'COVER-500', 'description': 'Weather cover', 'qty': 1, 'unit_price': 39.9},
+                            ],
+                            'total': 538.9,
+                        },
+                        tool_call_id='call_final_1',
+                    )
+                ],
+                usage=usage(720, 88),
+                model_name='demo-model-1',
+                finish_reason='tool_call',
+            )
+        return ModelResponse(
+            parts=[ToolCallPart('lookup_order', {'order_id': 'A-1042'}, tool_call_id='call_lookup_1')],
+            usage=usage(410, 19),
+            model_name='demo-model-1',
+            finish_reason='tool_call',
+        )
+
+    agent = Agent(
+        FunctionModel(model, model_name='demo-model-1'),
+        system_prompt='You turn orders into invoices. Return structured data only.',
+        output_type=Invoice,
+    )
+
+    @agent.tool_plain
+    def lookup_order(order_id: str) -> dict[str, object]:
+        """Fetch an order."""
+        return {
+            'order_id': order_id,
+            'customer': 'Scholz',
+            'items': [
+                {'sku': 'ACME-500', 'name': 'Acme 500 Gas Grill', 'qty': 1, 'price': 499.0},
+                {'sku': 'COVER-500', 'name': 'Weather cover', 'qty': 1, 'price': 39.9},
+            ],
+        }
+
+    result = agent.run_sync('Create the invoice for order A-1042.')
+    assert isinstance(result.output, Invoice)
+    write('structured-output', result.all_messages_json())
+
+
+# ---------------------------------------------------------------------------
+# 7. approvals: human-in-the-loop, one call approved and one denied
+# ---------------------------------------------------------------------------
+def approvals() -> None:
+    def model(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        last = messages[-1]
+        if isinstance(last, ModelRequest) and any(p.part_kind == 'tool-return' for p in last.parts):
+            return ModelResponse(
+                parts=[
+                    TextPart(
+                        'Done: README.md was updated. I did not delete .env because that call was denied, so it is still in place.'
+                    )
+                ],
+                usage=usage(690, 44),
+                model_name='demo-model-1',
+                finish_reason='stop',
+            )
+        return ModelResponse(
+            parts=[
+                ToolCallPart('read_file', {'path': 'README.md'}, tool_call_id='call_read_1'),
+                ToolCallPart('update_file', {'path': 'README.md', 'content': '# Acme\n\nHello, world!'}, tool_call_id='call_update_1'),
+                ToolCallPart('delete_file', {'path': '.env'}, tool_call_id='call_delete_1'),
+            ],
+            usage=usage(450, 72),
+            model_name='demo-model-1',
+            finish_reason='tool_call',
+        )
+
+    agent = Agent(
+        FunctionModel(model, model_name='demo-model-1'),
+        system_prompt='You are a repository assistant. Destructive changes need approval.',
+        output_type=[str, DeferredToolRequests],
+    )
+
+    @agent.tool_plain
+    def read_file(path: str) -> str:
+        """Read a file."""
+        return '# Acme\n\nOld readme.'
+
+    @agent.tool_plain(requires_approval=True)
+    def update_file(path: str, content: str) -> str:
+        """Write a file. Needs approval."""
+        return f'File {path!r} updated ({len(content)} chars)'
+
+    @agent.tool_plain(requires_approval=True)
+    def delete_file(path: str) -> str:
+        """Delete a file. Needs approval."""
+        return f'File {path!r} deleted'
+
+    first = agent.run_sync('Update README.md with a hello world and delete .env.')
+    requests = first.output
+    assert isinstance(requests, DeferredToolRequests)
+    decisions: dict[str, object] = {}
+    for call in requests.approvals:
+        decisions[call.tool_call_id] = (
+            True if call.tool_name == 'update_file' else ToolDenied('Deleting .env is not allowed from the assistant.')
+        )
+    second = agent.run_sync(
+        message_history=first.all_messages(),
+        deferred_tool_results=DeferredToolResults(approvals=decisions),  # type: ignore[arg-type]
+    )
+    write('approvals', second.all_messages_json())
+
+
+# ---------------------------------------------------------------------------
+# 8. delegation: a parent agent hands a sub-task to another agent via a tool
+# ---------------------------------------------------------------------------
+def delegation() -> None:
+    researcher = Agent(
+        TestModel(
+            custom_output_text='Three sources agree: the Acme 500 heats evenly, its burners are rated 4.5/5, and the lid seal is the common complaint.'
+        ),
+        system_prompt='You research products and summarize findings in one paragraph.',
+    )
+
+    def model(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        last = messages[-1]
+        if isinstance(last, ModelRequest) and any(p.part_kind == 'tool-return' for p in last.parts):
+            return ModelResponse(
+                parts=[
+                    ThinkingPart('The researcher found one recurring complaint. Lead with the strengths, mention the lid seal honestly.'),
+                    TextPart(
+                        'The Acme 500 is well regarded: even heat and burners rated 4.5/5. The one recurring complaint is the lid seal, so check it on delivery.'
+                    ),
+                ],
+                usage=usage(610, 58),
+                model_name='demo-model-1',
+                finish_reason='stop',
+            )
+        return ModelResponse(
+            parts=[ToolCallPart('research', {'topic': 'Acme 500 grill reviews'}, tool_call_id='call_research_1')],
+            usage=usage(380, 21),
+            model_name='demo-model-1',
+            finish_reason='tool_call',
+        )
+
+    agent = Agent(
+        FunctionModel(model, model_name='demo-model-1'),
+        system_prompt='You are a product advisor. Delegate research to the research agent.',
+    )
+
+    @agent.tool
+    async def research(ctx: RunContext[None], topic: str) -> str:
+        """Ask the research agent about a topic."""
+        result = await researcher.run(f'Research: {topic}', usage=ctx.usage)
+        return result.output
+
+    result = agent.run_sync('Should I buy the Acme 500?')
+    write('delegation', result.all_messages_json())
 
 
 if __name__ == '__main__':
@@ -284,4 +466,7 @@ if __name__ == '__main__':
     retry()
     multimodal()
     builtin_tools()
+    structured_output()
+    approvals()
+    delegation()
     sys.exit(0)

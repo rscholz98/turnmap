@@ -57,6 +57,8 @@ export interface TurnMapProps {
   palette?: Palette
   /** Characters above which a tool return starts collapsed. */
   collapseThreshold?: number
+  /** Open every node's details by default (else header and summary only). */
+  expandNodes?: boolean
   showMinimap?: boolean
   showControls?: boolean
   showBackground?: boolean
@@ -142,6 +144,7 @@ export function TurnMap({
   theme = "system",
   palette,
   collapseThreshold = 600,
+  expandNodes = false,
   showMinimap = true,
   showControls = true,
   showBackground = true,
@@ -154,8 +157,8 @@ export function TurnMap({
   const dark = useDark(theme)
   const prepared = useMemo(() => prepare(messages), [messages])
   const settings = useMemo(
-    () => ({ collapseThreshold, dark }),
-    [collapseThreshold, dark]
+    () => ({ collapseThreshold, dark, expandNodes }),
+    [collapseThreshold, dark, expandNodes]
   )
   const colors = useMemo(() => paletteStyle(palette), [palette])
 

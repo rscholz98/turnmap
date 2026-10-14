@@ -116,9 +116,10 @@ Three layouts: `spine` (default) keeps prompts and responses in one column and p
 tool call in a column to the right with its return one column further, so a run reads top
 to bottom with the tool work beside it; `TB` and `LR` hand the whole graph to dagre. Every
 node has handles on all four sides and the layout picks the pair per edge, so switching
-layouts never leaves an edge on a stale anchor. Long text and JSON are cut in the node and
-expand in place ("Show more"); the expand button opens the full content in a dialog. JSON
-is syntax colored.
+layouts never leaves an edge on a stale anchor. Nodes are compact: an icon, a title, a
+one-line summary and the outcome badge; the details open underneath on click (or everywhere
+with `expandNodes`). Long text and JSON are cut in the details and expand in place ("Show
+more"); the dialog button opens the full content. JSON is syntax colored.
 
 | Node           | Part kinds                                                                           |
 | -------------- | ------------------------------------------------------------------------------------ |

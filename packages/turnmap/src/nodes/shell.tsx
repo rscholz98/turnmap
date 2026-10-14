@@ -1,9 +1,11 @@
 import { Handle, Position } from "@xyflow/react"
-import type { CSSProperties, ReactNode } from "react"
+import { ChevronDown } from "lucide-react"
+import { useState, type CSSProperties, type ReactNode } from "react"
 
 import { cn } from "../cn"
 import { useTurnMapSettings } from "../context"
 import { HANDLE, NODE_WIDTH } from "../layout"
+import { IconButton } from "../ui/button"
 import { ExpandDialog } from "../ui/dialog"
 
 export { CodeBlock, TextBlock } from "./blocks"
@@ -12,12 +14,15 @@ interface NodeShellProps {
   accent: string
   icon: ReactNode
   title: ReactNode
-  /** Small badges rendered after the title. */
+  /** One line under the title, truncated. The node's "at a glance" content. */
+  summary?: ReactNode
+  /** Small badges at the end of the header row. */
   badges?: ReactNode
-  /** Footer line (timestamps, ids). */
-  footer?: ReactNode
+  /** Details section, shown when the node is opened (chevron or click). */
   children?: ReactNode
-  /** Full, untruncated content for the expand dialog; omit to hide the button. */
+  /** Footer line inside the details (timestamps, ids). */
+  footer?: ReactNode
+  /** Full, untruncated content for the dialog; omit to hide the button. */
   expand?: ReactNode
   expandTitle?: ReactNode
   className?: string
@@ -61,34 +66,49 @@ function Handles() {
   )
 }
 
+/**
+ * Compact node: an icon, a title, a one-line summary and badges in a single
+ * header row; the details open underneath on demand. Opening changes the
+ * node height, which the canvas re-measures and lays out again.
+ */
 export function NodeShell({
   accent,
   icon,
   title,
+  summary,
   badges,
-  footer,
   children,
+  footer,
   expand,
   expandTitle,
   className,
   style,
 }: NodeShellProps) {
-  const { dark } = useTurnMapSettings()
+  const { dark, expandNodes } = useTurnMapSettings()
+  const [toggled, setToggled] = useState<boolean | null>(null)
+  const open = toggled ?? expandNodes
+  const hasDetails = children != null || footer != null
   return (
     <div
       className={cn(
-        "tm-node tm:relative tm:flex tm:flex-col tm:gap-2 tm:rounded-lg tm:border tm:border-border tm:bg-card tm:p-3 tm:text-foreground tm:shadow-sm",
+        "tm-node tm:relative tm:rounded-lg tm:border tm:border-border tm:bg-card tm:text-foreground tm:shadow-sm",
         className
       )}
       style={{
         width: NODE_WIDTH,
-        borderLeftWidth: 4,
+        borderLeftWidth: 3,
         borderLeftColor: accent,
         ...style,
       }}
     >
       <Handles />
-      <div className="tm:flex tm:min-w-0 tm:items-center tm:gap-2 tm:pr-6">
+      <div
+        className={cn(
+          "tm:flex tm:items-center tm:gap-2 tm:px-2.5 tm:py-1.5",
+          hasDetails && "nodrag tm:cursor-pointer"
+        )}
+        onClick={hasDetails ? () => setToggled(!open) : undefined}
+      >
         <span
           className="tm:flex tm:h-6 tm:w-6 tm:shrink-0 tm:items-center tm:justify-center tm:rounded-md"
           style={{
@@ -98,28 +118,59 @@ export function NodeShell({
         >
           {icon}
         </span>
-        <span className="tm:min-w-0 tm:truncate tm:text-[13px] tm:font-semibold">
-          {title}
-        </span>
+        <div className="tm:min-w-0 tm:flex-1 tm:leading-tight">
+          <div className="tm:truncate tm:text-[12px] tm:font-semibold">
+            {title}
+          </div>
+          {summary != null && (
+            <div className="tm:truncate tm:text-[11px] tm:text-muted-foreground">
+              {summary}
+            </div>
+          )}
+        </div>
         {badges && (
-          <span className="tm:ml-auto tm:flex tm:shrink-0 tm:items-center tm:gap-1">
+          <span className="tm:flex tm:shrink-0 tm:items-center tm:gap-1">
             {badges}
           </span>
         )}
-      </div>
-      {children && <div className="tm:min-w-0 tm:text-[13px]">{children}</div>}
-      {footer && (
-        <div className="tm:flex tm:flex-wrap tm:items-center tm:gap-x-2 tm:gap-y-0.5 tm:text-[11px] tm:text-muted-foreground">
-          {footer}
-        </div>
-      )}
-      {expand && (
-        <ExpandDialog
-          title={expandTitle ?? title}
-          rootClassName={dark ? "dark" : undefined}
+        <span
+          className="tm:flex tm:shrink-0 tm:items-center"
+          onClick={(e) => e.stopPropagation()}
         >
-          {expand}
-        </ExpandDialog>
+          {expand && (
+            <ExpandDialog
+              title={expandTitle ?? title}
+              rootClassName={dark ? "dark" : undefined}
+            >
+              {expand}
+            </ExpandDialog>
+          )}
+          {hasDetails && (
+            <IconButton
+              className="nodrag tm:h-5 tm:w-5"
+              aria-label={open ? "Hide details" : "Show details"}
+              aria-expanded={open}
+              onClick={() => setToggled(!open)}
+            >
+              <ChevronDown
+                className={cn(
+                  "tm:h-3.5 tm:w-3.5 tm:transition-transform",
+                  open && "tm:rotate-180"
+                )}
+              />
+            </IconButton>
+          )}
+        </span>
+      </div>
+      {open && hasDetails && (
+        <div className="tm:flex tm:flex-col tm:gap-2 tm:border-t tm:border-border tm:px-2.5 tm:py-2 tm:text-[12px]">
+          {children}
+          {footer && (
+            <div className="tm:flex tm:flex-wrap tm:items-center tm:gap-x-2 tm:gap-y-0.5 tm:text-[10px] tm:text-muted-foreground">
+              {footer}
+            </div>
+          )}
+        </div>
       )}
     </div>
   )

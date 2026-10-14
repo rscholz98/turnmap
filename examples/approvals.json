@@ -1,0 +1,178 @@
+[
+  {
+    "parts": [
+      {
+        "content": "You are a repository assistant. Destructive changes need approval.",
+        "timestamp": "2026-10-14T07:18:09.078190Z",
+        "dynamic_ref": null,
+        "part_kind": "system-prompt"
+      },
+      {
+        "content": "Update README.md with a hello world and delete .env.",
+        "timestamp": "2026-10-14T07:18:09.078191Z",
+        "part_kind": "user-prompt"
+      }
+    ],
+    "timestamp": "2026-10-14T07:18:09.078353Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a13946-93b5-7212-8691-de065cc3dc70",
+    "conversation_id": "01a13946-93b5-7212-8691-de07c4d5313f",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "read_file",
+        "args": {
+          "path": "README.md"
+        },
+        "tool_call_id": "call_read_1",
+        "tool_kind": null,
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "tool-call"
+      },
+      {
+        "tool_name": "update_file",
+        "args": {
+          "path": "README.md",
+          "content": "# Acme\n\nHello, world!"
+        },
+        "tool_call_id": "call_update_1",
+        "tool_kind": null,
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "tool-call"
+      },
+      {
+        "tool_name": "delete_file",
+        "args": {
+          "path": ".env"
+        },
+        "tool_call_id": "call_delete_1",
+        "tool_kind": null,
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "tool-call"
+      }
+    ],
+    "usage": {
+      "input_tokens": 450,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 72,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-14T07:18:09.078694Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "tool_call",
+    "run_id": "01a13946-93b5-7212-8691-de065cc3dc70",
+    "conversation_id": "01a13946-93b5-7212-8691-de07c4d5313f",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "read_file",
+        "content": "# Acme\n\nOld readme.",
+        "tool_call_id": "call_read_1",
+        "tool_kind": null,
+        "metadata": null,
+        "timestamp": "2026-10-14T07:18:09.079174Z",
+        "outcome": "success",
+        "part_kind": "tool-return"
+      }
+    ],
+    "timestamp": "2026-10-14T07:18:09.079318Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a13946-93b5-7212-8691-de065cc3dc70",
+    "conversation_id": "01a13946-93b5-7212-8691-de07c4d5313f",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "update_file",
+        "content": "File 'README.md' updated (21 chars)",
+        "tool_call_id": "call_update_1",
+        "tool_kind": null,
+        "metadata": null,
+        "timestamp": "2026-10-14T07:18:09.080666Z",
+        "outcome": "success",
+        "part_kind": "tool-return"
+      },
+      {
+        "tool_name": "delete_file",
+        "content": "Deleting .env is not allowed from the assistant.",
+        "tool_call_id": "call_delete_1",
+        "tool_kind": null,
+        "metadata": null,
+        "timestamp": "2026-10-14T07:18:09.080485Z",
+        "outcome": "denied",
+        "part_kind": "tool-return"
+      }
+    ],
+    "timestamp": "2026-10-14T07:18:09.080866Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a13946-93b7-75ac-a8b9-0ae0c96ad93a",
+    "conversation_id": "01a13946-93b5-7212-8691-de07c4d5313f",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "Done: README.md was updated. I did not delete .env because that call was denied, so it is still in place.",
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "text"
+      }
+    ],
+    "usage": {
+      "input_tokens": 690,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 44,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-14T07:18:09.081142Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "stop",
+    "run_id": "01a13946-93b7-75ac-a8b9-0ae0c96ad93a",
+    "conversation_id": "01a13946-93b5-7212-8691-de07c4d5313f",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  }
+]

@@ -39,7 +39,7 @@ export interface LayoutResult {
   edges: TurnMapEdge[]
 }
 
-export const NODE_WIDTH = 320
+export const NODE_WIDTH = 260
 
 /** Handle ids rendered on every part node: a source and a target per side. */
 export const HANDLE = {
@@ -57,16 +57,17 @@ export const HANDLE = {
   },
 } as const
 
+// Closed nodes are a single header row; opened ones are re-measured.
 const FALLBACK_HEIGHT: Record<string, number> = {
-  prompt: 140,
-  response: 160,
-  thinking: 110,
-  toolCall: 170,
-  toolReturn: 150,
-  retry: 170,
-  media: 120,
-  note: 100,
-  unknown: 120,
+  prompt: 52,
+  response: 52,
+  thinking: 52,
+  toolCall: 52,
+  toolReturn: 52,
+  retry: 52,
+  media: 52,
+  note: 52,
+  unknown: 52,
 }
 
 export function fallbackSize(type: string | undefined) {
@@ -202,7 +203,16 @@ function spineLayout(
       }
       ry += row.h + rowGap
     }
-    y += blockH + stepGap
+    // Consecutive spine nodes of one message (system then user prompt) sit
+    // close together; a new message needs room for the group boxes.
+    const next = steps[steps.indexOf(step) + 1]
+    const sameMessage =
+      next?.spine != null &&
+      step.spine != null &&
+      step.calls.length === 0 &&
+      (next.spine.data as { messageIndex: number }).messageIndex ===
+        (step.spine.data as { messageIndex: number }).messageIndex
+    y += blockH + (sameMessage ? rowGap / 2 : stepGap)
   }
 
   // Anything not placed (answers whose call is missing) goes on the spine.
@@ -294,17 +304,17 @@ export function layoutGraph(
   const {
     mode = "spine",
     sizes,
-    nodeSeparation = 48,
-    rankSeparation = 100,
-    columnGap = 72,
-    groupPadding = 20,
-    groupHeader = 36,
+    nodeSeparation = 28,
+    rankSeparation = 72,
+    columnGap = 56,
+    groupPadding = 10,
+    groupHeader = 24,
   } = options
   const size = sizer(sizes)
 
   // Stacked tool rows and consecutive steps each need room for two group
   // paddings and one group header between them.
-  const groupClearance = groupPadding * 2 + groupHeader + 12
+  const groupClearance = groupPadding * 2 + groupHeader + 8
   const spine =
     mode === "spine"
       ? spineLayout(

@@ -6,25 +6,27 @@ import { cn } from "../cn"
 import { IconButton } from "./button"
 
 /**
- * Expand control shown on every node: opens the full, untruncated content in
- * a large dialog. `nodrag` keeps the click from starting a canvas drag.
+ * Expand control shown in every node header: opens the full, untruncated
+ * content in a large dialog. `nodrag` keeps the click from starting a canvas drag.
  */
 export function ExpandDialog({
   title,
   children,
   rootClassName,
+  className,
 }: {
   title: ReactNode
   children: ReactNode
   /** Class names to carry the `.turnmap` theme scope into the portal. */
   rootClassName?: string
+  className?: string
 }) {
   return (
     <DialogPrimitive.Root>
       <DialogPrimitive.Trigger asChild>
         <IconButton
-          className="nodrag tm:absolute tm:top-1.5 tm:right-1.5 tm:z-10"
-          aria-label="Expand"
+          className={cn("nodrag tm:h-5 tm:w-5", className)}
+          aria-label="Open in dialog"
         >
           <Maximize2 className="tm:h-3 tm:w-3" />
         </IconButton>

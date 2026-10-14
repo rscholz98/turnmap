@@ -2,6 +2,8 @@ import {
   ArrowDownUp,
   ArrowLeftRight,
   Check,
+  ChevronsDownUp,
+  ChevronsUpDown,
   GitFork,
   Link2,
   Moon,
@@ -34,6 +36,8 @@ interface ToolbarProps {
   dark: boolean
   onToggleTheme: () => void
   onRename: (id: string, name: string) => void
+  expandNodes: boolean
+  onExpandNodes: (v: boolean) => void
   palettes: ReturnType<typeof usePalettes>
   sidebarOpen: boolean
   onOpenSidebar: () => void
@@ -79,6 +83,8 @@ export function Toolbar({
   dark,
   onToggleTheme,
   onRename,
+  expandNodes,
+  onExpandNodes,
   palettes,
   sidebarOpen,
   onOpenSidebar,
@@ -201,6 +207,21 @@ export function Toolbar({
                 </Tip>
               ))}
             </div>
+            <Tip
+              label={expandNodes ? "Collapse all nodes" : "Expand all nodes"}
+            >
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={
+                  expandNodes ? "Collapse all nodes" : "Expand all nodes"
+                }
+                aria-pressed={expandNodes}
+                onClick={() => onExpandNodes(!expandNodes)}
+              >
+                {expandNodes ? <ChevronsDownUp /> : <ChevronsUpDown />}
+              </Button>
+            </Tip>
             <PaletteMenu palettes={palettes} />
             <Tip label="Copy a share link (the history is encoded in the URL)">
               <Button

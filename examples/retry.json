@@ -3,21 +3,21 @@
     "parts": [
       {
         "content": "You book restaurant tables.",
-        "timestamp": "2026-10-13T16:15:17.154414Z",
+        "timestamp": "2026-10-14T07:18:09.063696Z",
         "dynamic_ref": null,
         "part_kind": "system-prompt"
       },
       {
         "content": "Book a table for 4 next Tuesday under Scholz.",
-        "timestamp": "2026-10-13T16:15:17.154417Z",
+        "timestamp": "2026-10-14T07:18:09.063698Z",
         "part_kind": "user-prompt"
       }
     ],
-    "timestamp": "2026-10-13T16:15:17.154614Z",
+    "timestamp": "2026-10-14T07:18:09.063852Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
-    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "run_id": "01a13946-93a7-7306-8f26-859f8b063b50",
+    "conversation_id": "01a13946-93a7-7306-8f26-85a0a577de69",
     "metadata": null,
     "state": "complete"
   },
@@ -50,15 +50,15 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-13T16:15:17.154974Z",
+    "timestamp": "2026-10-14T07:18:09.064138Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "tool_call",
-    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
-    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "run_id": "01a13946-93a7-7306-8f26-859f8b063b50",
+    "conversation_id": "01a13946-93a7-7306-8f26-85a0a577de69",
     "metadata": null,
     "workspace_ref": null,
     "state": "complete"
@@ -89,15 +89,15 @@
         ],
         "tool_name": "book_table",
         "tool_call_id": "call_book_1",
-        "timestamp": "2026-10-13T16:15:17.155570Z",
+        "timestamp": "2026-10-14T07:18:09.064486Z",
         "part_kind": "retry-prompt"
       }
     ],
-    "timestamp": "2026-10-13T16:15:17.155845Z",
+    "timestamp": "2026-10-14T07:18:09.064740Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
-    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "run_id": "01a13946-93a7-7306-8f26-859f8b063b50",
+    "conversation_id": "01a13946-93a7-7306-8f26-85a0a577de69",
     "metadata": null,
     "state": "complete"
   },
@@ -131,15 +131,15 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-13T16:15:17.156112Z",
+    "timestamp": "2026-10-14T07:18:09.064971Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "tool_call",
-    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
-    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "run_id": "01a13946-93a7-7306-8f26-859f8b063b50",
+    "conversation_id": "01a13946-93a7-7306-8f26-85a0a577de69",
     "metadata": null,
     "workspace_ref": null,
     "state": "complete"
@@ -159,16 +159,16 @@
         "tool_call_id": "call_book_2",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-13T16:15:17.156618Z",
+        "timestamp": "2026-10-14T07:18:09.065520Z",
         "outcome": "success",
         "part_kind": "tool-return"
       }
     ],
-    "timestamp": "2026-10-13T16:15:17.156813Z",
+    "timestamp": "2026-10-14T07:18:09.065713Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
-    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "run_id": "01a13946-93a7-7306-8f26-859f8b063b50",
+    "conversation_id": "01a13946-93a7-7306-8f26-85a0a577de69",
     "metadata": null,
     "state": "complete"
   },
@@ -195,15 +195,15 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-13T16:15:17.157036Z",
+    "timestamp": "2026-10-14T07:18:09.065949Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "stop",
-    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
-    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "run_id": "01a13946-93a7-7306-8f26-859f8b063b50",
+    "conversation_id": "01a13946-93a7-7306-8f26-85a0a577de69",
     "metadata": null,
     "workspace_ref": null,
     "state": "complete"
@@ -213,16 +213,16 @@
       {
         "content": "Always include the confirmation number (it starts with RSV-) in the final answer.",
         "tool_name": null,
-        "tool_call_id": "pyd_ai_8a84f11d51bf453e8f949cc7b7cde861",
-        "timestamp": "2026-10-13T16:15:17.157398Z",
+        "tool_call_id": "pyd_ai_bf9a56d73397465baf22690f8fd6218e",
+        "timestamp": "2026-10-14T07:18:09.066317Z",
         "part_kind": "retry-prompt"
       }
     ],
-    "timestamp": "2026-10-13T16:15:17.157544Z",
+    "timestamp": "2026-10-14T07:18:09.066501Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
-    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "run_id": "01a13946-93a7-7306-8f26-859f8b063b50",
+    "conversation_id": "01a13946-93a7-7306-8f26-85a0a577de69",
     "metadata": null,
     "state": "complete"
   },
@@ -249,15 +249,15 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-13T16:15:17.157776Z",
+    "timestamp": "2026-10-14T07:18:09.066763Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "stop",
-    "run_id": "01a1360b-faa1-769b-95dd-b6c04101ed67",
-    "conversation_id": "01a1360b-faa1-769b-95dd-b6c1396ea045",
+    "run_id": "01a13946-93a7-7306-8f26-859f8b063b50",
+    "conversation_id": "01a13946-93a7-7306-8f26-85a0a577de69",
     "metadata": null,
     "workspace_ref": null,
     "state": "complete"

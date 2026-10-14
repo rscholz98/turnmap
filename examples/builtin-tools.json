@@ -2,16 +2,22 @@
   {
     "parts": [
       {
+        "content": "You are a shopping assistant. Search the web when asked about reviews.",
+        "timestamp": "2026-10-14T07:18:09.070731Z",
+        "dynamic_ref": null,
+        "part_kind": "system-prompt"
+      },
+      {
         "content": "What do reviewers say about the Acme 500?",
-        "timestamp": "2026-10-13T16:15:17.161660Z",
+        "timestamp": "2026-10-14T07:18:09.070733Z",
         "part_kind": "user-prompt"
       }
     ],
-    "timestamp": "2026-10-13T16:15:17.161872Z",
+    "timestamp": "2026-10-14T07:18:09.070881Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a1360b-faa9-7528-b4b9-58a363452138",
-    "conversation_id": "01a1360b-faa9-7528-b4b9-58a42369b2ba",
+    "run_id": "01a13946-93ae-779a-9a94-a85024eda5da",
+    "conversation_id": "01a13946-93ae-779a-9a94-a8514ad98968",
     "metadata": null,
     "state": "complete"
   },
@@ -48,7 +54,7 @@
         "tool_call_id": "srv_ws_1",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-13T16:15:17.162257Z",
+        "timestamp": "2026-10-14T07:18:09.071139Z",
         "outcome": "success",
         "provider_name": "openai",
         "provider_details": null,
@@ -75,15 +81,15 @@
       "cost": null
     },
     "model_name": "demo-search-1",
-    "timestamp": "2026-10-13T16:15:17.162262Z",
+    "timestamp": "2026-10-14T07:18:09.071143Z",
     "kind": "response",
     "provider_name": "openai",
     "provider_url": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "stop",
-    "run_id": "01a1360b-faa9-7528-b4b9-58a363452138",
-    "conversation_id": "01a1360b-faa9-7528-b4b9-58a42369b2ba",
+    "run_id": "01a13946-93ae-779a-9a94-a85024eda5da",
+    "conversation_id": "01a13946-93ae-779a-9a94-a8514ad98968",
     "metadata": null,
     "workspace_ref": null,
     "state": "complete"

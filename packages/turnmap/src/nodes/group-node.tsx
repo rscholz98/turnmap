@@ -2,14 +2,13 @@ import type { NodeProps } from "@xyflow/react"
 import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react"
 
 import type { MessageGroupNode } from "../graph"
-import { Badge } from "../ui/badge"
 import { formatTime } from "./format"
 
 function tokens(n: number | undefined) {
   return n == null ? null : n.toLocaleString()
 }
 
-/** Translucent box behind each message's parts, with the message metadata. */
+/** Translucent box behind each message's parts with a slim metadata header. */
 export function MessageGroupView({
   data,
   width,
@@ -18,50 +17,37 @@ export function MessageGroupView({
   const isResponse = data.kind === "response"
   const time = formatTime(data.timestamp)
   const usage = data.usage ?? undefined
+  const meta = [
+    data.modelName,
+    data.finishReason,
+    data.state && data.state !== "complete" ? data.state : null,
+    usage && (usage.input_tokens != null || usage.output_tokens != null)
+      ? `${tokens(usage.input_tokens)} in · ${tokens(usage.output_tokens)} out`
+      : null,
+    data.instructions ? "instructions" : null,
+  ].filter(Boolean)
   return (
     <div
-      className="tm:flex tm:flex-col tm:rounded-xl tm:border tm:border-dashed tm:border-group-border tm:bg-group"
+      className="tm:flex tm:flex-col tm:rounded-lg tm:border tm:border-dashed tm:border-group-border tm:bg-group"
       style={{ width, height }}
     >
-      <div className="tm:flex tm:flex-wrap tm:items-center tm:gap-1.5 tm:px-3 tm:py-1.5 tm:text-[11px] tm:text-muted-foreground">
+      <div
+        className="tm:flex tm:items-center tm:gap-1.5 tm:overflow-hidden tm:px-2 tm:text-[10px] tm:whitespace-nowrap tm:text-muted-foreground"
+        style={{ height: 22 }}
+        title={data.instructions ?? undefined}
+      >
         {isResponse ? (
-          <ArrowDownToLine className="tm:h-3 tm:w-3" />
+          <ArrowDownToLine className="tm:h-2.5 tm:w-2.5 tm:shrink-0" />
         ) : (
-          <ArrowUpFromLine className="tm:h-3 tm:w-3" />
+          <ArrowUpFromLine className="tm:h-2.5 tm:w-2.5 tm:shrink-0" />
         )}
         <span className="tm:font-semibold tm:text-foreground">
-          {isResponse ? "ModelResponse" : "ModelRequest"} #{data.ordinal}
+          {isResponse ? "Response" : "Request"} {data.ordinal}
         </span>
-        {data.modelName && <Badge>{data.modelName}</Badge>}
-        {data.providerName && <Badge>{data.providerName}</Badge>}
-        {data.finishReason && (
-          <Badge
-            tone={
-              data.finishReason === "stop" || data.finishReason === "tool_call"
-                ? "neutral"
-                : "warning"
-            }
-          >
-            {data.finishReason}
-          </Badge>
+        {meta.length > 0 && (
+          <span className="tm:truncate">{meta.join(" · ")}</span>
         )}
-        {data.state && data.state !== "complete" && (
-          <Badge tone="warning">{data.state}</Badge>
-        )}
-        {usage &&
-          (usage.input_tokens != null || usage.output_tokens != null) && (
-            <span>
-              {tokens(usage.input_tokens)} in · {tokens(usage.output_tokens)}{" "}
-              out
-              {usage.cache_read_tokens
-                ? ` · ${tokens(usage.cache_read_tokens)} cached`
-                : ""}
-            </span>
-          )}
-        {data.instructions && (
-          <Badge title={data.instructions}>instructions</Badge>
-        )}
-        {time && <span className="tm:ml-auto">{time}</span>}
+        {time && <span className="tm:ml-auto tm:shrink-0">{time}</span>}
       </div>
     </div>
   )

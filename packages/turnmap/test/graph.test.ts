@@ -171,4 +171,32 @@ describe("buildGraph", () => {
       "flow"
     )
   })
+
+  it("every fixture starts with a system prompt", () => {
+    for (const [name, data] of Object.entries(FIXTURES)) {
+      const first = parseMessages(data).messages[0]
+      expect(first.kind, name).toBe("request")
+      expect(first.parts[0].part_kind, name).toBe("system-prompt")
+    }
+  })
+
+  it("keeps the denied outcome of an approval and links the structured final_result call", () => {
+    const approvals = graphOf("approvals")
+    const denied = approvals.nodes.find(
+      (n) =>
+        n.type === "toolReturn" &&
+        (n.data as { outcome?: string }).outcome === "denied"
+    )
+    expect(denied?.data).toMatchObject({
+      toolName: "delete_file",
+      linked: true,
+    })
+    const structured = graphOf("structured-output")
+    const final = structured.nodes.find(
+      (n) =>
+        n.type === "toolCall" &&
+        (n.data as { toolName: string }).toolName === "final_result"
+    )
+    expect(final?.data).toMatchObject({ answered: true, outcome: "success" })
+  })
 })

@@ -5,11 +5,14 @@ export interface TurnMapSettings {
   collapseThreshold: number
   /** Whether the dark theme is active (carried into dialog portals). */
   dark: boolean
+  /** Whether nodes show their details section by default (else header + summary only). */
+  expandNodes: boolean
 }
 
 export const TurnMapContext = createContext<TurnMapSettings>({
   collapseThreshold: 600,
   dark: false,
+  expandNodes: false,
 })
 
 export function useTurnMapSettings() {

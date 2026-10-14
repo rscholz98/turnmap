@@ -1,0 +1,130 @@
+[
+  {
+    "parts": [
+      {
+        "content": "You are a product advisor. Delegate research to the research agent.",
+        "timestamp": "2026-10-14T07:18:09.082891Z",
+        "dynamic_ref": null,
+        "part_kind": "system-prompt"
+      },
+      {
+        "content": "Should I buy the Acme 500?",
+        "timestamp": "2026-10-14T07:18:09.082893Z",
+        "part_kind": "user-prompt"
+      }
+    ],
+    "timestamp": "2026-10-14T07:18:09.083025Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a13946-93ba-719e-bfab-dc7cf708bd0a",
+    "conversation_id": "01a13946-93ba-719e-bfab-dc7df19336ef",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "research",
+        "args": {
+          "topic": "Acme 500 grill reviews"
+        },
+        "tool_call_id": "call_research_1",
+        "tool_kind": null,
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "tool-call"
+      }
+    ],
+    "usage": {
+      "input_tokens": 380,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 21,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-14T07:18:09.083316Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "tool_call",
+    "run_id": "01a13946-93ba-719e-bfab-dc7cf708bd0a",
+    "conversation_id": "01a13946-93ba-719e-bfab-dc7df19336ef",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "tool_name": "research",
+        "content": "Three sources agree: the Acme 500 heats evenly, its burners are rated 4.5/5, and the lid seal is the common complaint.",
+        "tool_call_id": "call_research_1",
+        "tool_kind": null,
+        "metadata": null,
+        "timestamp": "2026-10-14T07:18:09.085250Z",
+        "outcome": "success",
+        "part_kind": "tool-return"
+      }
+    ],
+    "timestamp": "2026-10-14T07:18:09.085451Z",
+    "instructions": null,
+    "kind": "request",
+    "run_id": "01a13946-93ba-719e-bfab-dc7cf708bd0a",
+    "conversation_id": "01a13946-93ba-719e-bfab-dc7df19336ef",
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "The researcher found one recurring complaint. Lead with the strengths, mention the lid seal honestly.",
+        "id": null,
+        "signature": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "thinking"
+      },
+      {
+        "content": "The Acme 500 is well regarded: even heat and burners rated 4.5/5. The one recurring complaint is the lid seal, so check it on delivery.",
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "text"
+      }
+    ],
+    "usage": {
+      "input_tokens": 610,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 58,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "timestamp": "2026-10-14T07:18:09.085685Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "stop",
+    "run_id": "01a13946-93ba-719e-bfab-dc7cf708bd0a",
+    "conversation_id": "01a13946-93ba-719e-bfab-dc7df19336ef",
+    "metadata": null,
+    "workspace_ref": null,
+    "state": "complete"
+  }
+]
