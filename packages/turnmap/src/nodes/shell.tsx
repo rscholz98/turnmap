@@ -1,5 +1,5 @@
 import { Handle, Position } from "@xyflow/react"
-import type { CSSProperties, ReactNode } from "react"
+import { Fragment, type CSSProperties, type ReactNode } from "react"
 
 import { cn } from "../cn"
 import { useTurnMapSettings } from "../context"
@@ -35,7 +35,7 @@ function Handles() {
   return (
     <>
       {SIDES.map(({ pos, s, t }) => (
-        <span key={pos}>
+        <Fragment key={pos}>
           <Handle
             type="source"
             id={s}
@@ -50,7 +50,7 @@ function Handles() {
             isConnectable={false}
             className="tm-handle"
           />
-        </span>
+        </Fragment>
       ))}
     </>
   )
