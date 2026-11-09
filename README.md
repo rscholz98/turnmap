@@ -67,9 +67,12 @@ entries = {}
 for tip in [record.head_id, *record.branches]:
     for entry in await store.read_history(tip):
         entries.setdefault(entry.id, entry)
+
 dump = {
     "record": TypeAdapter(ConversationRecord).dump_python(record, mode="json"),
-    "entries": TypeAdapter(list[ConversationEntry]).dump_python(list(entries.values()), mode="json"),
+    "entries": TypeAdapter(list[ConversationEntry]).dump_python(
+        list(entries.values()), mode="json"
+    ),
 }
 ```
 
@@ -83,10 +86,10 @@ dump = {
 | `palette`            |            | Accent color per node family, for example `{ toolCall: "#a855f7" }` |
 | `showConversation`   | `true`     | The conversation bar, drawn when the input has one                  |
 | `showNavigation`     | `true`     | The first / previous / next / last control                          |
-| `showMinimap`        | `true`     |                                                                     |
+| `showMinimap`        | `true`     | The minimap in the bottom-right corner                              |
 | `showControls`       | `true`     | Zoom and fit buttons                                                |
 | `showBackground`     | `true`     | Dot grid                                                            |
-| `fitViewPadding`     | `0.15`     |                                                                     |
+| `fitViewPadding`     | `0.15`     | Room left around the graph when it is fitted to the view            |
 | `onSelect`           |            | Called with the part node that was clicked                          |
 | `className`, `style` |            | Applied to the wrapper                                              |
 
