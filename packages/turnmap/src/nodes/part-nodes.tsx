@@ -111,6 +111,13 @@ const OUTCOME_TONE: Record<ToolReturnOutcome | "retry", BadgeTone> = {
   retry: "danger",
 }
 
+/** What an unanswered call shows: what it waits on, when the conversation says. */
+const PENDING_LABEL = {
+  approval: "needs approval",
+  external: "awaits result",
+  none: "no return",
+} as const
+
 export function ToolCallNodeView({ id, data }: NodeProps<ToolCallNode>) {
   const accent = data.builtin ? ACCENTS.builtinTool : ACCENTS.toolCall
   return (
@@ -131,7 +138,9 @@ export function ToolCallNodeView({ id, data }: NodeProps<ToolCallNode>) {
           {data.outcome ? (
             <Badge tone={OUTCOME_TONE[data.outcome]}>{data.outcome}</Badge>
           ) : (
-            <Badge tone="warning">no return</Badge>
+            <Badge tone="warning">
+              {PENDING_LABEL[data.pending ?? "none"]}
+            </Badge>
           )}
         </>
       }

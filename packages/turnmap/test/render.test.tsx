@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
 import { TurnMap } from "../src/turn-map"
-import { FIXTURES } from "./fixtures"
+import { FIXTURES, PAUSED_CONVERSATION, STORED_CONVERSATION } from "./fixtures"
 
 describe("TurnMap", () => {
   it("renders every fixture", () => {
@@ -88,5 +88,87 @@ describe("navigation and side panel", () => {
     const canvas = container.querySelector("[tabindex='0']") as HTMLElement
     fireEvent.keyDown(canvas, { key: "Escape" })
     expect(screen.queryByRole("dialog")).toBeNull()
+  })
+})
+
+describe("conversations", () => {
+  it("draws no conversation bar for a plain message history", () => {
+    render(
+      <div style={{ width: 800, height: 600 }}>
+        <TurnMap messages={FIXTURES["simple-chat"]} theme="light" />
+      </div>
+    )
+    expect(screen.queryByRole("group", { name: "Conversation" })).toBeNull()
+  })
+
+  it("shows what a paused conversation carries and what its calls wait on", () => {
+    render(
+      <div style={{ width: 800, height: 600 }}>
+        <TurnMap messages={PAUSED_CONVERSATION} theme="light" />
+      </div>
+    )
+    const bar = screen.getByRole("group", { name: "Conversation" })
+    expect(bar.textContent).toContain("returns-a-1042")
+    expect(bar.textContent).toContain("2 requests")
+    expect(bar.textContent).toContain("1 tool call")
+    expect(bar.textContent).toContain("paused: 1 approval, 1 external result")
+    expect(screen.queryByRole("combobox", { name: "Branch" })).toBeNull()
+    expect(screen.getByText("needs approval")).toBeInTheDocument()
+    expect(screen.getByText("awaits result")).toBeInTheDocument()
+  })
+
+  it("hides the bar with showConversation={false}", () => {
+    render(
+      <div style={{ width: 800, height: 600 }}>
+        <TurnMap
+          messages={PAUSED_CONVERSATION}
+          theme="light"
+          showConversation={false}
+        />
+      </div>
+    )
+    expect(screen.queryByRole("group", { name: "Conversation" })).toBeNull()
+    expect(screen.getByText("needs approval")).toBeInTheDocument()
+  })
+
+  it("switches between a stored conversation's current history and a branch", async () => {
+    const { fireEvent } = await import("@testing-library/react")
+    render(
+      <div style={{ width: 800, height: 600 }}>
+        <TurnMap messages={STORED_CONVERSATION} theme="light" />
+      </div>
+    )
+    const counter = () =>
+      screen.getByRole("group", { name: "Node navigation" }).textContent
+    // Current history: system + user, then five single-part messages.
+    expect(counter()).toContain("– / 7")
+    expect(screen.getByText("1 branch")).toBeInTheDocument()
+    const select = screen.getByRole("combobox", { name: "Branch" })
+    expect(select.textContent).toContain("Current history · 6 messages")
+    expect(select.textContent).toContain(
+      "Branch 1 · left after message 2 · 4 messages"
+    )
+    fireEvent.change(select, {
+      target: { value: STORED_CONVERSATION.record.branches[0] },
+    })
+    expect(counter()).toContain("– / 5")
+    expect(screen.getByText("1 branch")).toBeInTheDocument()
+    fireEvent.change(screen.getByRole("combobox", { name: "Branch" }), {
+      target: { value: "" },
+    })
+    expect(counter()).toContain("– / 7")
+  })
+
+  it("shows a message's store entry id in the side panel", async () => {
+    const { fireEvent } = await import("@testing-library/react")
+    render(
+      <div style={{ width: 800, height: 600 }}>
+        <TurnMap messages={STORED_CONVERSATION} theme="light" />
+      </div>
+    )
+    fireEvent.click(screen.getAllByRole("button", { name: /System prompt/ })[0])
+    const panel = screen.getByRole("dialog")
+    expect(panel.textContent).toContain("entry id")
+    expect(panel.textContent).toContain(STORED_CONVERSATION.entries[0].id)
   })
 })

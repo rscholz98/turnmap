@@ -2,6 +2,8 @@
  * TypeScript mirror of the pydantic-ai message schema as it serializes through
  * `ModelMessagesTypeAdapter` / `all_messages_json()`: a JSON array of messages
  * discriminated by `kind`, each holding parts discriminated by `part_kind`.
+ * The `Conversation` that wraps a history, and the entries and record a
+ * `ConversationStore` keeps for one, are mirrored at the end.
  * Field names are the snake_case Python names, timestamps are ISO 8601
  * strings, bytes are base64 strings. Every field pydantic-ai may omit or set
  * to null is optional here, and extra fields are never rejected.
@@ -257,6 +259,64 @@ export interface ModelResponse extends MessageCommon {
 }
 
 export type ModelMessage = ModelRequest | ModelResponse
+
+// ---------------------------------------------------------------------------
+// Conversations (pydantic_ai/conversation.py, pydantic_ai/conversation_store.py)
+// ---------------------------------------------------------------------------
+
+/** `RunUsage`: a conversation's running total, including what no message records. */
+export interface RunUsage extends RequestUsage {
+  requests?: number
+  tool_calls?: number
+}
+
+/** The tool calls a paused run is waiting on. */
+export interface DeferredToolRequests {
+  /** Calls that need a result from outside the run. */
+  calls?: ToolCallPart[]
+  /** Calls that need approval. */
+  approvals?: ToolCallPart[]
+  /** What each call was deferred with, keyed by `tool_call_id`. */
+  metadata?: Record<string, Record<string, unknown>> | null
+}
+
+/**
+ * A `Conversation` as `ConversationTypeAdapter` serializes it: the messages
+ * plus what lives outside them.
+ */
+export interface Conversation {
+  messages: ModelMessage[]
+  usage?: RunUsage | null
+  conversation_id?: string | null
+  deferred_tool_requests?: DeferredToolRequests | null
+  revision?: string | null
+  new_message_index?: number | null
+}
+
+/** One message in a `ConversationStore`'s log, linked to the entry before it. */
+export interface ConversationEntry {
+  id: string
+  parent_id?: string | null
+  message: ModelMessage
+  /** `"message"` today; other kinds may join the log later. */
+  kind?: string
+}
+
+/** What a `ConversationStore` keeps for a conversation besides its log. */
+export interface ConversationRecord {
+  conversation_id: string
+  head_id?: string | null
+  usage?: RunUsage | null
+  deferred_tool_requests?: DeferredToolRequests | null
+  scope?: string | null
+  forked_from?: string | null
+  forked_at?: string | null
+  /** The last entries of the branches the conversation has left, oldest first. */
+  branches?: string[]
+  revision?: string | null
+  updated_at?: string | null
+  format_version?: number
+}
 
 export const REQUEST_PART_KINDS = new Set<string>([
   "system-prompt",

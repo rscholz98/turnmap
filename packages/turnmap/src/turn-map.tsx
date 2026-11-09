@@ -20,11 +20,13 @@ import {
   useSyncExternalStore,
   type CSSProperties,
   type KeyboardEvent,
+  type ReactNode,
 } from "react"
 
 import { ACCENTS } from "./accents"
 import { cn } from "./cn"
 import { TurnMapContext, type TurnMapSettings } from "./context"
+import { ConversationBar } from "./conversation-bar"
 import {
   buildGraph,
   type PartNode,
@@ -37,16 +39,16 @@ import { NodeNav } from "./nav"
 import { nodeTypes } from "./nodes"
 import { paletteStyle, type Palette } from "./palette"
 import { SidePanel, type PanelSide } from "./panel"
-import { parseMessages, TurnMapParseError } from "./parse"
-import type { ModelMessage } from "./schema"
+import { parseMessages, TurnMapParseError, type ParseResult } from "./parse"
 
 export type TurnMapTheme = "light" | "dark" | "system"
 
 export interface TurnMapProps {
   /**
-   * The message history: the parsed `all_messages_json()` array, the raw JSON
-   * string, or any of the wrapped shapes `parseMessages` accepts. A new value
-   * renders a new graph, which is how consumers switch between sessions.
+   * The history: the parsed `all_messages_json()` array, a serialized
+   * `Conversation`, a `ConversationStore`'s entries, the raw JSON string of
+   * any of them, or another shape `parseMessages` accepts. A new value renders
+   * a new graph, which is how consumers switch between sessions.
    */
   messages: unknown
   /**
@@ -66,6 +68,13 @@ export interface TurnMapProps {
   showBackground?: boolean
   /** Prev / next / first / last control in the top-right corner (also arrow keys, Home, End). */
   showNavigation?: boolean
+  /**
+   * The bar in the top-left corner with what a `Conversation` carries besides
+   * its messages (id, running usage, pending deferred tool requests) and the
+   * switch between a stored conversation's branches. Only drawn when the
+   * input has any of that.
+   */
+  showConversation?: boolean
   fitViewPadding?: number
   /** Called when a part node is clicked. Group boxes are not selectable. */
   onSelect?: (node: PartNode) => void
@@ -115,26 +124,56 @@ function useDark(theme: TurnMapTheme): boolean {
 }
 
 interface Prepared {
-  graph: TurnMapGraph | null
-  warnings: string[]
+  parsed: ParseResult | null
   error: string | null
 }
 
 function prepare(messages: unknown): Prepared {
   try {
-    const { messages: parsed, warnings } = parseMessages(messages)
-    return {
-      graph: buildGraph(parsed as ModelMessage[]),
-      warnings,
-      error: null,
-    }
+    return { parsed: parseMessages(messages), error: null }
   } catch (error) {
     const message =
       error instanceof TurnMapParseError
         ? error.message
         : `Could not read the message history: ${(error as Error).message}`
-    return { graph: null, warnings: [], error: message }
+    return { parsed: null, error: message }
   }
+}
+
+/**
+ * The graph of the current history, or of the branch ending at `tip`. Every
+ * other history marks the message it parts from the shown one after.
+ */
+function graphOf(parsed: ParseResult, tip: string | null): TurnMapGraph {
+  const branch = tip ? parsed.branches?.find((b) => b.tipId === tip) : undefined
+  const shown = branch ?? parsed
+  const others = [
+    ...(branch ? [parsed] : []),
+    ...(parsed.branches ?? []).filter((b) => b !== branch),
+  ]
+  const branchCounts = new Map<number, number>()
+  for (const other of others) {
+    const ids = other.entryIds ?? []
+    let shared = 0
+    while (
+      shared < ids.length &&
+      shown.entryIds != null &&
+      ids[shared] === shown.entryIds[shared]
+    ) {
+      shared++
+    }
+    if (shared > 0) {
+      branchCounts.set(shared - 1, (branchCounts.get(shared - 1) ?? 0) + 1)
+    }
+  }
+  return buildGraph(shown.messages, {
+    // The pending requests belong to the current history's last run.
+    deferredToolRequests: branch
+      ? null
+      : parsed.conversation?.deferredToolRequests,
+    entryIds: shown.entryIds,
+    branchCounts,
+  })
 }
 
 /**
@@ -151,6 +190,7 @@ export function TurnMap({
   showControls = true,
   showBackground = true,
   showNavigation = true,
+  showConversation = true,
   fitViewPadding = 0.15,
   onSelect,
   className,
@@ -160,6 +200,17 @@ export function TurnMap({
   const dark = useDark(theme)
   const prepared = useMemo(() => prepare(messages), [messages])
   const colors = useMemo(() => paletteStyle(palette), [palette])
+  // The branch shown, remembered per input so a new history starts on its
+  // current one.
+  const [selection, setSelection] = useState<{
+    of: Prepared
+    tip: string | null
+  }>({ of: prepared, tip: null })
+  const tip = selection.of === prepared ? selection.tip : null
+  const graph = useMemo(
+    () => (prepared.parsed ? graphOf(prepared.parsed, tip) : null),
+    [prepared, tip]
+  )
 
   return (
     <div
@@ -181,9 +232,9 @@ export function TurnMap({
       ) : (
         // Remount per history so canvas state and the measured layout pass
         // start fresh for each session.
-        <ReactFlowProvider key={graphKey(prepared.graph!)}>
+        <ReactFlowProvider key={graphKey(graph!)}>
           <Canvas
-            graph={prepared.graph!}
+            graph={graph!}
             mode={mode}
             dark={dark}
             showMinimap={showMinimap}
@@ -192,6 +243,19 @@ export function TurnMap({
             showNavigation={showNavigation}
             fitViewPadding={fitViewPadding}
             onSelect={onSelect}
+            header={
+              showConversation && (
+                <ConversationBar
+                  conversation={prepared.parsed!.conversation}
+                  messageCount={prepared.parsed!.messages.length}
+                  branches={prepared.parsed!.branches ?? []}
+                  selectedTip={tip}
+                  onSelectBranch={(next) =>
+                    setSelection({ of: prepared, tip: next })
+                  }
+                />
+              )
+            }
           />
         </ReactFlowProvider>
       )}
@@ -220,6 +284,8 @@ interface CanvasProps {
   showNavigation: boolean
   fitViewPadding: number
   onSelect?: (node: PartNode) => void
+  /** Drawn in the top-left corner of the canvas. */
+  header?: ReactNode
 }
 
 const PANEL_WIDTH = 520
@@ -234,6 +300,7 @@ function Canvas({
   showNavigation,
   fitViewPadding,
   onSelect,
+  header,
 }: CanvasProps) {
   const initial = useMemo(
     () =>
@@ -481,6 +548,7 @@ function Canvas({
     if (
       target.tagName === "INPUT" ||
       target.tagName === "TEXTAREA" ||
+      target.tagName === "SELECT" ||
       target.isContentEditable
     )
       return
@@ -576,6 +644,7 @@ function Canvas({
               zoomable
             />
           )}
+          {header && <Panel position="top-left">{header}</Panel>}
           {showNavigation && (
             <Panel position="top-right">
               <NodeNav

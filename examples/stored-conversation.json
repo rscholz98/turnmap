@@ -1,0 +1,319 @@
+{
+  "record": {
+    "conversation_id": "support-42",
+    "head_id": "01a1c06c-91d3-7745-8501-cd64483f6459",
+    "usage": {
+      "input_tokens": 1440,
+      "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 136,
+      "output_reasoning_tokens": 0,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null,
+      "requests": 4,
+      "tool_calls": 0
+    },
+    "deferred_tool_requests": null,
+    "scope": "user-7",
+    "forked_from": null,
+    "forked_at": null,
+    "branches": [
+      "01a1c06c-91cf-7035-ae4d-2e81dbf4f003"
+    ],
+    "revision": "01a1c06c-91d3-7745-8501-cd65af43fbef",
+    "updated_at": "2026-11-09T13:08:23.123102Z",
+    "format_version": 1
+  },
+  "entries": [
+    {
+      "id": "01a1c06c-91ce-77ed-b1c8-d94f417bdd58",
+      "parent_id": null,
+      "message": {
+        "parts": [
+          {
+            "content": "You are the friendly support assistant for Acme Grills. Answer briefly.",
+            "timestamp": "2026-11-09T13:08:23.117371Z",
+            "dynamic_ref": null,
+            "context_id": null,
+            "scope": "conversation",
+            "metadata": null,
+            "part_kind": "system-prompt"
+          },
+          {
+            "content": "What do I get with the Acme 500?",
+            "timestamp": "2026-11-09T13:08:23.117373Z",
+            "part_kind": "user-prompt"
+          }
+        ],
+        "timestamp": "2026-11-09T13:08:23.117511Z",
+        "instructions": null,
+        "kind": "request",
+        "run_id": "01a1c06c-91cc-72de-9190-77bee49b7069",
+        "conversation_id": "support-42",
+        "metadata": null,
+        "state": "complete"
+      },
+      "kind": "message"
+    },
+    {
+      "id": "01a1c06c-91ce-77ed-b1c8-d9507f18ba92",
+      "parent_id": "01a1c06c-91ce-77ed-b1c8-d94f417bdd58",
+      "message": {
+        "parts": [
+          {
+            "content": "The Acme 500 has three burners, a cast-iron grate and a 10 year warranty on the body.",
+            "id": null,
+            "provider_name": null,
+            "provider_details": null,
+            "citations": null,
+            "part_kind": "text"
+          }
+        ],
+        "usage": {
+          "input_tokens": 240,
+          "cache_write_tokens": 0,
+          "cache_write_1h_tokens": 0,
+          "cache_read_tokens": 0,
+          "output_tokens": 34,
+          "output_reasoning_tokens": 0,
+          "input_audio_tokens": 0,
+          "cache_audio_read_tokens": 0,
+          "output_audio_tokens": 0,
+          "audio_seconds": 0.0,
+          "details": {},
+          "cost": null
+        },
+        "model_name": "demo-model-1",
+        "model_id": "function:demo-model-1",
+        "timestamp": "2026-11-09T13:08:23.117886Z",
+        "kind": "response",
+        "provider_name": null,
+        "provider_url": null,
+        "canonical_system": null,
+        "provider_details": null,
+        "provider_response_id": null,
+        "finish_reason": "stop",
+        "run_id": "01a1c06c-91cc-72de-9190-77bee49b7069",
+        "conversation_id": "support-42",
+        "metadata": null,
+        "workspace_ref": null,
+        "history_digest": null,
+        "failed_attempts": null,
+        "state": "complete"
+      },
+      "kind": "message"
+    },
+    {
+      "id": "01a1c06c-91d1-75b1-873e-77295d1e2562",
+      "parent_id": "01a1c06c-91ce-77ed-b1c8-d9507f18ba92",
+      "message": {
+        "parts": [
+          {
+            "content": "Does it work with gas?",
+            "timestamp": "2026-11-09T13:08:23.120708Z",
+            "part_kind": "user-prompt"
+          }
+        ],
+        "timestamp": "2026-11-09T13:08:23.120831Z",
+        "instructions": null,
+        "kind": "request",
+        "run_id": "01a1c06c-91d0-7414-b6ae-19a94a977c19",
+        "conversation_id": "support-42",
+        "metadata": null,
+        "state": "complete"
+      },
+      "kind": "message"
+    },
+    {
+      "id": "01a1c06c-91d1-75b1-873e-772a55021711",
+      "parent_id": "01a1c06c-91d1-75b1-873e-77295d1e2562",
+      "message": {
+        "parts": [
+          {
+            "content": "Yes: propane as delivered. For natural gas you need conversion kit NG-500 (49 EUR), fitted by a certified installer to keep the warranty.",
+            "id": null,
+            "provider_name": null,
+            "provider_details": null,
+            "citations": null,
+            "part_kind": "text"
+          }
+        ],
+        "usage": {
+          "input_tokens": 360,
+          "cache_write_tokens": 0,
+          "cache_write_1h_tokens": 0,
+          "cache_read_tokens": 0,
+          "output_tokens": 34,
+          "output_reasoning_tokens": 0,
+          "input_audio_tokens": 0,
+          "cache_audio_read_tokens": 0,
+          "output_audio_tokens": 0,
+          "audio_seconds": 0.0,
+          "details": {},
+          "cost": null
+        },
+        "model_name": "demo-model-1",
+        "model_id": "function:demo-model-1",
+        "timestamp": "2026-11-09T13:08:23.121100Z",
+        "kind": "response",
+        "provider_name": null,
+        "provider_url": null,
+        "canonical_system": null,
+        "provider_details": null,
+        "provider_response_id": null,
+        "finish_reason": "stop",
+        "run_id": "01a1c06c-91d0-7414-b6ae-19a94a977c19",
+        "conversation_id": "support-42",
+        "metadata": null,
+        "workspace_ref": null,
+        "history_digest": null,
+        "failed_attempts": null,
+        "state": "complete"
+      },
+      "kind": "message"
+    },
+    {
+      "id": "01a1c06c-91d3-7745-8501-cd630f1e298a",
+      "parent_id": "01a1c06c-91d1-75b1-873e-772a55021711",
+      "message": {
+        "parts": [
+          {
+            "content": "How long does the conversion take?",
+            "timestamp": "2026-11-09T13:08:23.122214Z",
+            "part_kind": "user-prompt"
+          }
+        ],
+        "timestamp": "2026-11-09T13:08:23.122336Z",
+        "instructions": null,
+        "kind": "request",
+        "run_id": "01a1c06c-91d1-75b1-873e-772c61ec5ff5",
+        "conversation_id": "support-42",
+        "metadata": null,
+        "state": "complete"
+      },
+      "kind": "message"
+    },
+    {
+      "id": "01a1c06c-91d3-7745-8501-cd64483f6459",
+      "parent_id": "01a1c06c-91d3-7745-8501-cd630f1e298a",
+      "message": {
+        "parts": [
+          {
+            "content": "Plan about an hour for the fitting. Most installers charge 80 to 120 EUR.",
+            "id": null,
+            "provider_name": null,
+            "provider_details": null,
+            "citations": null,
+            "part_kind": "text"
+          }
+        ],
+        "usage": {
+          "input_tokens": 480,
+          "cache_write_tokens": 0,
+          "cache_write_1h_tokens": 0,
+          "cache_read_tokens": 0,
+          "output_tokens": 34,
+          "output_reasoning_tokens": 0,
+          "input_audio_tokens": 0,
+          "cache_audio_read_tokens": 0,
+          "output_audio_tokens": 0,
+          "audio_seconds": 0.0,
+          "details": {},
+          "cost": null
+        },
+        "model_name": "demo-model-1",
+        "model_id": "function:demo-model-1",
+        "timestamp": "2026-11-09T13:08:23.122600Z",
+        "kind": "response",
+        "provider_name": null,
+        "provider_url": null,
+        "canonical_system": null,
+        "provider_details": null,
+        "provider_response_id": null,
+        "finish_reason": "stop",
+        "run_id": "01a1c06c-91d1-75b1-873e-772c61ec5ff5",
+        "conversation_id": "support-42",
+        "metadata": null,
+        "workspace_ref": null,
+        "history_digest": null,
+        "failed_attempts": null,
+        "state": "complete"
+      },
+      "kind": "message"
+    },
+    {
+      "id": "01a1c06c-91cf-7035-ae4d-2e8011d05e6e",
+      "parent_id": "01a1c06c-91ce-77ed-b1c8-d9507f18ba92",
+      "message": {
+        "parts": [
+          {
+            "content": "Does it work with gas?",
+            "timestamp": "2026-11-09T13:08:23.119077Z",
+            "part_kind": "user-prompt"
+          }
+        ],
+        "timestamp": "2026-11-09T13:08:23.119203Z",
+        "instructions": null,
+        "kind": "request",
+        "run_id": "01a1c06c-91ce-77ed-b1c8-d95234675e88",
+        "conversation_id": "support-42",
+        "metadata": null,
+        "state": "complete"
+      },
+      "kind": "message"
+    },
+    {
+      "id": "01a1c06c-91cf-7035-ae4d-2e81dbf4f003",
+      "parent_id": "01a1c06c-91cf-7035-ae4d-2e8011d05e6e",
+      "message": {
+        "parts": [
+          {
+            "content": "Yes. It runs on propane out of the box; a natural gas conversion kit is sold separately.",
+            "id": null,
+            "provider_name": null,
+            "provider_details": null,
+            "citations": null,
+            "part_kind": "text"
+          }
+        ],
+        "usage": {
+          "input_tokens": 360,
+          "cache_write_tokens": 0,
+          "cache_write_1h_tokens": 0,
+          "cache_read_tokens": 0,
+          "output_tokens": 34,
+          "output_reasoning_tokens": 0,
+          "input_audio_tokens": 0,
+          "cache_audio_read_tokens": 0,
+          "output_audio_tokens": 0,
+          "audio_seconds": 0.0,
+          "details": {},
+          "cost": null
+        },
+        "model_name": "demo-model-1",
+        "model_id": "function:demo-model-1",
+        "timestamp": "2026-11-09T13:08:23.119483Z",
+        "kind": "response",
+        "provider_name": null,
+        "provider_url": null,
+        "canonical_system": null,
+        "provider_details": null,
+        "provider_response_id": null,
+        "finish_reason": "stop",
+        "run_id": "01a1c06c-91ce-77ed-b1c8-d95234675e88",
+        "conversation_id": "support-42",
+        "metadata": null,
+        "workspace_ref": null,
+        "history_digest": null,
+        "failed_attempts": null,
+        "state": "complete"
+      },
+      "kind": "message"
+    }
+  ]
+}

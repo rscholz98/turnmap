@@ -1,23 +1,40 @@
 """Generate the example message histories shipped with turnmap.
 
-Every file is produced by pydantic-ai itself (FunctionModel / TestModel) and
-written with `all_messages_json()`, so the fixtures track the real schema.
+Every file is produced by pydantic-ai itself (FunctionModel / TestModel), so the
+fixtures track the real schema. Most are written with `all_messages_json()`;
+`paused-conversation` is a `Conversation` dumped with `ConversationTypeAdapter`,
+and `stored-conversation` is the record and entries a `ConversationStore` keeps.
 
 Run from the repo root with a pydantic-ai environment available, for example:
 
     uv run --project ../pydantic-ai python examples/generate.py
+    uv run --project ../pydantic-ai python examples/generate.py stored-conversation
 """
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import json
 import sys
 from pathlib import Path
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, TypeAdapter
 
-from pydantic_ai import Agent, BinaryContent, DeferredToolRequests, DeferredToolResults, ImageUrl, ModelRetry, RunContext, ToolDenied
+from pydantic_ai import (
+    Agent,
+    BinaryContent,
+    CallDeferred,
+    Conversation,
+    ConversationTypeAdapter,
+    DeferredToolRequests,
+    DeferredToolResults,
+    ImageUrl,
+    ModelRetry,
+    RunContext,
+    ToolDenied,
+)
+from pydantic_ai.conversation_store import ConversationEntry, ConversationRecord, InMemoryConversationStore
 from pydantic_ai.messages import (
     ModelMessage,
     ModelRequest,
@@ -52,7 +69,12 @@ def write(name: str, data: bytes) -> None:
     path = OUT / f'{name}.json'
     parsed = json.loads(data)
     path.write_text(json.dumps(parsed, indent=2, ensure_ascii=False) + '\n')
-    print(f'wrote {path.name}: {len(parsed)} messages')
+    if isinstance(parsed, list):
+        print(f'wrote {path.name}: {len(parsed)} messages')
+    elif 'entries' in parsed:
+        print(f'wrote {path.name}: {len(parsed["entries"])} entries')
+    else:
+        print(f'wrote {path.name}: {len(parsed["messages"])} messages')
 
 
 def last_user_text(messages: list[ModelMessage]) -> str:
@@ -460,13 +482,141 @@ def delegation() -> None:
     write('delegation', result.all_messages_json())
 
 
+# ---------------------------------------------------------------------------
+# 9. paused-conversation: a `Conversation` whose last run paused on deferred
+#    tool requests, one needing approval and one an external result
+# ---------------------------------------------------------------------------
+def paused_conversation() -> None:
+    def model(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        last = messages[-1]
+        if isinstance(last, ModelRequest) and any(p.part_kind == 'tool-return' for p in last.parts):
+            return ModelResponse(
+                parts=[
+                    ToolCallPart('refund_order', {'order_id': 'A-1042', 'amount_eur': 349.0}, tool_call_id='call_refund_1'),
+                    ToolCallPart('schedule_pickup', {'order_id': 'A-1042', 'carrier': 'DHL'}, tool_call_id='call_pickup_1'),
+                ],
+                usage=usage(588, 52),
+                model_name='demo-model-1',
+                finish_reason='tool_call',
+            )
+        return ModelResponse(
+            parts=[ToolCallPart('get_order', {'order_id': 'A-1042'}, tool_call_id='call_order_1')],
+            usage=usage(402, 19),
+            model_name='demo-model-1',
+            finish_reason='tool_call',
+        )
+
+    agent = Agent(
+        FunctionModel(model, model_name='demo-model-1'),
+        system_prompt='You are a returns assistant. Refunds need approval; pickups are booked by the logistics system.',
+        output_type=[str, DeferredToolRequests],
+    )
+
+    @agent.tool_plain
+    def get_order(order_id: str) -> dict[str, object]:
+        """Look up an order."""
+        return {'order_id': order_id, 'status': 'delivered', 'total_eur': 349.0, 'item': 'Acme 500'}
+
+    @agent.tool_plain(requires_approval=True)
+    def refund_order(order_id: str, amount_eur: float) -> str:
+        """Refund an order. Needs approval."""
+        return f'Refunded {amount_eur} EUR for {order_id}'
+
+    @agent.tool_plain
+    def schedule_pickup(order_id: str, carrier: str) -> str:
+        """Book a pickup. Executed by the logistics system, outside the run."""
+        raise CallDeferred(metadata={'queue': 'logistics', 'carrier': carrier})
+
+    result = agent.run_sync(
+        'My Acme 500 arrived damaged. Please refund order A-1042 and have it picked up.',
+        conversation=Conversation(conversation_id='returns-a-1042'),
+    )
+    assert isinstance(result.output, DeferredToolRequests)
+    write('paused-conversation', ConversationTypeAdapter.dump_json(result.conversation))
+
+
+# ---------------------------------------------------------------------------
+# 10. stored-conversation: what a `ConversationStore` keeps, the record and
+#     its entries, after a reply was regenerated on a branch
+# ---------------------------------------------------------------------------
+def stored_conversation() -> None:
+    answers = iter(
+        [
+            'The Acme 500 has three burners, a cast-iron grate and a 10 year warranty on the body.',
+            'Yes. It runs on propane out of the box; a natural gas conversion kit is sold separately.',
+            'Yes: propane as delivered. For natural gas you need conversion kit NG-500 (49 EUR), fitted by a certified installer to keep the warranty.',
+            'Plan about an hour for the fitting. Most installers charge 80 to 120 EUR.',
+        ]
+    )
+
+    def model(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        return ModelResponse(
+            parts=[TextPart(next(answers))],
+            usage=usage(180 + 60 * len(messages), 34),
+            model_name='demo-model-1',
+            finish_reason='stop',
+        )
+
+    agent = Agent(
+        FunctionModel(model, model_name='demo-model-1'),
+        system_prompt='You are the friendly support assistant for Acme Grills. Answer briefly.',
+    )
+
+    async def run() -> bytes:
+        store = InMemoryConversationStore()
+        conversation_id = 'support-42'
+
+        async def chat(prompt: str) -> None:
+            conversation = await store.load(conversation_id) or Conversation(conversation_id=conversation_id)
+            result = await agent.run(prompt, conversation=conversation)
+            await store.save(result, scope='user-7')
+
+        await chat('What do I get with the Acme 500?')
+        await chat('Does it work with gas?')
+        # Regenerate the second reply: branch after the first turn, ask again, carry on there.
+        stored = await store.load(conversation_id)
+        assert stored is not None
+        branched = await store.branch(conversation_id, at=2, expected_revision=stored.revision)
+        result = await agent.run('Does it work with gas?', conversation=branched)
+        await store.save(result)
+        await chat('How long does the conversion take?')
+
+        record = await store.read_record(conversation_id)
+        assert record is not None and len(record.branches) == 1
+        # Every entry the record reaches: its history, then the branches it left.
+        entries: dict[str, ConversationEntry] = {}
+        for tip in [record.head_id, *record.branches]:
+            for entry in await store.read_history(tip):
+                entries.setdefault(entry.id, entry)
+        return json.dumps(
+            {
+                'record': TypeAdapter(ConversationRecord).dump_python(record, mode='json'),
+                'entries': TypeAdapter(list[ConversationEntry]).dump_python(list(entries.values()), mode='json'),
+            }
+        ).encode()
+
+    write('stored-conversation', asyncio.run(run()))
+
+
+EXAMPLES = {
+    'simple-chat': simple_chat,
+    'tool-calls': tool_calls,
+    'retry': retry,
+    'multimodal': multimodal,
+    'builtin-tools': builtin_tools,
+    'structured-output': structured_output,
+    'approvals': approvals,
+    'delegation': delegation,
+    'paused-conversation': paused_conversation,
+    'stored-conversation': stored_conversation,
+}
+
 if __name__ == '__main__':
-    simple_chat()
-    tool_calls()
-    retry()
-    multimodal()
-    builtin_tools()
-    structured_output()
-    approvals()
-    delegation()
+    # No arguments regenerates every example; names regenerate just those.
+    names = sys.argv[1:] or list(EXAMPLES)
+    unknown = [name for name in names if name not in EXAMPLES]
+    if unknown:
+        sys.exit(f'Unknown example(s): {", ".join(unknown)}. Known: {", ".join(EXAMPLES)}')
+    for name in names:
+        EXAMPLES[name]()
     sys.exit(0)

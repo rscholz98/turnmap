@@ -1,0 +1,222 @@
+{
+  "messages": [
+    {
+      "parts": [
+        {
+          "content": "You are a returns assistant. Refunds need approval; pickups are booked by the logistics system.",
+          "timestamp": "2026-11-09T13:08:23.083730Z",
+          "dynamic_ref": null,
+          "context_id": null,
+          "scope": "conversation",
+          "metadata": null,
+          "part_kind": "system-prompt"
+        },
+        {
+          "content": "My Acme 500 arrived damaged. Please refund order A-1042 and have it picked up.",
+          "timestamp": "2026-11-09T13:08:23.083734Z",
+          "part_kind": "user-prompt"
+        }
+      ],
+      "timestamp": "2026-11-09T13:08:23.083900Z",
+      "instructions": null,
+      "kind": "request",
+      "run_id": "01a1c06c-91a7-725d-9bb2-bffe00c23250",
+      "conversation_id": "returns-a-1042",
+      "metadata": null,
+      "state": "complete"
+    },
+    {
+      "parts": [
+        {
+          "tool_name": "get_order",
+          "args": {
+            "order_id": "A-1042"
+          },
+          "tool_call_id": "call_order_1",
+          "tool_kind": null,
+          "id": null,
+          "provider_name": null,
+          "provider_details": null,
+          "part_kind": "tool-call"
+        }
+      ],
+      "usage": {
+        "input_tokens": 402,
+        "cache_write_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "cache_read_tokens": 0,
+        "output_tokens": 19,
+        "output_reasoning_tokens": 0,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {},
+        "cost": null
+      },
+      "model_name": "demo-model-1",
+      "model_id": "function:demo-model-1",
+      "timestamp": "2026-11-09T13:08:23.085257Z",
+      "kind": "response",
+      "provider_name": null,
+      "provider_url": null,
+      "canonical_system": null,
+      "provider_details": null,
+      "provider_response_id": null,
+      "finish_reason": "tool_call",
+      "run_id": "01a1c06c-91a7-725d-9bb2-bffe00c23250",
+      "conversation_id": "returns-a-1042",
+      "metadata": null,
+      "workspace_ref": null,
+      "history_digest": null,
+      "failed_attempts": null,
+      "state": "complete"
+    },
+    {
+      "parts": [
+        {
+          "tool_name": "get_order",
+          "content": {
+            "order_id": "A-1042",
+            "status": "delivered",
+            "total_eur": 349.0,
+            "item": "Acme 500"
+          },
+          "tool_call_id": "call_order_1",
+          "tool_kind": null,
+          "metadata": null,
+          "timestamp": "2026-11-09T13:08:23.086063Z",
+          "outcome": "success",
+          "retry": null,
+          "part_kind": "tool-return",
+          "content_file_digests": []
+        }
+      ],
+      "timestamp": "2026-11-09T13:08:23.086287Z",
+      "instructions": null,
+      "kind": "request",
+      "run_id": "01a1c06c-91a7-725d-9bb2-bffe00c23250",
+      "conversation_id": "returns-a-1042",
+      "metadata": null,
+      "state": "complete"
+    },
+    {
+      "parts": [
+        {
+          "tool_name": "refund_order",
+          "args": {
+            "order_id": "A-1042",
+            "amount_eur": 349.0
+          },
+          "tool_call_id": "call_refund_1",
+          "tool_kind": null,
+          "id": null,
+          "provider_name": null,
+          "provider_details": null,
+          "part_kind": "tool-call"
+        },
+        {
+          "tool_name": "schedule_pickup",
+          "args": {
+            "order_id": "A-1042",
+            "carrier": "DHL"
+          },
+          "tool_call_id": "call_pickup_1",
+          "tool_kind": null,
+          "id": null,
+          "provider_name": null,
+          "provider_details": null,
+          "part_kind": "tool-call"
+        }
+      ],
+      "usage": {
+        "input_tokens": 588,
+        "cache_write_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "cache_read_tokens": 0,
+        "output_tokens": 52,
+        "output_reasoning_tokens": 0,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0.0,
+        "details": {},
+        "cost": null
+      },
+      "model_name": "demo-model-1",
+      "model_id": "function:demo-model-1",
+      "timestamp": "2026-11-09T13:08:23.086698Z",
+      "kind": "response",
+      "provider_name": null,
+      "provider_url": null,
+      "canonical_system": null,
+      "provider_details": null,
+      "provider_response_id": null,
+      "finish_reason": "tool_call",
+      "run_id": "01a1c06c-91a7-725d-9bb2-bffe00c23250",
+      "conversation_id": "returns-a-1042",
+      "metadata": null,
+      "workspace_ref": null,
+      "history_digest": null,
+      "failed_attempts": null,
+      "state": "complete"
+    }
+  ],
+  "usage": {
+    "input_tokens": 990,
+    "cache_write_tokens": 0,
+    "cache_write_1h_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 71,
+    "output_reasoning_tokens": 0,
+    "input_audio_tokens": 0,
+    "cache_audio_read_tokens": 0,
+    "output_audio_tokens": 0,
+    "audio_seconds": 0.0,
+    "details": {},
+    "cost": null,
+    "requests": 2,
+    "tool_calls": 1
+  },
+  "conversation_id": "returns-a-1042",
+  "deferred_tool_requests": {
+    "calls": [
+      {
+        "tool_name": "schedule_pickup",
+        "args": {
+          "order_id": "A-1042",
+          "carrier": "DHL"
+        },
+        "tool_call_id": "call_pickup_1",
+        "tool_kind": null,
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "tool-call"
+      }
+    ],
+    "approvals": [
+      {
+        "tool_name": "refund_order",
+        "args": {
+          "order_id": "A-1042",
+          "amount_eur": 349.0
+        },
+        "tool_call_id": "call_refund_1",
+        "tool_kind": null,
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "part_kind": "tool-call"
+      }
+    ],
+    "metadata": {
+      "call_pickup_1": {
+        "queue": "logistics",
+        "carrier": "DHL"
+      }
+    }
+  },
+  "revision": null,
+  "new_message_index": null
+}

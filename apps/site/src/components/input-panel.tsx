@@ -8,7 +8,8 @@ import { EXAMPLES } from "@/examples"
 import { cn } from "@/lib/utils"
 
 interface InputPanelProps {
-  onSubmit: (name: string, messages: unknown[]) => void
+  /** Called with the history as given, so a conversation keeps what it carries. */
+  onSubmit: (name: string, messages: unknown) => void
 }
 
 export function InputPanel({ onSubmit }: InputPanelProps) {
@@ -22,12 +23,12 @@ export function InputPanel({ onSubmit }: InputPanelProps) {
   const submit = useCallback(
     (raw: string, label?: string) => {
       try {
-        const { messages, warnings } = parseMessages(raw)
+        const { warnings } = parseMessages(raw)
         setWarnings(warnings)
         setError(null)
         onSubmit(
           label || name.trim() || `Session ${new Date().toLocaleTimeString()}`,
-          messages
+          JSON.parse(raw)
         )
         setText("")
         setName("")
@@ -69,9 +70,11 @@ export function InputPanel({ onSubmit }: InputPanelProps) {
           Paste the output of{" "}
           <code className="rounded bg-muted px-1">
             result.all_messages_json()
-          </code>{" "}
-          and get every prompt, model response, tool call, tool return and retry
-          as a graph. Everything runs in your browser.
+          </code>
+          , a stored <code className="rounded bg-muted px-1">Conversation</code>{" "}
+          or a <code className="rounded bg-muted px-1">ConversationStore</code>
+          &apos;s entries, and get every prompt, model response, tool call, tool
+          return and retry as a graph. Everything runs in your browser.
         </p>
       </div>
 
@@ -121,8 +124,11 @@ export function InputPanel({ onSubmit }: InputPanelProps) {
         </div>
         <p className="text-[11px] text-muted-foreground">
           Drop a .json file anywhere in this box. Accepted shapes: the plain
-          message array, <code>{"{ messages: [...] }"}</code>, or rows of{" "}
-          <code>{"{ message: {...} }"}</code>.
+          message array, a <code>Conversation</code> (
+          <code>ConversationTypeAdapter.dump_json(result.conversation)</code>),
+          a store&apos;s entries (<code>{"{ id, parent_id, message }"}</code>{" "}
+          rows, or <code>{"{ record, entries }"}</code> to see its branches), or
+          rows of <code>{"{ message: {...} }"}</code>.
         </p>
         {error && (
           <div className="flex items-start gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">

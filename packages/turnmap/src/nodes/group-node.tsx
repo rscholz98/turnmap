@@ -1,5 +1,5 @@
 import type { NodeProps } from "@xyflow/react"
-import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react"
+import { ArrowDownToLine, ArrowUpFromLine, GitBranch } from "lucide-react"
 
 import type { MessageGroupNode } from "../graph"
 import { formatTime } from "./format"
@@ -47,6 +47,15 @@ export function MessageGroupView({
         {meta.length > 0 && (
           <span className="tm:truncate">{meta.join(" · ")}</span>
         )}
+        {data.branchCount ? (
+          <span
+            className="tm:flex tm:shrink-0 tm:items-center tm:gap-0.5 tm:font-medium tm:text-accent-thinking"
+            title="Branches the conversation left after this message"
+          >
+            <GitBranch className="tm:h-2.5 tm:w-2.5" />
+            {data.branchCount} {data.branchCount === 1 ? "branch" : "branches"}
+          </span>
+        ) : null}
         {time && <span className="tm:ml-auto tm:shrink-0">{time}</span>}
       </div>
     </div>

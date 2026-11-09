@@ -75,7 +75,7 @@ export function App() {
   }, [persistError])
 
   const onSubmit = useCallback(
-    (name: string, messages: unknown[]) => {
+    (name: string, messages: unknown) => {
       add(name, messages)
       setShowingInput(false)
     },

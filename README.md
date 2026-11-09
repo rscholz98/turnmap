@@ -1,9 +1,10 @@
 # turnmap
 
 See what your [Pydantic AI](https://ai.pydantic.dev) agent actually did. turnmap turns the
-message history of a run (the output of `result.all_messages_json()`) into an interactive
-graph: every system and user prompt, model response, thinking block, tool call, tool return
-and validation retry as a node, laid out top-down, grouped by message.
+message history of a run (the output of `result.all_messages_json()`), or a whole stored
+[`Conversation`](https://pydantic.dev/docs/ai/persistence/), into an interactive graph: every
+system and user prompt, model response, thinking block, tool call, tool return and validation
+retry as a node, laid out top-down, grouped by message.
 
 - **Website**: [turnmap.dev](https://turnmap.dev). Paste a history or drop a file, load an
   example, switch between sessions, share a link. Everything runs in the browser, nothing is
@@ -41,7 +42,52 @@ export function Trace({ history }: { history: unknown }) {
 
 `messages` accepts the parsed `all_messages_json()` array, the raw JSON string, a
 `{ messages: [...] }` wrapper, or rows of `{ message: {...} }` as a database export might
-produce. Unknown part kinds are shown as raw JSON, never dropped.
+produce. It also takes what pydantic-ai's conversation persistence stores (see
+[Conversations](#conversations)). Unknown part kinds are shown as raw JSON, never dropped.
+
+### Conversations
+
+Since pydantic-ai 2.66 the unit to store is a
+[`Conversation`](https://pydantic.dev/docs/ai/persistence/): the messages plus what lives
+outside them. Pass one as `messages` and turnmap shows that too.
+
+| You have                                                            | Pass                                  | You also get                                                   |
+| ------------------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------- |
+| a `Conversation` (`ConversationTypeAdapter.dump_json(...)`)         | the JSON as is                        | conversation id, running usage, pending deferred tool requests |
+| a `ConversationStore`'s entries (`load_entries()`, `save()`)        | the `{ id, parent_id, message }` rows | each message's entry id, and the branches among the entries    |
+| a stored conversation: its `ConversationRecord` and all its entries | `{ record: {...}, entries: [...] }`   | all of the above, with the record deciding the current history |
+
+```python
+from pydantic import TypeAdapter
+from pydantic_ai import ConversationTypeAdapter
+from pydantic_ai.conversation_store import ConversationEntry, ConversationRecord
+
+# One conversation as a run left it:
+ConversationTypeAdapter.dump_json(result.conversation)
+
+# A stored conversation with the branches it left (regenerated or edited turns):
+record = await store.read_record(conversation_id)
+entries = {}
+for tip in [record.head_id, *record.branches]:
+    for entry in await store.read_history(tip):
+        entries.setdefault(entry.id, entry)
+{
+    "record": TypeAdapter(ConversationRecord).dump_python(record, mode="json"),
+    "entries": TypeAdapter(list[ConversationEntry]).dump_python(list(entries.values()), mode="json"),
+}
+```
+
+A bar in the top-left corner of the canvas shows the conversation id, its running usage
+(requests, tool calls, tokens) and what a paused run is waiting on. A tool call the
+conversation's `deferred_tool_requests` names is badged `needs approval` or `awaits result`
+instead of `no return`, and its panel shows the metadata it was deferred with.
+
+Entries are ordered by following `parent_id`, not by their position in the input. The
+current history ends at the record's `head_id`; without a record, at the newest entry
+nothing follows (entry ids are UUIDv7, so they sort by time). Every other history is a
+branch: the bar's switch draws it instead, and the message the branch leaves after is marked
+in both. Each message's panel shows its entry id, the one to tie a rating or a billing row
+to.
 
 ### Switching sessions
 
@@ -70,6 +116,7 @@ const [current, setCurrent] = useState(sessions[0])
 | `showMinimap`        | `boolean`                       | `true`     |                                                       |
 | `showControls`       | `boolean`                       | `true`     | zoom and fit buttons                                  |
 | `showBackground`     | `boolean`                       | `true`     | dot grid                                              |
+| `showConversation`   | `boolean`                       | `true`     | the conversation bar, drawn when the input has one    |
 | `fitViewPadding`     | `number`                        | `0.15`     |                                                       |
 | `onSelect`           | `(node: PartNode) => void`      |            | called when a part node is clicked                    |
 | `className`, `style` |                                 |            | applied to the wrapper                                |
@@ -79,15 +126,24 @@ const [current, setCurrent] = useState(sessions[0])
 ```ts
 import { parseMessages, buildGraph, layoutGraph } from "turnmap"
 
-const { messages, warnings } = parseMessages(json)
-const { nodes, edges, groups } = buildGraph(messages)
+const { messages, warnings, conversation, entryIds, branches } =
+  parseMessages(json)
+const { nodes, edges, groups } = buildGraph(messages, {
+  deferredToolRequests: conversation?.deferredToolRequests,
+  entryIds,
+})
 const laid = layoutGraph(nodes, edges, groups, { mode: "spine" })
 // laid.nodes carry positions (parts via initialWidth / initialHeight, message
 // groups with explicit sizes); laid.edges carry the handle pair to use.
 ```
 
+`conversation`, `entryIds` and `branches` are only set when the input was a `Conversation`
+or store entries. Each branch is a whole history of its own (`branch.messages`), so to draw
+branches with a switch of your own, pass `branch.messages` to `<TurnMap>` or `buildGraph`.
+
 The TypeScript types of the pydantic-ai message schema (`ModelMessage`, `ModelRequest`,
-`ModelResponse`, every part) are exported too.
+`ModelResponse`, every part) are exported too, as are `Conversation`, `ConversationEntry`
+and `ConversationRecord`.
 
 ### Styling
 
@@ -110,7 +166,10 @@ from the current chain tip so parallel calls sit side by side; a tool return or 
 off the call it answers (matched by `tool_call_id`) and takes over as the chain tip, so the
 next response follows the result. A message's leaves feed the next message. Each
 `ModelRequest` / `ModelResponse` is drawn as a translucent group with its model name,
-finish reason, token usage and timestamp.
+finish reason, token usage and timestamp. With a conversation as input, an unanswered tool
+call that its deferred tool requests name carries what it waits on (approval or an external
+result), and a message the conversation left a branch after carries the branch count in its
+group header.
 
 Three layouts: `spine` (default) keeps prompts and responses in one column and puts each
 tool call in a column to the right with its return one column further, so a run reads top
@@ -154,10 +213,12 @@ npm run lint && npm run typecheck
 The site imports the built package, so run `npm run build:lib` (or `npm run dev -w packages/turnmap`
 for watch mode) after changing the library.
 
-Regenerate the example histories with a pydantic-ai environment:
+Regenerate the example histories with a pydantic-ai environment, all of them or the ones
+named:
 
 ```bash
 uv run --project ../pydantic-ai python examples/generate.py
+uv run --project ../pydantic-ai python examples/generate.py stored-conversation
 ```
 
 ## Release

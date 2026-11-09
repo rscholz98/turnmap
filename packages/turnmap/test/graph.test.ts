@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest"
 
 import { buildGraph, partNodeId } from "../src/graph"
 import { parseMessages } from "../src/parse"
-import { FIXTURES, type FixtureName } from "./fixtures"
+import {
+  FIXTURES,
+  PAUSED_CONVERSATION,
+  STORED_CONVERSATION,
+  type FixtureName,
+} from "./fixtures"
 
 function graphOf(name: FixtureName) {
   return buildGraph(parseMessages(FIXTURES[name]).messages)
@@ -198,5 +203,47 @@ describe("buildGraph", () => {
         (n.data as { toolName: string }).toolName === "final_result"
     )
     expect(final?.data).toMatchObject({ answered: true, outcome: "success" })
+  })
+})
+
+describe("buildGraph with a conversation", () => {
+  it("marks the calls a paused conversation is waiting on", () => {
+    const parsed = parseMessages(PAUSED_CONVERSATION)
+    const graph = buildGraph(parsed.messages, {
+      deferredToolRequests: parsed.conversation?.deferredToolRequests,
+    })
+    const calls = Object.fromEntries(
+      graph.nodes
+        .filter((n) => n.type === "toolCall")
+        .map((n) => [n.data.toolName, n.data])
+    )
+    expect(calls.get_order.pending).toBeNull()
+    expect(calls.get_order.outcome).toBe("success")
+    expect(calls.refund_order.pending).toBe("approval")
+    expect(calls.refund_order.deferredMetadata).toBeNull()
+    expect(calls.schedule_pickup.pending).toBe("external")
+    expect(calls.schedule_pickup.deferredMetadata).toEqual({
+      queue: "logistics",
+      carrier: "DHL",
+    })
+  })
+
+  it("leaves unanswered calls unmarked without the conversation", () => {
+    const graph = buildGraph(parseMessages(PAUSED_CONVERSATION).messages)
+    const pending = graph.nodes
+      .filter((n) => n.type === "toolCall")
+      .map((n) => n.data.pending)
+    expect(pending).toEqual([null, null, null])
+  })
+
+  it("carries entry ids and branch counts onto the message groups", () => {
+    const parsed = parseMessages(STORED_CONVERSATION)
+    const graph = buildGraph(parsed.messages, {
+      entryIds: parsed.entryIds,
+      branchCounts: new Map([[1, 1]]),
+    })
+    expect(graph.groups.map((g) => g.entryId)).toEqual(parsed.entryIds)
+    expect(graph.groups.map((g) => g.branchCount)).toEqual([0, 1, 0, 0, 0, 0])
+    expect(graph.groups[0].conversationId).toBe("support-42")
   })
 })

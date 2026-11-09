@@ -148,6 +148,14 @@ export function SidePanel({
       ) : null,
     ],
     [
+      "waiting on",
+      d.pending === "approval" || d.pending === "external" ? (
+        <Badge tone="warning">
+          {d.pending === "approval" ? "approval" : "external result"}
+        </Badge>
+      ) : null,
+    ],
+    [
       "provider",
       typeof d.providerName === "string" ? (
         <Badge tone="info">{d.providerName}</Badge>
@@ -173,6 +181,19 @@ export function SidePanel({
           ) : null,
         ],
         ["run id", group.runId],
+        ["conversation id", group.conversationId],
+        [
+          "entry id",
+          group.entryId ? (
+            <code className="tm:text-[11px]">{group.entryId}</code>
+          ) : null,
+        ],
+        [
+          "branches",
+          group.branchCount
+            ? `${group.branchCount} left after this message`
+            : null,
+        ],
         ...usageRows(group.usage),
       ]
     : []

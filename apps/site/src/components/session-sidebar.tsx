@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import type { Session } from "@/sessions"
+import { messageCount, type Session } from "@/sessions"
 
 interface SessionSidebarProps {
   sessions: Session[]
@@ -94,7 +94,7 @@ export function SessionSidebar({
                       <span className="truncate">{session.name}</span>
                     </span>
                     <span className="text-[11px] text-muted-foreground">
-                      {session.messages.length} messages ·{" "}
+                      {messageCount(session.messages)} messages ·{" "}
                       {new Date(session.createdAt).toLocaleString(undefined, {
                         dateStyle: "short",
                         timeStyle: "short",

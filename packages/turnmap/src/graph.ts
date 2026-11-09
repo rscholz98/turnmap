@@ -4,6 +4,7 @@ import { ACCENTS } from "./accents"
 import { contentToText, parseToolArgs } from "./parse"
 import type {
   BinaryContent,
+  DeferredToolRequests,
   ErrorDetails,
   FinishReason,
   MessageKind,
@@ -58,6 +59,13 @@ export interface ToolCallNodeData extends PartNodeBase {
   /** Whether a return or retry part answers this call anywhere in the history. */
   answered: boolean
   outcome?: ToolReturnOutcome | "retry" | null
+  /**
+   * What an unanswered call is waiting on, when the conversation's deferred
+   * tool requests name it: approval, or a result from outside the run.
+   */
+  pending?: "approval" | "external" | null
+  /** What the call was deferred with. */
+  deferredMetadata?: Record<string, unknown> | null
 }
 
 export interface ToolReturnNodeData extends PartNodeBase {
@@ -110,6 +118,11 @@ export interface MessageGroupData {
   timestamp?: string | null
   state?: MessageState | null
   runId?: string | null
+  conversationId?: string | null
+  /** The message's entry in a `ConversationStore`, when the history came from one. */
+  entryId?: string | null
+  /** How many branches the conversation left right after this message. */
+  branchCount?: number
   instructions?: string | null
   modelName?: string | null
   providerName?: string | null
@@ -150,6 +163,18 @@ export interface TurnMapEdgeData {
 }
 
 export type TurnMapEdge = Edge<TurnMapEdgeData>
+
+export interface BuildGraphOptions {
+  /**
+   * The conversation's pending deferred tool requests, so the calls it is
+   * waiting on are marked with what they need.
+   */
+  deferredToolRequests?: DeferredToolRequests | null
+  /** The store entry id of each message, aligned with the messages. */
+  entryIds?: readonly string[] | null
+  /** Per message index, how many branches leave the history right after it. */
+  branchCounts?: ReadonlyMap<number, number> | null
+}
 
 export interface TurnMapGraph {
   nodes: PartNode[]
@@ -238,11 +263,27 @@ function binaryInfo(content: BinaryContent | null | undefined) {
  * `tool_call_id`) and otherwise joins the chain. A message's leaves (nodes
  * without an outgoing edge once the message ends) feed the next message, so
  * several returns converge on the following response.
+ *
+ * `options` adds what a conversation knows beyond its messages: which
+ * unanswered calls await approval or an external result, each message's store
+ * entry, and where branches leave the history.
  */
-export function buildGraph(messages: ModelMessage[]): TurnMapGraph {
+export function buildGraph(
+  messages: ModelMessage[],
+  options: BuildGraphOptions = {}
+): TurnMapGraph {
   const nodes: PartNode[] = []
   const edges: TurnMapEdge[] = []
   const groups: MessageGroupData[] = []
+
+  const deferred = options.deferredToolRequests
+  const pendingByCallId = new Map<string, "approval" | "external">()
+  for (const call of deferred?.approvals ?? []) {
+    if (call?.tool_call_id) pendingByCallId.set(call.tool_call_id, "approval")
+  }
+  for (const call of deferred?.calls ?? []) {
+    if (call?.tool_call_id) pendingByCallId.set(call.tool_call_id, "external")
+  }
 
   // Pass 1: index every tool call and note which ids get an answer.
   const callNodeIdByCallId = new Map<string, string>()
@@ -414,6 +455,12 @@ export function buildGraph(messages: ModelMessage[]): TurnMapGraph {
               providerName: p.provider_name ?? null,
               answered: answerByCallId.has(callId),
               outcome: answerByCallId.get(callId) ?? null,
+              pending: answerByCallId.has(callId)
+                ? null
+                : (pendingByCallId.get(callId) ?? null),
+              deferredMetadata: answerByCallId.has(callId)
+                ? null
+                : (deferred?.metadata?.[callId] ?? null),
             },
           })
           // Branch from the tips; the tips stay so sibling calls fan out.
@@ -553,6 +600,9 @@ export function buildGraph(messages: ModelMessage[]): TurnMapGraph {
       timestamp: message.timestamp ?? null,
       state: message.state ?? null,
       runId: message.run_id ?? null,
+      conversationId: message.conversation_id ?? null,
+      entryId: options.entryIds?.[mi] ?? null,
+      branchCount: options.branchCounts?.get(mi) ?? 0,
       instructions:
         message.kind === "request" ? (message.instructions ?? null) : null,
       modelName:

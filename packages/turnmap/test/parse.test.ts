@@ -7,7 +7,7 @@ import {
   truncateJson,
   TurnMapParseError,
 } from "../src/parse"
-import { FIXTURES } from "./fixtures"
+import { FIXTURES, PAUSED_CONVERSATION, STORED_CONVERSATION } from "./fixtures"
 
 describe("parseMessages", () => {
   it("parses every fixture without warnings", () => {
@@ -45,6 +45,117 @@ describe("parseMessages", () => {
       "request",
       "response",
     ])
+  })
+
+  it("reads a Conversation and what it carries besides its messages", () => {
+    const result = parseMessages(PAUSED_CONVERSATION)
+    expect(result.warnings).toEqual([])
+    expect(result.messages).toHaveLength(4)
+    expect(result.conversation?.conversationId).toBe("returns-a-1042")
+    expect(result.conversation?.usage?.requests).toBe(2)
+    expect(result.conversation?.usage?.tool_calls).toBe(1)
+    const requests = result.conversation?.deferredToolRequests
+    expect(requests?.approvals?.map((c) => c.tool_name)).toEqual([
+      "refund_order",
+    ])
+    expect(requests?.calls?.map((c) => c.tool_name)).toEqual([
+      "schedule_pickup",
+    ])
+    expect(result.entryIds).toBeUndefined()
+    expect(result.branches).toBeUndefined()
+  })
+
+  it("leaves a plain { messages } wrapper without conversation info", () => {
+    const result = parseMessages({ messages: FIXTURES["simple-chat"] })
+    expect(result.conversation).toBeUndefined()
+  })
+
+  it("reads a stored conversation: the head history and the branch it left", () => {
+    const result = parseMessages(STORED_CONVERSATION)
+    expect(result.warnings).toEqual([])
+    expect(result.messages).toHaveLength(6)
+    expect(result.entryIds).toHaveLength(6)
+    expect(result.entryIds?.at(-1)).toBe(STORED_CONVERSATION.record.head_id)
+    expect(result.conversation?.conversationId).toBe("support-42")
+    expect(result.conversation?.scope).toBe("user-7")
+    expect(result.conversation?.usage?.requests).toBe(4)
+    expect(result.branches).toHaveLength(1)
+    const [branch] = result.branches!
+    expect(branch.tipId).toBe(STORED_CONVERSATION.record.branches[0])
+    expect(branch.messages).toHaveLength(4)
+    expect(branch.sharedCount).toBe(2)
+    expect(branch.entryIds.slice(0, 2)).toEqual(result.entryIds?.slice(0, 2))
+    expect(branch.entryIds[2]).not.toBe(result.entryIds?.[2])
+  })
+
+  it("orders store entries by parent_id, whatever order they arrive in", () => {
+    const head = parseMessages(STORED_CONVERSATION)
+    const entries = [...STORED_CONVERSATION.entries].reverse()
+    const result = parseMessages({
+      record: STORED_CONVERSATION.record,
+      entries,
+    })
+    expect(result.entryIds).toEqual(head.entryIds)
+    expect(result.messages).toEqual(head.messages)
+  })
+
+  it("reads bare entries: the newest entry nothing follows is the head", () => {
+    const stored = parseMessages(STORED_CONVERSATION)
+    for (const entries of [
+      STORED_CONVERSATION.entries,
+      [...STORED_CONVERSATION.entries].reverse(),
+    ]) {
+      const result = parseMessages(entries)
+      expect(result.conversation).toBeUndefined()
+      expect(result.messages).toEqual(stored.messages)
+      expect(result.entryIds).toEqual(stored.entryIds)
+      expect(result.branches).toEqual(stored.branches)
+    }
+  })
+
+  it("reads a window of entries whose first parent is not included", () => {
+    const stored = parseMessages(STORED_CONVERSATION)
+    const window = STORED_CONVERSATION.entries.filter((entry) =>
+      stored.entryIds!.slice(-3).includes(entry.id)
+    )
+    const result = parseMessages(window)
+    expect(result.messages).toEqual(stored.messages.slice(-3))
+    expect(result.branches).toEqual([])
+  })
+
+  it("skips entries of a kind it does not know and warns once", () => {
+    const [first, second, ...rest] = STORED_CONVERSATION.entries
+    const marker = {
+      id: "marker-1",
+      parent_id: first.id,
+      kind: "checkpoint",
+      label: "before the regenerate",
+    }
+    const result = parseMessages({
+      record: STORED_CONVERSATION.record,
+      entries: [first, marker, { ...second, parent_id: marker.id }, ...rest],
+    })
+    expect(result.messages).toHaveLength(6)
+    expect(result.entryIds).not.toContain("marker-1")
+    expect(result.branches![0].sharedCount).toBe(2)
+    expect(result.warnings).toEqual([
+      'Entry "marker-1" has kind "checkpoint" (expected "message") and was skipped.',
+    ])
+  })
+
+  it("warns when the record names a head or branch the entries lack", () => {
+    const result = parseMessages({
+      record: {
+        ...STORED_CONVERSATION.record,
+        head_id: "gone",
+        branches: ["also-gone"],
+      },
+      entries: STORED_CONVERSATION.entries,
+    })
+    expect(result.messages.length).toBeGreaterThan(0)
+    expect(result.warnings).toHaveLength(2)
+    expect(result.warnings[0]).toMatch(/head_id "gone"/)
+    expect(result.warnings[1]).toMatch(/Branch "also-gone"/)
   })
 
   it("keeps unknown part kinds and warns", () => {

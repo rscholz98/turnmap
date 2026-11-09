@@ -56,23 +56,36 @@ export function describeNode(node: PartNode): {
       return {
         title: `Tool call: ${node.data.toolName}`,
         content: (
-          <Section
-            title="Arguments"
-            json={
-              node.data.args == null ? undefined : stringify(node.data.args)
-            }
-          >
-            {node.data.args == null ? (
-              <p className="tm:m-0 tm:text-muted-foreground tm:italic">
-                no arguments
-              </p>
-            ) : (
-              <CodeBlock
-                text={stringify(truncateJson(node.data.args))}
-                limit={Infinity}
-              />
+          <>
+            <Section
+              title="Arguments"
+              json={
+                node.data.args == null ? undefined : stringify(node.data.args)
+              }
+            >
+              {node.data.args == null ? (
+                <p className="tm:m-0 tm:text-muted-foreground tm:italic">
+                  no arguments
+                </p>
+              ) : (
+                <CodeBlock
+                  text={stringify(truncateJson(node.data.args))}
+                  limit={Infinity}
+                />
+              )}
+            </Section>
+            {node.data.deferredMetadata != null && (
+              <Section
+                title="Deferred with"
+                json={stringify(node.data.deferredMetadata)}
+              >
+                <CodeBlock
+                  text={stringify(truncateJson(node.data.deferredMetadata))}
+                  limit={Infinity}
+                />
+              </Section>
             )}
-          </Section>
+          </>
         ),
       }
     case "toolReturn": {

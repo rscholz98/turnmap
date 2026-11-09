@@ -1,7 +1,7 @@
 {
   "name": "turnmap",
   "version": "0.2.0",
-  "description": "React component that renders a Pydantic AI message history (all_messages_json) as an interactive React Flow graph",
+  "description": "React component that renders a Pydantic AI message history (all_messages_json) or stored Conversation as an interactive React Flow graph",
   "keywords": [
     "pydantic-ai",
     "pydantic",
@@ -11,7 +11,8 @@
     "react-flow",
     "visualizer",
     "trace",
-    "message-history"
+    "message-history",
+    "conversation"
   ],
   "license": "MIT",
   "author": "Richard Scholz",

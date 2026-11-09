@@ -9,10 +9,11 @@ export {
   contentToText,
   TurnMapParseError,
 } from "./parse"
-export type { ParseResult } from "./parse"
+export type { ParseResult, ConversationInfo, ConversationBranch } from "./parse"
 
 export { buildGraph, partNodeId, groupNodeId } from "./graph"
 export type {
+  BuildGraphOptions,
   TurnMapGraph,
   TurnMapNode,
   TurnMapEdge,
@@ -65,6 +66,7 @@ export { SidePanel } from "./panel"
 export { describeNode } from "./nodes/describe"
 export type { PanelSide } from "./panel"
 export { NodeNav } from "./nav"
+export { ConversationBar } from "./conversation-bar"
 export { ACCENTS } from "./accents"
 export type { AccentKey } from "./accents"
 

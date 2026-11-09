@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import type { usePalettes } from "@/palettes"
-import type { Session } from "@/sessions"
+import { messageCount, type Session } from "@/sessions"
 import { SHARE_LINK_SOFT_LIMIT, shareUrl } from "@/share"
 
 interface ToolbarProps {
@@ -170,7 +170,7 @@ export function Toolbar({
         )}
         {session && (
           <span className="text-xs text-muted-foreground">
-            {session.messages.length} messages
+            {messageCount(session.messages)} messages
           </span>
         )}
       </div>

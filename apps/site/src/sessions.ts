@@ -1,3 +1,4 @@
+import { parseMessages } from "turnmap"
 import { useCallback, useEffect, useState } from "react"
 
 import { decodeShare } from "@/share"
@@ -10,7 +11,29 @@ export interface Session {
   id: string
   name: string
   createdAt: string
-  messages: unknown[]
+  /**
+   * The history as it was given: a message array, a `Conversation`, or a
+   * store's entries. Kept whole so the conversation's usage, pending tool
+   * requests and branches reach the component.
+   */
+  messages: unknown
+}
+
+const counts = new WeakMap<object, number>()
+
+/** Messages in a session's current history, for the sidebar and toolbar. */
+export function messageCount(messages: unknown): number {
+  if (typeof messages !== "object" || messages === null) return 0
+  let count = counts.get(messages)
+  if (count == null) {
+    try {
+      count = parseMessages(messages).messages.length
+    } catch {
+      count = 0
+    }
+    counts.set(messages, count)
+  }
+  return count
 }
 
 const STORAGE_KEY = "turnmap.sessions"
@@ -95,7 +118,7 @@ export function useSessions() {
   }, [selectedId])
 
   const add = useCallback(
-    (name: string, messages: unknown[]) => {
+    (name: string, messages: unknown) => {
       const session: Session = {
         id: newSessionId(),
         name,

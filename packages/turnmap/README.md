@@ -5,6 +5,11 @@ React component that renders a [Pydantic AI](https://ai.pydantic.dev) message hi
 tool calls, tool returns and validation retries as nodes, laid out top-down with dagre,
 grouped by message. Runs entirely in the browser.
 
+`messages` also takes a stored `Conversation` (`ConversationTypeAdapter.dump_json(...)`) or a
+`ConversationStore`'s entries: the graph then shows the conversation's running usage, the
+tool calls a paused run is waiting on, each message's entry id, and a switch between the
+current history and the branches the store kept.
+
 Try it at [turnmap.dev](https://turnmap.dev).
 
 ```bash
