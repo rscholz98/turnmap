@@ -12,6 +12,7 @@ import type {
   ModelMessage,
   ModelPart,
   RequestUsage,
+  RetryInfo,
   ToolReturnOutcome,
   UserContentItem,
 } from "./schema"
@@ -84,9 +85,16 @@ export interface ToolReturnNodeData extends PartNodeBase {
 export interface RetryNodeData extends PartNodeBase {
   errors: ErrorDetails[] | null
   text: string | null
+  /** The tool whose call has to be made again; null when the output was rejected. */
   toolName: string | null
+  /** Empty for retry feedback, which answers no call. */
   toolCallId: string
   linked: boolean
+  /** Why the retry happened, when the part records it (pydantic-ai 2.60+). */
+  cause?: string | null
+  /** Which attempt this is, and the budget it counts against. */
+  attempt?: number | null
+  maxRetries?: number | null
 }
 
 export interface MediaNodeData extends PartNodeBase {
@@ -102,6 +110,8 @@ export interface MediaNodeData extends PartNodeBase {
 
 export interface NoteNodeData extends PartNodeBase {
   title: string
+  /** Heading of the list in the side panel, for example "Tools". */
+  label: string
   lines: string[]
 }
 
@@ -233,6 +243,15 @@ function makeEdge(source: string, target: string, kind: EdgeKind): TurnMapEdge {
   }
 }
 
+/** One line per changed setting, values as compact JSON. */
+function settingLines(settings: unknown): string[] {
+  if (typeof settings !== "object" || settings === null) return []
+  return Object.entries(settings).map(
+    ([key, value]) =>
+      `${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`
+  )
+}
+
 function binaryInfo(content: BinaryContent | null | undefined) {
   if (!content || typeof content !== "object") return {}
   const data = typeof content.data === "string" ? content.data : ""
@@ -302,13 +321,15 @@ export function buildGraph(
       const kind = part.part_kind
       const id = (part as { tool_call_id?: string }).tool_call_id
       if (!id) return
-      if (kind === "tool-return" || kind === "builtin-tool-return") {
-        answerByCallId.set(
-          id,
-          (part as { outcome?: ToolReturnOutcome | null }).outcome ?? "success"
-        )
-      } else if (kind === "retry-prompt" && !answerByCallId.has(id)) {
-        answerByCallId.set(id, "retry")
+      const outcome = (part as { outcome?: ToolReturnOutcome | null }).outcome
+      const retried =
+        kind === "retry-prompt" ||
+        (kind === "tool-return" && outcome === "retried")
+      if (retried) {
+        // A retry only stands until the call made again is answered for real.
+        if (!answerByCallId.has(id)) answerByCallId.set(id, "retry")
+      } else if (kind === "tool-return" || kind === "builtin-tool-return") {
+        answerByCallId.set(id, outcome ?? "success")
       }
     })
   })
@@ -363,6 +384,49 @@ export function buildGraph(
           ...(branchedFrom.get(callNodeId) ?? []),
         ])
         tips = [...tips.filter((t) => !superseded.has(t)), id]
+      }
+
+      // A retry: hangs off the call that has to be made again, or joins the
+      // chain when it answers none (the output was rejected).
+      const retry = (
+        content: unknown,
+        toolName: string | null | undefined,
+        callId: string,
+        info: RetryInfo | null | undefined
+      ) => {
+        const callNodeId = toolName ? callNodeIdByCallId.get(callId) : undefined
+        nodes.push({
+          id,
+          type: "retry",
+          position: { x: 0, y: 0 },
+          data: {
+            ...base,
+            errors: Array.isArray(content) ? (content as ErrorDetails[]) : null,
+            text: typeof content === "string" ? content : null,
+            toolName: toolName ?? null,
+            toolCallId: callId,
+            linked: callNodeId != null,
+            cause: info?.cause ?? null,
+            attempt: info?.attempt ?? null,
+            maxRetries: info?.max_retries ?? null,
+          },
+        })
+        if (callNodeId) {
+          answer(callNodeId, "retry")
+        } else {
+          tips.forEach((tip) => pushEdge(tip, id, "retry"))
+          tips = [id]
+        }
+      }
+
+      const note = (title: string, label: string, lines: string[]) => {
+        nodes.push({
+          id,
+          type: "note",
+          position: { x: 0, y: 0 },
+          data: { ...base, title, label, lines },
+        })
+        chain()
       }
 
       switch (kind) {
@@ -474,6 +538,11 @@ export function buildGraph(
             provider_name?: string | null
           }
           const callId = p.tool_call_id ?? ""
+          if (kind === "tool-return" && p.outcome === "retried") {
+            // pydantic-ai 2.60+: the call has to be made again.
+            retry(p.content, p.tool_name ?? "tool", callId, p.retry)
+            break
+          }
           const callNodeId = callNodeIdByCallId.get(callId)
           nodes.push({
             id,
@@ -500,30 +569,14 @@ export function buildGraph(
           break
         }
         case "retry-prompt": {
+          // Before pydantic-ai 2.60: one part for both kinds of retry.
           const p = part as Extract<ModelPart, { part_kind: "retry-prompt" }>
-          const callId = p.tool_call_id ?? ""
-          const callNodeId = p.tool_name
-            ? callNodeIdByCallId.get(callId)
-            : undefined
-          nodes.push({
-            id,
-            type: "retry",
-            position: { x: 0, y: 0 },
-            data: {
-              ...base,
-              errors: Array.isArray(p.content) ? p.content : null,
-              text: typeof p.content === "string" ? p.content : null,
-              toolName: p.tool_name ?? null,
-              toolCallId: callId,
-              linked: callNodeId != null,
-            },
-          })
-          if (callNodeId) {
-            answer(callNodeId, "retry")
-          } else {
-            tips.forEach((tip) => pushEdge(tip, id, "retry"))
-            tips = [id]
-          }
+          retry(p.content, p.tool_name, p.tool_call_id ?? "", null)
+          break
+        }
+        case "retry-feedback": {
+          const p = part as Extract<ModelPart, { part_kind: "retry-feedback" }>
+          retry(p.content, null, "", p.retry)
           break
         }
         case "file": {
@@ -560,17 +613,62 @@ export function buildGraph(
             ModelPart,
             { part_kind: "tool-availability-delta" }
           >
-          nodes.push({
-            id,
-            type: "note",
-            position: { x: 0, y: 0 },
-            data: {
-              ...base,
-              title: "Tools made available",
-              lines: Array.isArray(p.tools_added) ? p.tools_added : [],
-            },
-          })
-          chain()
+          note(
+            "Tools made available",
+            "Tools",
+            Array.isArray(p.tools_added) ? p.tools_added : []
+          )
+          break
+        }
+        case "capability-load-delta": {
+          const p = part as Extract<
+            ModelPart,
+            { part_kind: "capability-load-delta" }
+          >
+          note(
+            "Capabilities loaded",
+            "Capabilities",
+            Array.isArray(p.loaded) ? p.loaded : []
+          )
+          break
+        }
+        case "model-settings-delta": {
+          const p = part as Extract<
+            ModelPart,
+            { part_kind: "model-settings-delta" }
+          >
+          note("Model settings changed", "Settings", settingLines(p.settings))
+          break
+        }
+        case "instruction-delta": {
+          const p = part as Extract<
+            ModelPart,
+            { part_kind: "instruction-delta" }
+          >
+          const name = p.id ?? "instruction"
+          note(
+            p.content == null ? "Instruction withdrawn" : "Instruction changed",
+            "Instruction",
+            p.content == null ? [name] : [`${name}: ${p.content}`]
+          )
+          break
+        }
+        case "instruction-baseline": {
+          const p = part as Extract<
+            ModelPart,
+            { part_kind: "instruction-baseline" }
+          >
+          const blocks = Array.isArray(p.instructions) ? p.instructions : []
+          note(
+            "Instructions baseline",
+            "Instructions",
+            blocks.map((block) => {
+              const name = ("name" in block && block.name) || block.id
+              return "content" in block
+                ? `${name ? `${name}: ` : ""}${block.content}`
+                : `${name ?? "block"} (unchanged, recorded by hash)`
+            })
+          )
           break
         }
         default: {

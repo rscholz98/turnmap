@@ -2,7 +2,12 @@ import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
 import { TurnMap } from "../src/turn-map"
-import { FIXTURES, PAUSED_CONVERSATION, STORED_CONVERSATION } from "./fixtures"
+import {
+  FIXTURES,
+  LEGACY_RETRY,
+  PAUSED_CONVERSATION,
+  STORED_CONVERSATION,
+} from "./fixtures"
 
 describe("TurnMap", () => {
   it("renders every fixture", () => {
@@ -26,11 +31,26 @@ describe("TurnMap", () => {
     )
     expect(screen.getAllByText(/Retry: book_table/).length).toBeGreaterThan(0)
     expect(
-      screen.getAllByText(/Retry: output validation/).length
+      screen.getAllByText(/Retry: output rejected/).length
     ).toBeGreaterThan(0)
     expect(
       screen.getAllByText(/Input should be less than or equal to 12/).length
     ).toBeGreaterThan(0)
+    expect(screen.getAllByTitle("attempt 1 of 3")).toHaveLength(2)
+    expect(screen.queryByText("retried")).toBeNull()
+  })
+
+  it("shows the retries of a history stored before pydantic-ai 2.60", () => {
+    render(
+      <div style={{ width: 800, height: 600 }}>
+        <TurnMap messages={LEGACY_RETRY} theme="light" />
+      </div>
+    )
+    expect(screen.getAllByText(/Retry: book_table/).length).toBeGreaterThan(0)
+    expect(
+      screen.getAllByText(/Retry: output validation/).length
+    ).toBeGreaterThan(0)
+    expect(screen.queryByTitle(/attempt/)).toBeNull()
   })
 
   it("renders a readable error for bad input", () => {

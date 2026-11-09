@@ -14,6 +14,9 @@ npm workspaces monorepo (npm, node 24, no pnpm):
   `FunctionModel` / `TestModel`. Regenerate rather than hand-edit so they match the real schema.
   Pass example names to regenerate only those. `paused-conversation` is a `Conversation`,
   `stored-conversation` a `{ record, entries }` dump of an `InMemoryConversationStore`.
+  `packages/turnmap/test/fixtures` holds histories only the tests read: `deltas.json`
+  (generated, the change-record parts) and `legacy-retry.json` (written by pydantic-ai
+  before 2.60, kept as is so `retry-prompt` histories stay covered; do not regenerate it).
 
 ## Commands
 

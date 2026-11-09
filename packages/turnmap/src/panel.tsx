@@ -5,6 +5,7 @@ import { cn } from "./cn"
 import type { MessageGroupData, PartNode } from "./graph"
 import { describeNode } from "./nodes/describe"
 import { CodeBlock } from "./nodes/blocks"
+import { retryAttempt } from "./nodes/format"
 import { stringify, truncateJson } from "./parse"
 import { Badge, type BadgeTone } from "./ui/badge"
 import { IconButton } from "./ui/button"
@@ -62,6 +63,7 @@ const OUTCOME_TONE: Record<string, BadgeTone> = {
   success: "success",
   return: "success",
   failed: "danger",
+  retried: "danger",
   retry: "danger",
   denied: "warning",
   interrupted: "warning",
@@ -133,7 +135,7 @@ export function SidePanel({
     ],
     [
       "tool call id",
-      typeof d.toolCallId === "string" ? (
+      typeof d.toolCallId === "string" && d.toolCallId ? (
         <code className="tm:text-[11px]">{d.toolCallId}</code>
       ) : null,
     ],
@@ -146,6 +148,13 @@ export function SidePanel({
       typeof d.outcome === "string" ? (
         <Badge tone={OUTCOME_TONE[d.outcome] ?? "neutral"}>{d.outcome}</Badge>
       ) : null,
+    ],
+    ["retry cause", typeof d.cause === "string" ? d.cause : null],
+    [
+      "attempt",
+      node.type === "retry"
+        ? retryAttempt(node.data)?.replace("attempt ", "")
+        : null,
     ],
     [
       "waiting on",

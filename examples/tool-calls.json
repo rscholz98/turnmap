@@ -3,21 +3,24 @@
     "parts": [
       {
         "content": "You are an order assistant. Use tools to look things up.",
-        "timestamp": "2026-10-14T07:18:09.056571Z",
+        "timestamp": "2026-11-09T14:34:39.267351Z",
         "dynamic_ref": null,
+        "context_id": null,
+        "scope": "conversation",
+        "metadata": null,
         "part_kind": "system-prompt"
       },
       {
         "content": "Where is my order A-1042 and what is the weather like there?",
-        "timestamp": "2026-10-14T07:18:09.056574Z",
+        "timestamp": "2026-11-09T14:34:39.267357Z",
         "part_kind": "user-prompt"
       }
     ],
-    "timestamp": "2026-10-14T07:18:09.056735Z",
+    "timestamp": "2026-11-09T14:34:39.267503Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a13946-939f-7177-a7ce-00a81e854817",
-    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
+    "run_id": "01a1c0bb-8d22-70b2-9616-e5843370300a",
+    "conversation_id": "01a1c0bb-8d22-70b2-9616-e5852d840747",
     "metadata": null,
     "state": "complete"
   },
@@ -52,8 +55,10 @@
     "usage": {
       "input_tokens": 402,
       "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
       "cache_read_tokens": 0,
       "output_tokens": 36,
+      "output_reasoning_tokens": 0,
       "input_audio_tokens": 0,
       "cache_audio_read_tokens": 0,
       "output_audio_tokens": 0,
@@ -62,17 +67,21 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-14T07:18:09.057168Z",
+    "model_id": "function:demo-model-1",
+    "timestamp": "2026-11-09T14:34:39.268039Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
+    "canonical_system": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "tool_call",
-    "run_id": "01a13946-939f-7177-a7ce-00a81e854817",
-    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
+    "run_id": "01a1c0bb-8d22-70b2-9616-e5843370300a",
+    "conversation_id": "01a1c0bb-8d22-70b2-9616-e5852d840747",
     "metadata": null,
     "workspace_ref": null,
+    "history_digest": null,
+    "failed_attempts": null,
     "state": "complete"
   },
   {
@@ -106,9 +115,11 @@
         "tool_call_id": "call_order_1",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-14T07:18:09.058307Z",
+        "timestamp": "2026-11-09T14:34:39.269336Z",
         "outcome": "success",
-        "part_kind": "tool-return"
+        "retry": null,
+        "part_kind": "tool-return",
+        "content_file_digests": []
       },
       {
         "tool_name": "get_weather",
@@ -121,16 +132,18 @@
         "tool_call_id": "call_weather_1",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-14T07:18:09.058345Z",
+        "timestamp": "2026-11-09T14:34:39.269356Z",
         "outcome": "success",
-        "part_kind": "tool-return"
+        "retry": null,
+        "part_kind": "tool-return",
+        "content_file_digests": []
       }
     ],
-    "timestamp": "2026-10-14T07:18:09.058576Z",
+    "timestamp": "2026-11-09T14:34:39.269603Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a13946-939f-7177-a7ce-00a81e854817",
-    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
+    "run_id": "01a1c0bb-8d22-70b2-9616-e5843370300a",
+    "conversation_id": "01a1c0bb-8d22-70b2-9616-e5852d840747",
     "metadata": null,
     "state": "complete"
   },
@@ -141,14 +154,17 @@
         "id": null,
         "provider_name": null,
         "provider_details": null,
+        "citations": null,
         "part_kind": "text"
       }
     ],
     "usage": {
       "input_tokens": 512,
       "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
       "cache_read_tokens": 0,
       "output_tokens": 41,
+      "output_reasoning_tokens": 0,
       "input_audio_tokens": 0,
       "cache_audio_read_tokens": 0,
       "output_audio_tokens": 0,
@@ -157,32 +173,36 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-14T07:18:09.058918Z",
+    "model_id": "function:demo-model-1",
+    "timestamp": "2026-11-09T14:34:39.270011Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
+    "canonical_system": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "stop",
-    "run_id": "01a13946-939f-7177-a7ce-00a81e854817",
-    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
+    "run_id": "01a1c0bb-8d22-70b2-9616-e5843370300a",
+    "conversation_id": "01a1c0bb-8d22-70b2-9616-e5852d840747",
     "metadata": null,
     "workspace_ref": null,
+    "history_digest": null,
+    "failed_attempts": null,
     "state": "complete"
   },
   {
     "parts": [
       {
         "content": "Is the Acme 500 still in stock?",
-        "timestamp": "2026-10-14T07:18:09.060092Z",
+        "timestamp": "2026-11-09T14:34:39.271326Z",
         "part_kind": "user-prompt"
       }
     ],
-    "timestamp": "2026-10-14T07:18:09.060243Z",
+    "timestamp": "2026-11-09T14:34:39.271456Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a13946-93a3-721c-ae2c-144d00be5db8",
-    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
+    "run_id": "01a1c0bb-8d26-7556-8aa2-c8adb76f13a0",
+    "conversation_id": "01a1c0bb-8d22-70b2-9616-e5852d840747",
     "metadata": null,
     "state": "complete"
   },
@@ -204,8 +224,10 @@
     "usage": {
       "input_tokens": 590,
       "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
       "cache_read_tokens": 0,
       "output_tokens": 18,
+      "output_reasoning_tokens": 0,
       "input_audio_tokens": 0,
       "cache_audio_read_tokens": 0,
       "output_audio_tokens": 0,
@@ -214,17 +236,21 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-14T07:18:09.060601Z",
+    "model_id": "function:demo-model-1",
+    "timestamp": "2026-11-09T14:34:39.271906Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
+    "canonical_system": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "tool_call",
-    "run_id": "01a13946-93a3-721c-ae2c-144d00be5db8",
-    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
+    "run_id": "01a1c0bb-8d26-7556-8aa2-c8adb76f13a0",
+    "conversation_id": "01a1c0bb-8d22-70b2-9616-e5852d840747",
     "metadata": null,
     "workspace_ref": null,
+    "history_digest": null,
+    "failed_attempts": null,
     "state": "complete"
   },
   {
@@ -240,16 +266,18 @@
         "tool_call_id": "call_stock_1",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-14T07:18:09.061130Z",
+        "timestamp": "2026-11-09T14:34:39.272437Z",
         "outcome": "success",
-        "part_kind": "tool-return"
+        "retry": null,
+        "part_kind": "tool-return",
+        "content_file_digests": []
       }
     ],
-    "timestamp": "2026-10-14T07:18:09.061344Z",
+    "timestamp": "2026-11-09T14:34:39.272656Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a13946-93a3-721c-ae2c-144d00be5db8",
-    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
+    "run_id": "01a1c0bb-8d26-7556-8aa2-c8adb76f13a0",
+    "conversation_id": "01a1c0bb-8d22-70b2-9616-e5852d840747",
     "metadata": null,
     "state": "complete"
   },
@@ -260,14 +288,17 @@
         "id": null,
         "provider_name": null,
         "provider_details": null,
+        "citations": null,
         "part_kind": "text"
       }
     ],
     "usage": {
       "input_tokens": 640,
       "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
       "cache_read_tokens": 0,
       "output_tokens": 28,
+      "output_reasoning_tokens": 0,
       "input_audio_tokens": 0,
       "cache_audio_read_tokens": 0,
       "output_audio_tokens": 0,
@@ -276,17 +307,21 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-14T07:18:09.061636Z",
+    "model_id": "function:demo-model-1",
+    "timestamp": "2026-11-09T14:34:39.273129Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
+    "canonical_system": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "stop",
-    "run_id": "01a13946-93a3-721c-ae2c-144d00be5db8",
-    "conversation_id": "01a13946-939f-7177-a7ce-00a910992c7c",
+    "run_id": "01a1c0bb-8d26-7556-8aa2-c8adb76f13a0",
+    "conversation_id": "01a1c0bb-8d22-70b2-9616-e5852d840747",
     "metadata": null,
     "workspace_ref": null,
+    "history_digest": null,
+    "failed_attempts": null,
     "state": "complete"
   }
 ]

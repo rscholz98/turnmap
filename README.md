@@ -57,7 +57,7 @@ The canvas fills its parent, so give the parent a height. To switch sessions, re
 | a stored conversation: its `ConversationRecord` and its entries | `{ record: {...}, entries: [...] }`   | all of the above, with the record deciding the current history |
 | rows from your own table                                        | `{ message: {...} }` rows             | ordered by `sequence_num` when every row has one               |
 
-`Conversation` and `ConversationStore` are pydantic-ai's [persistence](https://pydantic.dev/docs/ai/persistence/) types, new in 2.66. Store entries are ordered by following `parent_id`, not by their position in the input. Unknown part kinds are shown as raw JSON, never dropped.
+`Conversation` (pydantic-ai 2.55+) and `ConversationStore` (2.65+) are pydantic-ai's [persistence](https://pydantic.dev/docs/ai/persistence/) types. Store entries are ordered by following `parent_id`, not by their position in the input. Unknown part kinds are shown as raw JSON, never dropped.
 
 To see the branches a store kept (regenerated or edited turns), dump the record with every entry it reaches:
 
@@ -97,19 +97,19 @@ The stylesheet is safe to load next to your own: no CSS reset, every class prefi
 
 ## The graph
 
-| Node           | Part kinds                                            |
-| -------------- | ----------------------------------------------------- |
-| Prompt         | `system-prompt`, `user-prompt` (attachments as chips) |
-| Model response | `text`                                                |
-| Thinking       | `thinking`, `compaction`                              |
-| Tool call      | `tool-call`, `builtin-tool-call` (shows the provider) |
-| Tool return    | `tool-return`, `builtin-tool-return` (outcome badge)  |
-| Retry          | `retry-prompt` (validation errors listed)             |
-| Media          | `file`, `speech`                                      |
-| Note           | `tool-availability-delta`                             |
-| Unknown        | anything else, as raw JSON                            |
+| Node           | Part kinds                                                                                                              |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Prompt         | `system-prompt`, `user-prompt` (attachments as chips)                                                                   |
+| Model response | `text`                                                                                                                  |
+| Thinking       | `thinking`, `compaction`                                                                                                |
+| Tool call      | `tool-call`, `builtin-tool-call` (shows the provider)                                                                   |
+| Tool return    | `tool-return`, `builtin-tool-return` (outcome badge)                                                                    |
+| Retry          | `retry-feedback`, a `tool-return` with outcome `retried`, and `retry-prompt` from before pydantic-ai 2.60               |
+| Media          | `file`, `speech`                                                                                                        |
+| Note           | `tool-availability-delta`, `capability-load-delta`, `model-settings-delta`, `instruction-delta`, `instruction-baseline` |
+| Unknown        | anything else, as raw JSON                                                                                              |
 
-- **Edges**: one node per part. Non-tool parts chain in order. Each tool call branches from the chain tip, so parallel calls sit side by side. A return or retry hangs off the call it answers (matched by `tool_call_id`) and becomes the tip, so the next response follows the result. A message's leaves feed the next message.
+- **Edges**: one node per part. Non-tool parts chain in order. Each tool call branches from the chain tip, so parallel calls sit side by side. A return or retry hangs off the call it answers (matched by `tool_call_id`) and becomes the tip, so the next response follows the result. A retry that answers no call (the output was rejected) joins the chain, and shows its cause and which attempt it is. A message's leaves feed the next message.
 - **Groups**: each request and response is a translucent box with its model, finish reason, token usage and timestamp.
 - **Layouts**: `spine` keeps prompts and responses in one column, tool calls to the right and their returns one column further. `TB` and `LR` hand the graph to dagre.
 - **Side panel**: a click on a node opens its full content, metadata and raw part. Long JSON is shortened in place and opens whole in a dialog.

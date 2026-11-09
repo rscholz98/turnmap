@@ -4,6 +4,7 @@ Every file is produced by pydantic-ai itself (FunctionModel / TestModel), so the
 fixtures track the real schema. Most are written with `all_messages_json()`;
 `paused-conversation` is a `Conversation` dumped with `ConversationTypeAdapter`,
 and `stored-conversation` is the record and entries a `ConversationStore` keeps.
+`deltas` is a test fixture written to `packages/turnmap/test/fixtures`.
 
 Run from the repo root with a pydantic-ai environment available, for example:
 
@@ -36,22 +37,31 @@ from pydantic_ai import (
 )
 from pydantic_ai.conversation_store import ConversationEntry, ConversationRecord, InMemoryConversationStore
 from pydantic_ai.messages import (
+    CapabilityLoadDeltaPart,
+    InstructionBaselinePart,
+    InstructionDeltaPart,
+    InstructionDigest,
+    InstructionPart,
     ModelMessage,
+    ModelMessagesTypeAdapter,
     ModelRequest,
     ModelResponse,
+    ModelSettingsDeltaPart,
     NativeToolCallPart,
     NativeToolReturnPart,
-    RetryPromptPart,
     TextPart,
     ThinkingPart,
     ToolCallPart,
     ToolReturnPart,
+    UserPromptPart,
 )
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 from pydantic_ai.models.test import TestModel
 from pydantic_ai.usage import RequestUsage
 
 OUT = Path(__file__).parent
+# Histories only the tests read, not shown as examples on the site.
+TEST_FIXTURES = OUT.parent / 'packages' / 'turnmap' / 'test' / 'fixtures'
 
 
 class Booking(BaseModel):
@@ -188,16 +198,17 @@ def retry() -> None:
         last = messages[-1]
         if isinstance(last, ModelRequest):
             kinds = [p.part_kind for p in last.parts]
-            if 'retry-prompt' in kinds:
-                retry_part = next(p for p in last.parts if p.part_kind == 'retry-prompt')
-                assert isinstance(retry_part, RetryPromptPart)
-                if retry_part.tool_name == 'book_table':
-                    return ModelResponse(
-                        parts=[ToolCallPart('book_table', {'date': '2026-10-20', 'guests': 4, 'name': 'Scholz'}, tool_call_id='call_book_2')],
-                        usage=usage(730, 40),
-                        model_name='demo-model-1',
-                        finish_reason='tool_call',
-                    )
+            # A tool call to make again comes back as a tool return with outcome 'retried'.
+            # An output the validator rejected is stored as retry feedback, which the model
+            # is sent in the user voice: a user prompt after the first answer.
+            if any(isinstance(p, ToolReturnPart) and p.outcome == 'retried' for p in last.parts):
+                return ModelResponse(
+                    parts=[ToolCallPart('book_table', {'date': '2026-10-20', 'guests': 4, 'name': 'Scholz'}, tool_call_id='call_book_2')],
+                    usage=usage(730, 40),
+                    model_name='demo-model-1',
+                    finish_reason='tool_call',
+                )
+            if attempts['answer'] and 'user-prompt' in kinds:
                 return ModelResponse(
                     parts=[TextPart('Your table for 4 is booked for 2026-10-20 under the name Scholz. Confirmation: RSV-7781.')],
                     usage=usage(880, 33),
@@ -598,6 +609,51 @@ def stored_conversation() -> None:
     write('stored-conversation', asyncio.run(run()))
 
 
+# ---------------------------------------------------------------------------
+# 11. deltas (test fixture): the parts that record a change to instructions,
+#     model settings or loaded capabilities. A plain run does not produce
+#     them, so the history is built from the message classes and serialized
+#     the way a stored history is.
+# ---------------------------------------------------------------------------
+def deltas() -> None:
+    base = InstructionPart(content='You are the support assistant for Acme Grills.', name='base')
+    tone = InstructionPart(content='Answer in a friendly tone.', name='tone', id='tone', on_change='append')
+    history: list[ModelMessage] = [
+        ModelRequest(
+            parts=[
+                InstructionBaselinePart(instructions=[InstructionDigest.of(base), tone]),
+                UserPromptPart('Hi, can you check my invoice?'),
+            ],
+            instructions=f'{base.content}\n\n{tone.content}',
+        ),
+        ModelResponse(
+            parts=[TextPart('Sure, happy to help. Which order is it about?')],
+            usage=usage(210, 14),
+            model_name='demo-model-1',
+            finish_reason='stop',
+        ),
+        ModelRequest(
+            parts=[
+                ModelSettingsDeltaPart(settings={'thinking': 'high'}),
+                InstructionDeltaPart(id='tone', content='Answer formally: this is a billing dispute.'),
+                InstructionDeltaPart(id='promo', content=None),
+                CapabilityLoadDeltaPart(loaded=['billing']),
+                UserPromptPart('Order A-1042. I was charged twice.'),
+            ]
+        ),
+        ModelResponse(
+            parts=[TextPart('I have opened a billing review for order A-1042. You will hear from us within two days.')],
+            usage=usage(340, 26),
+            model_name='demo-model-1',
+            finish_reason='stop',
+        ),
+    ]
+    path = TEST_FIXTURES / 'deltas.json'
+    parsed = json.loads(ModelMessagesTypeAdapter.dump_json(history))
+    path.write_text(json.dumps(parsed, indent=2, ensure_ascii=False) + '\n')
+    print(f'wrote test fixture {path.name}: {len(parsed)} messages')
+
+
 EXAMPLES = {
     'simple-chat': simple_chat,
     'tool-calls': tool_calls,
@@ -609,6 +665,7 @@ EXAMPLES = {
     'delegation': delegation,
     'paused-conversation': paused_conversation,
     'stored-conversation': stored_conversation,
+    'deltas': deltas,
 }
 
 if __name__ == '__main__':

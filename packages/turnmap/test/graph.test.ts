@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest"
 import { buildGraph, partNodeId } from "../src/graph"
 import { parseMessages } from "../src/parse"
 import {
+  DELTAS,
   FIXTURES,
+  LEGACY_RETRY,
   PAUSED_CONVERSATION,
   STORED_CONVERSATION,
   type FixtureName,
@@ -203,6 +205,83 @@ describe("buildGraph", () => {
         (n.data as { toolName: string }).toolName === "final_result"
     )
     expect(final?.data).toMatchObject({ answered: true, outcome: "success" })
+  })
+})
+
+describe("retries", () => {
+  const retries = (data: unknown) =>
+    buildGraph(parseMessages(data).messages).nodes.filter(
+      (n) => n.type === "retry"
+    )
+
+  it("reads a retried tool return and retry feedback with why and which attempt", () => {
+    const [tool, output] = retries(FIXTURES.retry)
+    expect(tool.data).toMatchObject({
+      partKind: "tool-return",
+      toolName: "book_table",
+      linked: true,
+      cause: "validation_error",
+      attempt: 1,
+      maxRetries: 3,
+    })
+    expect(tool.data.errors?.length).toBeGreaterThan(0)
+    expect(output.data).toMatchObject({
+      partKind: "retry-feedback",
+      toolName: null,
+      toolCallId: "",
+      linked: false,
+      cause: "model_retry",
+      attempt: 1,
+    })
+    expect(output.data.text).toMatch(/confirmation number/)
+  })
+
+  it("draws no tool-return node for a retried call", () => {
+    const graph = graphOf("retry")
+    const returns = graph.nodes.filter((n) => n.type === "toolReturn")
+    expect(returns.map((n) => n.data.outcome)).toEqual(["success"])
+  })
+
+  it("builds the same graph shape from the legacy retry-prompt parts", () => {
+    const shape = (data: unknown) => {
+      const graph = buildGraph(parseMessages(data).messages)
+      return {
+        nodes: graph.nodes.map((n) => n.type),
+        edges: graph.edges.map(
+          (e) => `${e.source}>${e.target}:${e.data?.kind}`
+        ),
+      }
+    }
+    expect(shape(LEGACY_RETRY)).toEqual(shape(FIXTURES.retry))
+    const [tool, output] = retries(LEGACY_RETRY)
+    expect(tool.data).toMatchObject({ toolName: "book_table", cause: null })
+    expect(output.data).toMatchObject({ toolName: null, attempt: null })
+  })
+})
+
+describe("change records", () => {
+  it("draws instruction, settings and capability changes as notes", () => {
+    const graph = buildGraph(parseMessages(DELTAS).messages)
+    expect(graph.nodes.some((n) => n.type === "unknown")).toBe(false)
+    const notes = graph.nodes
+      .filter((n) => n.type === "note")
+      .map((n) => ({ title: n.data.title, lines: n.data.lines }))
+    expect(notes).toEqual([
+      {
+        title: "Instructions baseline",
+        lines: [
+          "block (unchanged, recorded by hash)",
+          "tone: Answer in a friendly tone.",
+        ],
+      },
+      { title: "Model settings changed", lines: ["thinking: high"] },
+      {
+        title: "Instruction changed",
+        lines: ["tone: Answer formally: this is a billing dispute."],
+      },
+      { title: "Instruction withdrawn", lines: ["promo"] },
+      { title: "Capabilities loaded", lines: ["billing"] },
+    ])
   })
 })
 

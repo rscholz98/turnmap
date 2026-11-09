@@ -29,7 +29,7 @@ import type {
 } from "../graph"
 import type { ToolReturnOutcome } from "../schema"
 import { Badge, type BadgeTone } from "../ui/badge"
-import { formatBytes } from "./format"
+import { formatBytes, retryAttempt, retryTitle } from "./format"
 import { NodeShell } from "./shell"
 
 const ICON = "tm:h-3.5 tm:w-3.5"
@@ -108,6 +108,7 @@ const OUTCOME_TONE: Record<ToolReturnOutcome | "retry", BadgeTone> = {
   failed: "danger",
   denied: "warning",
   interrupted: "warning",
+  retried: "danger",
   retry: "danger",
 }
 
@@ -174,16 +175,13 @@ export function ToolReturnNodeView({ id, data }: NodeProps<ToolReturnNode>) {
 export function RetryNodeView({ id, data }: NodeProps<RetryNode>) {
   const outputValidation = data.toolName == null
   const first = data.errors?.[0]
+  const attempt = retryAttempt(data)
   return (
     <NodeShell
       nodeId={id}
       accent={ACCENTS.retry}
       icon={<AlertTriangle className={ICON} />}
-      title={
-        outputValidation
-          ? "Retry: output validation"
-          : `Retry: ${data.toolName}`
-      }
+      title={retryTitle(data)}
       summary={
         first
           ? `${first.loc?.length ? first.loc.join(".") + ": " : ""}${first.msg}`
@@ -196,6 +194,12 @@ export function RetryNodeView({ id, data }: NodeProps<RetryNode>) {
               ? `${data.errors.length} error${data.errors.length === 1 ? "" : "s"}`
               : "retry"}
           </Badge>
+          {attempt && (
+            <Badge title={attempt}>
+              {data.attempt}
+              {data.maxRetries != null && `/${data.maxRetries}`}
+            </Badge>
+          )}
           {!outputValidation && !data.linked && (
             <Badge tone="warning">unmatched</Badge>
           )}

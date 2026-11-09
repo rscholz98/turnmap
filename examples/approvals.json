@@ -3,21 +3,24 @@
     "parts": [
       {
         "content": "You are a repository assistant. Destructive changes need approval.",
-        "timestamp": "2026-10-14T07:18:09.078190Z",
+        "timestamp": "2026-11-09T14:34:39.289747Z",
         "dynamic_ref": null,
+        "context_id": null,
+        "scope": "conversation",
+        "metadata": null,
         "part_kind": "system-prompt"
       },
       {
         "content": "Update README.md with a hello world and delete .env.",
-        "timestamp": "2026-10-14T07:18:09.078191Z",
+        "timestamp": "2026-11-09T14:34:39.289749Z",
         "part_kind": "user-prompt"
       }
     ],
-    "timestamp": "2026-10-14T07:18:09.078353Z",
+    "timestamp": "2026-11-09T14:34:39.289870Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a13946-93b5-7212-8691-de065cc3dc70",
-    "conversation_id": "01a13946-93b5-7212-8691-de07c4d5313f",
+    "run_id": "01a1c0bb-8d39-76ae-8ac1-b4c71d13c642",
+    "conversation_id": "01a1c0bb-8d39-76ae-8ac1-b4c86466d18c",
     "metadata": null,
     "state": "complete"
   },
@@ -64,8 +67,10 @@
     "usage": {
       "input_tokens": 450,
       "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
       "cache_read_tokens": 0,
       "output_tokens": 72,
+      "output_reasoning_tokens": 0,
       "input_audio_tokens": 0,
       "cache_audio_read_tokens": 0,
       "output_audio_tokens": 0,
@@ -74,17 +79,21 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-14T07:18:09.078694Z",
+    "model_id": "function:demo-model-1",
+    "timestamp": "2026-11-09T14:34:39.290260Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
+    "canonical_system": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "tool_call",
-    "run_id": "01a13946-93b5-7212-8691-de065cc3dc70",
-    "conversation_id": "01a13946-93b5-7212-8691-de07c4d5313f",
+    "run_id": "01a1c0bb-8d39-76ae-8ac1-b4c71d13c642",
+    "conversation_id": "01a1c0bb-8d39-76ae-8ac1-b4c86466d18c",
     "metadata": null,
     "workspace_ref": null,
+    "history_digest": null,
+    "failed_attempts": null,
     "state": "complete"
   },
   {
@@ -95,16 +104,17 @@
         "tool_call_id": "call_read_1",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-14T07:18:09.079174Z",
+        "timestamp": "2026-11-09T14:34:39.290730Z",
         "outcome": "success",
+        "retry": null,
         "part_kind": "tool-return"
       }
     ],
-    "timestamp": "2026-10-14T07:18:09.079318Z",
+    "timestamp": "2026-11-09T14:34:39.290873Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a13946-93b5-7212-8691-de065cc3dc70",
-    "conversation_id": "01a13946-93b5-7212-8691-de07c4d5313f",
+    "run_id": "01a1c0bb-8d39-76ae-8ac1-b4c71d13c642",
+    "conversation_id": "01a1c0bb-8d39-76ae-8ac1-b4c86466d18c",
     "metadata": null,
     "state": "complete"
   },
@@ -116,8 +126,9 @@
         "tool_call_id": "call_update_1",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-14T07:18:09.080666Z",
+        "timestamp": "2026-11-09T14:34:39.292184Z",
         "outcome": "success",
+        "retry": null,
         "part_kind": "tool-return"
       },
       {
@@ -126,16 +137,17 @@
         "tool_call_id": "call_delete_1",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-14T07:18:09.080485Z",
+        "timestamp": "2026-11-09T14:34:39.292011Z",
         "outcome": "denied",
+        "retry": null,
         "part_kind": "tool-return"
       }
     ],
-    "timestamp": "2026-10-14T07:18:09.080866Z",
+    "timestamp": "2026-11-09T14:34:39.292382Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a13946-93b7-75ac-a8b9-0ae0c96ad93a",
-    "conversation_id": "01a13946-93b5-7212-8691-de07c4d5313f",
+    "run_id": "01a1c0bb-8d3b-72af-9067-29f199b724c4",
+    "conversation_id": "01a1c0bb-8d39-76ae-8ac1-b4c86466d18c",
     "metadata": null,
     "state": "complete"
   },
@@ -146,14 +158,17 @@
         "id": null,
         "provider_name": null,
         "provider_details": null,
+        "citations": null,
         "part_kind": "text"
       }
     ],
     "usage": {
       "input_tokens": 690,
       "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
       "cache_read_tokens": 0,
       "output_tokens": 44,
+      "output_reasoning_tokens": 0,
       "input_audio_tokens": 0,
       "cache_audio_read_tokens": 0,
       "output_audio_tokens": 0,
@@ -162,17 +177,21 @@
       "cost": null
     },
     "model_name": "demo-model-1",
-    "timestamp": "2026-10-14T07:18:09.081142Z",
+    "model_id": "function:demo-model-1",
+    "timestamp": "2026-11-09T14:34:39.292784Z",
     "kind": "response",
     "provider_name": null,
     "provider_url": null,
+    "canonical_system": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "stop",
-    "run_id": "01a13946-93b7-75ac-a8b9-0ae0c96ad93a",
-    "conversation_id": "01a13946-93b5-7212-8691-de07c4d5313f",
+    "run_id": "01a1c0bb-8d3b-72af-9067-29f199b724c4",
+    "conversation_id": "01a1c0bb-8d39-76ae-8ac1-b4c86466d18c",
     "metadata": null,
     "workspace_ref": null,
+    "history_digest": null,
+    "failed_attempts": null,
     "state": "complete"
   }
 ]

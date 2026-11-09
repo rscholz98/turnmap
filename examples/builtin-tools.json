@@ -3,21 +3,24 @@
     "parts": [
       {
         "content": "You are a shopping assistant. Search the web when asked about reviews.",
-        "timestamp": "2026-10-14T07:18:09.070731Z",
+        "timestamp": "2026-11-09T14:34:39.282485Z",
         "dynamic_ref": null,
+        "context_id": null,
+        "scope": "conversation",
+        "metadata": null,
         "part_kind": "system-prompt"
       },
       {
         "content": "What do reviewers say about the Acme 500?",
-        "timestamp": "2026-10-14T07:18:09.070733Z",
+        "timestamp": "2026-11-09T14:34:39.282487Z",
         "part_kind": "user-prompt"
       }
     ],
-    "timestamp": "2026-10-14T07:18:09.070881Z",
+    "timestamp": "2026-11-09T14:34:39.282606Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a13946-93ae-779a-9a94-a85024eda5da",
-    "conversation_id": "01a13946-93ae-779a-9a94-a8514ad98968",
+    "run_id": "01a1c0bb-8d31-752d-b4ac-44b0d08a48f1",
+    "conversation_id": "01a1c0bb-8d31-752d-b4ac-44b1c3a958d1",
     "metadata": null,
     "state": "complete"
   },
@@ -54,25 +57,29 @@
         "tool_call_id": "srv_ws_1",
         "tool_kind": null,
         "metadata": null,
-        "timestamp": "2026-10-14T07:18:09.071139Z",
+        "timestamp": "2026-11-09T14:34:39.282929Z",
         "outcome": "success",
         "provider_name": "openai",
         "provider_details": null,
-        "part_kind": "builtin-tool-return"
+        "part_kind": "builtin-tool-return",
+        "content_file_digests": []
       },
       {
         "content": "Reviews are positive: even heat and sturdy build, with the Acme 500 in several 2026 top-five lists.",
         "id": null,
         "provider_name": null,
         "provider_details": null,
+        "citations": null,
         "part_kind": "text"
       }
     ],
     "usage": {
       "input_tokens": 950,
       "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
       "cache_read_tokens": 0,
       "output_tokens": 120,
+      "output_reasoning_tokens": 0,
       "input_audio_tokens": 0,
       "cache_audio_read_tokens": 0,
       "output_audio_tokens": 0,
@@ -81,17 +88,21 @@
       "cost": null
     },
     "model_name": "demo-search-1",
-    "timestamp": "2026-10-14T07:18:09.071143Z",
+    "model_id": "function:demo-search-1",
+    "timestamp": "2026-11-09T14:34:39.282933Z",
     "kind": "response",
     "provider_name": "openai",
     "provider_url": null,
+    "canonical_system": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": "stop",
-    "run_id": "01a13946-93ae-779a-9a94-a85024eda5da",
-    "conversation_id": "01a13946-93ae-779a-9a94-a8514ad98968",
+    "run_id": "01a1c0bb-8d31-752d-b4ac-44b0d08a48f1",
+    "conversation_id": "01a1c0bb-8d31-752d-b4ac-44b1c3a958d1",
     "metadata": null,
     "workspace_ref": null,
+    "history_digest": null,
+    "failed_attempts": null,
     "state": "complete"
   }
 ]

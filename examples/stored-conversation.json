@@ -1,7 +1,7 @@
 {
   "record": {
     "conversation_id": "support-42",
-    "head_id": "01a1c06c-91d3-7745-8501-cd64483f6459",
+    "head_id": "01a1c0bb-8d5c-72ba-8a8b-4235626c6e12",
     "usage": {
       "input_tokens": 1440,
       "cache_write_tokens": 0,
@@ -23,21 +23,21 @@
     "forked_from": null,
     "forked_at": null,
     "branches": [
-      "01a1c06c-91cf-7035-ae4d-2e81dbf4f003"
+      "01a1c0bb-8d58-73cb-a28b-fbc52c385648"
     ],
-    "revision": "01a1c06c-91d3-7745-8501-cd65af43fbef",
-    "updated_at": "2026-11-09T13:08:23.123102Z",
+    "revision": "01a1c0bb-8d5c-72ba-8a8b-423633ba376c",
+    "updated_at": "2026-11-09T14:34:39.324141Z",
     "format_version": 1
   },
   "entries": [
     {
-      "id": "01a1c06c-91ce-77ed-b1c8-d94f417bdd58",
+      "id": "01a1c0bb-8d57-71fd-b0f4-31f7c7cfa608",
       "parent_id": null,
       "message": {
         "parts": [
           {
             "content": "You are the friendly support assistant for Acme Grills. Answer briefly.",
-            "timestamp": "2026-11-09T13:08:23.117371Z",
+            "timestamp": "2026-11-09T14:34:39.317990Z",
             "dynamic_ref": null,
             "context_id": null,
             "scope": "conversation",
@@ -46,14 +46,14 @@
           },
           {
             "content": "What do I get with the Acme 500?",
-            "timestamp": "2026-11-09T13:08:23.117373Z",
+            "timestamp": "2026-11-09T14:34:39.317992Z",
             "part_kind": "user-prompt"
           }
         ],
-        "timestamp": "2026-11-09T13:08:23.117511Z",
+        "timestamp": "2026-11-09T14:34:39.318118Z",
         "instructions": null,
         "kind": "request",
-        "run_id": "01a1c06c-91cc-72de-9190-77bee49b7069",
+        "run_id": "01a1c0bb-8d55-7093-84a0-27baada71b02",
         "conversation_id": "support-42",
         "metadata": null,
         "state": "complete"
@@ -61,8 +61,8 @@
       "kind": "message"
     },
     {
-      "id": "01a1c06c-91ce-77ed-b1c8-d9507f18ba92",
-      "parent_id": "01a1c06c-91ce-77ed-b1c8-d94f417bdd58",
+      "id": "01a1c0bb-8d57-71fd-b0f4-31f80f19704f",
+      "parent_id": "01a1c0bb-8d57-71fd-b0f4-31f7c7cfa608",
       "message": {
         "parts": [
           {
@@ -90,7 +90,7 @@
         },
         "model_name": "demo-model-1",
         "model_id": "function:demo-model-1",
-        "timestamp": "2026-11-09T13:08:23.117886Z",
+        "timestamp": "2026-11-09T14:34:39.318840Z",
         "kind": "response",
         "provider_name": null,
         "provider_url": null,
@@ -98,7 +98,7 @@
         "provider_details": null,
         "provider_response_id": null,
         "finish_reason": "stop",
-        "run_id": "01a1c06c-91cc-72de-9190-77bee49b7069",
+        "run_id": "01a1c0bb-8d55-7093-84a0-27baada71b02",
         "conversation_id": "support-42",
         "metadata": null,
         "workspace_ref": null,
@@ -109,20 +109,20 @@
       "kind": "message"
     },
     {
-      "id": "01a1c06c-91d1-75b1-873e-77295d1e2562",
-      "parent_id": "01a1c06c-91ce-77ed-b1c8-d9507f18ba92",
+      "id": "01a1c0bb-8d5a-73f3-8914-d110e6ca05b2",
+      "parent_id": "01a1c0bb-8d57-71fd-b0f4-31f80f19704f",
       "message": {
         "parts": [
           {
             "content": "Does it work with gas?",
-            "timestamp": "2026-11-09T13:08:23.120708Z",
+            "timestamp": "2026-11-09T14:34:39.321713Z",
             "part_kind": "user-prompt"
           }
         ],
-        "timestamp": "2026-11-09T13:08:23.120831Z",
+        "timestamp": "2026-11-09T14:34:39.321837Z",
         "instructions": null,
         "kind": "request",
-        "run_id": "01a1c06c-91d0-7414-b6ae-19a94a977c19",
+        "run_id": "01a1c0bb-8d59-730a-afe3-22820bb42e37",
         "conversation_id": "support-42",
         "metadata": null,
         "state": "complete"
@@ -130,8 +130,8 @@
       "kind": "message"
     },
     {
-      "id": "01a1c06c-91d1-75b1-873e-772a55021711",
-      "parent_id": "01a1c06c-91d1-75b1-873e-77295d1e2562",
+      "id": "01a1c0bb-8d5a-73f3-8914-d111e1b3ba50",
+      "parent_id": "01a1c0bb-8d5a-73f3-8914-d110e6ca05b2",
       "message": {
         "parts": [
           {
@@ -159,7 +159,7 @@
         },
         "model_name": "demo-model-1",
         "model_id": "function:demo-model-1",
-        "timestamp": "2026-11-09T13:08:23.121100Z",
+        "timestamp": "2026-11-09T14:34:39.322120Z",
         "kind": "response",
         "provider_name": null,
         "provider_url": null,
@@ -167,7 +167,7 @@
         "provider_details": null,
         "provider_response_id": null,
         "finish_reason": "stop",
-        "run_id": "01a1c06c-91d0-7414-b6ae-19a94a977c19",
+        "run_id": "01a1c0bb-8d59-730a-afe3-22820bb42e37",
         "conversation_id": "support-42",
         "metadata": null,
         "workspace_ref": null,
@@ -178,20 +178,20 @@
       "kind": "message"
     },
     {
-      "id": "01a1c06c-91d3-7745-8501-cd630f1e298a",
-      "parent_id": "01a1c06c-91d1-75b1-873e-772a55021711",
+      "id": "01a1c0bb-8d5c-72ba-8a8b-4234f76253d3",
+      "parent_id": "01a1c0bb-8d5a-73f3-8914-d111e1b3ba50",
       "message": {
         "parts": [
           {
             "content": "How long does the conversion take?",
-            "timestamp": "2026-11-09T13:08:23.122214Z",
+            "timestamp": "2026-11-09T14:34:39.323249Z",
             "part_kind": "user-prompt"
           }
         ],
-        "timestamp": "2026-11-09T13:08:23.122336Z",
+        "timestamp": "2026-11-09T14:34:39.323368Z",
         "instructions": null,
         "kind": "request",
-        "run_id": "01a1c06c-91d1-75b1-873e-772c61ec5ff5",
+        "run_id": "01a1c0bb-8d5a-73f3-8914-d1138515ddbe",
         "conversation_id": "support-42",
         "metadata": null,
         "state": "complete"
@@ -199,8 +199,8 @@
       "kind": "message"
     },
     {
-      "id": "01a1c06c-91d3-7745-8501-cd64483f6459",
-      "parent_id": "01a1c06c-91d3-7745-8501-cd630f1e298a",
+      "id": "01a1c0bb-8d5c-72ba-8a8b-4235626c6e12",
+      "parent_id": "01a1c0bb-8d5c-72ba-8a8b-4234f76253d3",
       "message": {
         "parts": [
           {
@@ -228,7 +228,7 @@
         },
         "model_name": "demo-model-1",
         "model_id": "function:demo-model-1",
-        "timestamp": "2026-11-09T13:08:23.122600Z",
+        "timestamp": "2026-11-09T14:34:39.323641Z",
         "kind": "response",
         "provider_name": null,
         "provider_url": null,
@@ -236,7 +236,7 @@
         "provider_details": null,
         "provider_response_id": null,
         "finish_reason": "stop",
-        "run_id": "01a1c06c-91d1-75b1-873e-772c61ec5ff5",
+        "run_id": "01a1c0bb-8d5a-73f3-8914-d1138515ddbe",
         "conversation_id": "support-42",
         "metadata": null,
         "workspace_ref": null,
@@ -247,20 +247,20 @@
       "kind": "message"
     },
     {
-      "id": "01a1c06c-91cf-7035-ae4d-2e8011d05e6e",
-      "parent_id": "01a1c06c-91ce-77ed-b1c8-d9507f18ba92",
+      "id": "01a1c0bb-8d58-73cb-a28b-fbc448627dfe",
+      "parent_id": "01a1c0bb-8d57-71fd-b0f4-31f80f19704f",
       "message": {
         "parts": [
           {
             "content": "Does it work with gas?",
-            "timestamp": "2026-11-09T13:08:23.119077Z",
+            "timestamp": "2026-11-09T14:34:39.320005Z",
             "part_kind": "user-prompt"
           }
         ],
-        "timestamp": "2026-11-09T13:08:23.119203Z",
+        "timestamp": "2026-11-09T14:34:39.320128Z",
         "instructions": null,
         "kind": "request",
-        "run_id": "01a1c06c-91ce-77ed-b1c8-d95234675e88",
+        "run_id": "01a1c0bb-8d57-71fd-b0f4-31fabe59f792",
         "conversation_id": "support-42",
         "metadata": null,
         "state": "complete"
@@ -268,8 +268,8 @@
       "kind": "message"
     },
     {
-      "id": "01a1c06c-91cf-7035-ae4d-2e81dbf4f003",
-      "parent_id": "01a1c06c-91cf-7035-ae4d-2e8011d05e6e",
+      "id": "01a1c0bb-8d58-73cb-a28b-fbc52c385648",
+      "parent_id": "01a1c0bb-8d58-73cb-a28b-fbc448627dfe",
       "message": {
         "parts": [
           {
@@ -297,7 +297,7 @@
         },
         "model_name": "demo-model-1",
         "model_id": "function:demo-model-1",
-        "timestamp": "2026-11-09T13:08:23.119483Z",
+        "timestamp": "2026-11-09T14:34:39.320396Z",
         "kind": "response",
         "provider_name": null,
         "provider_url": null,
@@ -305,7 +305,7 @@
         "provider_details": null,
         "provider_response_id": null,
         "finish_reason": "stop",
-        "run_id": "01a1c06c-91ce-77ed-b1c8-d95234675e88",
+        "run_id": "01a1c0bb-8d57-71fd-b0f4-31fabe59f792",
         "conversation_id": "support-42",
         "metadata": null,
         "workspace_ref": null,

@@ -69,3 +69,30 @@ export function looksLikeJson(text: string): boolean {
   const t = text.trimStart()
   return t.startsWith("{") || t.startsWith("[")
 }
+
+/** Title of a retry node: the tool to call again, or why the output was rejected. */
+export function retryTitle(data: {
+  toolName: string | null
+  cause?: string | null
+}): string {
+  if (data.toolName) return `Retry: ${data.toolName}`
+  switch (data.cause) {
+    case "no_output":
+      return "Retry: no output"
+    case "model_retry":
+      return "Retry: output rejected"
+    default:
+      return "Retry: output validation"
+  }
+}
+
+/** "attempt 2 of 3", or null when the retry does not record its attempt. */
+export function retryAttempt(data: {
+  attempt?: number | null
+  maxRetries?: number | null
+}): string | null {
+  if (data.attempt == null) return null
+  return data.maxRetries == null
+    ? `attempt ${data.attempt}`
+    : `attempt ${data.attempt} of ${data.maxRetries}`
+}

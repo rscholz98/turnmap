@@ -17,7 +17,20 @@ export type FinishReason =
 export type MessageState =
   "complete" | "incomplete" | "suspended" | "interrupted"
 
-export type ToolReturnOutcome = "success" | "failed" | "denied" | "interrupted"
+export type ToolReturnOutcome =
+  "success" | "failed" | "denied" | "interrupted" | "retried"
+
+/** Why a retry happened and how far into its budget it is. */
+export interface RetryInfo {
+  /**
+   * For a retried tool call: `validation_error`, `model_retry`, `unknown_tool`
+   * or `unavailable_tool`. For retry feedback: `validation_error`, `no_output`
+   * or `model_retry`.
+   */
+  cause?: string | null
+  attempt?: number | null
+  max_retries?: number | null
+}
 
 // ---------------------------------------------------------------------------
 // User content (UserPromptPart.content items)
@@ -54,6 +67,17 @@ export interface UploadedFileContent {
   [key: string]: unknown
 }
 
+/** A structured value in a user prompt, such as the state of the app the user sees. */
+export interface StructuredContent {
+  kind: "structured-content"
+  value: unknown
+  /** The value as it is rendered for the model. */
+  content?: string
+  tag?: string | null
+  description?: string | null
+  metadata?: unknown
+}
+
 export interface CachePointContent {
   kind: "cache-point"
   ttl?: "5m" | "1h" | null
@@ -65,6 +89,7 @@ export type UserContentItem =
   | FileUrlContent
   | BinaryContent
   | UploadedFileContent
+  | StructuredContent
   | CachePointContent
 
 export type UserContent = string | UserContentItem[]
@@ -93,6 +118,9 @@ export interface SystemPromptPart {
   content: string
   timestamp?: string | null
   dynamic_ref?: string | null
+  context_id?: string | null
+  scope?: "conversation" | "request" | null
+  metadata?: Record<string, unknown> | null
 }
 
 export interface UserPromptPart {
@@ -110,8 +138,16 @@ export interface ToolReturnPart {
   metadata?: unknown
   timestamp?: string | null
   outcome?: ToolReturnOutcome | null
+  /** Set when `outcome` is `"retried"`: the call has to be made again. */
+  retry?: RetryInfo | null
 }
 
+/**
+ * The retry part of pydantic-ai before 2.60, still found in stored histories.
+ * Newer versions record a `ToolReturnPart` with outcome `"retried"` for a
+ * retry that answers a tool call, and a `RetryFeedbackPart` for one that
+ * answers none.
+ */
 export interface RetryPromptPart {
   part_kind: "retry-prompt"
   content: string | ErrorDetails[]
@@ -121,10 +157,64 @@ export interface RetryPromptPart {
   timestamp?: string | null
 }
 
+/** Feedback about a model response that could not be used as output. */
+export interface RetryFeedbackPart {
+  part_kind: "retry-feedback"
+  content: string | ErrorDetails[]
+  retry?: RetryInfo | null
+  timestamp?: string | null
+}
+
 export interface ToolAvailabilityDeltaPart {
   part_kind: "tool-availability-delta"
   tools_added: string[]
   tool_call_id?: string | null
+}
+
+/** On-demand capabilities loaded at this point without a `load_capability` call. */
+export interface CapabilityLoadDeltaPart {
+  part_kind: "capability-load-delta"
+  loaded: string[]
+  tool_call_id?: string | null
+}
+
+/** Model settings that change from this point onward (today: thinking effort). */
+export interface ModelSettingsDeltaPart {
+  part_kind: "model-settings-delta"
+  settings: Record<string, unknown>
+  top_level?: boolean
+}
+
+/** One instruction block replaced (or withdrawn, when `content` is null) from here on. */
+export interface InstructionDeltaPart {
+  part_kind: "instruction-delta"
+  id?: string | null
+  content: string | null
+  base_hash?: string | null
+}
+
+/** An instruction block as an `InstructionBaselinePart` records it in full. */
+export interface InstructionBlock {
+  part_kind?: "instruction"
+  content: string
+  dynamic?: boolean
+  on_change?: string
+  name?: string | null
+  id?: string | null
+}
+
+/** A rewrite-mode instruction block recorded by its hash only. */
+export interface InstructionDigest {
+  part_kind: "instruction-digest"
+  id?: string | null
+  dynamic?: boolean
+  content_hash: string
+}
+
+/** The instructions a request was sent with, where a run of appended changes starts. */
+export interface InstructionBaselinePart {
+  part_kind: "instruction-baseline"
+  instructions: (InstructionBlock | InstructionDigest)[]
 }
 
 export interface SpeechPart extends ProviderFields {
@@ -138,6 +228,7 @@ export interface SpeechPart extends ProviderFields {
 export interface TextPart extends ProviderFields {
   part_kind: "text"
   content: string
+  citations?: Record<string, unknown>[] | null
 }
 
 export interface ToolCallPart extends ProviderFields {
@@ -195,7 +286,13 @@ export type RequestPart =
   | UserPromptPart
   | ToolReturnPart
   | RetryPromptPart
+  | RetryFeedbackPart
   | ToolAvailabilityDeltaPart
+  | CapabilityLoadDeltaPart
+  | ModelSettingsDeltaPart
+  | InstructionDeltaPart
+  | InstructionBaselinePart
+  | CompactionPart
   | SpeechPart
 
 export type ResponsePart =
@@ -219,7 +316,9 @@ export type PartKind = (RequestPart | ResponsePart)["part_kind"]
 export interface RequestUsage {
   input_tokens?: number
   output_tokens?: number
+  output_reasoning_tokens?: number
   cache_write_tokens?: number
+  cache_write_1h_tokens?: number
   cache_read_tokens?: number
   input_audio_tokens?: number
   cache_audio_read_tokens?: number
@@ -249,6 +348,8 @@ export interface ModelResponse extends MessageCommon {
   parts: (ResponsePart | UnknownPart)[]
   usage?: RequestUsage | null
   model_name?: string | null
+  /** `provider:model` as the run named it. */
+  model_id?: string | null
   timestamp?: string | null
   provider_name?: string | null
   provider_url?: string | null
@@ -323,7 +424,13 @@ export const REQUEST_PART_KINDS = new Set<string>([
   "user-prompt",
   "tool-return",
   "retry-prompt",
+  "retry-feedback",
   "tool-availability-delta",
+  "capability-load-delta",
+  "model-settings-delta",
+  "instruction-delta",
+  "instruction-baseline",
+  "compaction",
   "speech",
 ])
 

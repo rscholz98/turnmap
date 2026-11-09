@@ -4,7 +4,7 @@ import type { PartNode } from "../graph"
 import { Section, Text } from "../panel"
 import { stringify, truncateJson } from "../parse"
 import { CodeBlock } from "./blocks"
-import { formatBytes } from "./format"
+import { formatBytes, retryTitle } from "./format"
 
 /** Human title and the type-specific full content of a part node. */
 export function describeNode(node: PartNode): {
@@ -120,9 +120,7 @@ export function describeNode(node: PartNode): {
     }
     case "retry":
       return {
-        title: node.data.toolName
-          ? `Retry: ${node.data.toolName}`
-          : "Retry: output validation",
+        title: retryTitle(node.data),
         content: (
           <Section
             title={
@@ -192,7 +190,7 @@ export function describeNode(node: PartNode): {
       return {
         title: node.data.title,
         content: (
-          <Section title="Tools">
+          <Section title={node.data.label}>
             <ul className="tm:m-0 tm:pl-4">
               {node.data.lines.map((l, i) => (
                 <li key={i}>{l}</li>

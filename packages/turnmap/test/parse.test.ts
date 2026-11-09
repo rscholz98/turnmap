@@ -7,7 +7,13 @@ import {
   truncateJson,
   TurnMapParseError,
 } from "../src/parse"
-import { FIXTURES, PAUSED_CONVERSATION, STORED_CONVERSATION } from "./fixtures"
+import {
+  DELTAS,
+  FIXTURES,
+  LEGACY_RETRY,
+  PAUSED_CONVERSATION,
+  STORED_CONVERSATION,
+} from "./fixtures"
 
 describe("parseMessages", () => {
   it("parses every fixture without warnings", () => {
@@ -15,6 +21,14 @@ describe("parseMessages", () => {
       const result = parseMessages(data)
       expect(result.warnings, name).toEqual([])
       expect(result.messages.length, name).toBe((data as unknown[]).length)
+    }
+  })
+
+  it("knows every part kind of the retry and delta fixtures", () => {
+    for (const data of [LEGACY_RETRY, DELTAS]) {
+      const result = parseMessages(data)
+      expect(result.warnings).toEqual([])
+      expect(result.messages).toHaveLength(data.length)
     }
   })
 

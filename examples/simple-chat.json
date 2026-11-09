@@ -3,21 +3,24 @@
     "parts": [
       {
         "content": "You are the friendly support assistant for Acme Grills. Answer briefly.",
-        "timestamp": "2026-10-14T07:18:09.039257Z",
+        "timestamp": "2026-11-09T14:34:39.249528Z",
         "dynamic_ref": null,
+        "context_id": null,
+        "scope": "conversation",
+        "metadata": null,
         "part_kind": "system-prompt"
       },
       {
         "content": "Hello, who are you?",
-        "timestamp": "2026-10-14T07:18:09.039262Z",
+        "timestamp": "2026-11-09T14:34:39.249532Z",
         "part_kind": "user-prompt"
       }
     ],
-    "timestamp": "2026-10-14T07:18:09.039483Z",
+    "timestamp": "2026-11-09T14:34:39.249695Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a13946-9388-76ac-91b4-37e2b82533e4",
-    "conversation_id": "01a13946-9388-76ac-91b4-37e3a23210a6",
+    "run_id": "01a1c0bb-8d0d-75ec-b8d9-885ad546027b",
+    "conversation_id": "01a1c0bb-8d0d-75ec-b8d9-885b2105fc09",
     "metadata": null,
     "state": "complete"
   },
@@ -28,14 +31,17 @@
         "id": null,
         "provider_name": null,
         "provider_details": null,
+        "citations": null,
         "part_kind": "text"
       }
     ],
     "usage": {
       "input_tokens": 66,
       "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
       "cache_read_tokens": 0,
       "output_tokens": 13,
+      "output_reasoning_tokens": 0,
       "input_audio_tokens": 0,
       "cache_audio_read_tokens": 0,
       "output_audio_tokens": 0,
@@ -44,32 +50,36 @@
       "cost": null
     },
     "model_name": "test",
-    "timestamp": "2026-10-14T07:18:09.039718Z",
+    "model_id": "test:test",
+    "timestamp": "2026-11-09T14:34:39.250098Z",
     "kind": "response",
     "provider_name": "test",
     "provider_url": null,
+    "canonical_system": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": null,
-    "run_id": "01a13946-9388-76ac-91b4-37e2b82533e4",
-    "conversation_id": "01a13946-9388-76ac-91b4-37e3a23210a6",
+    "run_id": "01a1c0bb-8d0d-75ec-b8d9-885ad546027b",
+    "conversation_id": "01a1c0bb-8d0d-75ec-b8d9-885b2105fc09",
     "metadata": null,
     "workspace_ref": null,
+    "history_digest": null,
+    "failed_attempts": null,
     "state": "complete"
   },
   {
     "parts": [
       {
         "content": "How long does shipping take for the Acme 500?",
-        "timestamp": "2026-10-14T07:18:09.041570Z",
+        "timestamp": "2026-11-09T14:34:39.251672Z",
         "part_kind": "user-prompt"
       }
     ],
-    "timestamp": "2026-10-14T07:18:09.041735Z",
+    "timestamp": "2026-11-09T14:34:39.251804Z",
     "instructions": null,
     "kind": "request",
-    "run_id": "01a13946-9390-710a-9ea2-46e632079a0a",
-    "conversation_id": "01a13946-9388-76ac-91b4-37e3a23210a6",
+    "run_id": "01a1c0bb-8d12-7626-b94b-74d2190ced87",
+    "conversation_id": "01a1c0bb-8d0d-75ec-b8d9-885b2105fc09",
     "metadata": null,
     "state": "complete"
   },
@@ -80,14 +90,17 @@
         "id": null,
         "provider_name": null,
         "provider_details": null,
+        "citations": null,
         "part_kind": "text"
       }
     ],
     "usage": {
       "input_tokens": 75,
       "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
       "cache_read_tokens": 0,
       "output_tokens": 27,
+      "output_reasoning_tokens": 0,
       "input_audio_tokens": 0,
       "cache_audio_read_tokens": 0,
       "output_audio_tokens": 0,
@@ -96,17 +109,21 @@
       "cost": null
     },
     "model_name": "test",
-    "timestamp": "2026-10-14T07:18:09.041920Z",
+    "model_id": "test:test",
+    "timestamp": "2026-11-09T14:34:39.252097Z",
     "kind": "response",
     "provider_name": "test",
     "provider_url": null,
+    "canonical_system": null,
     "provider_details": null,
     "provider_response_id": null,
     "finish_reason": null,
-    "run_id": "01a13946-9390-710a-9ea2-46e632079a0a",
-    "conversation_id": "01a13946-9388-76ac-91b4-37e3a23210a6",
+    "run_id": "01a1c0bb-8d12-7626-b94b-74d2190ced87",
+    "conversation_id": "01a1c0bb-8d0d-75ec-b8d9-885b2105fc09",
     "metadata": null,
     "workspace_ref": null,
+    "history_digest": null,
+    "failed_attempts": null,
     "state": "complete"
   }
 ]

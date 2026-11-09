@@ -4,7 +4,7 @@
       "parts": [
         {
           "content": "You are a returns assistant. Refunds need approval; pickups are booked by the logistics system.",
-          "timestamp": "2026-11-09T13:08:23.083730Z",
+          "timestamp": "2026-11-09T14:34:39.299765Z",
           "dynamic_ref": null,
           "context_id": null,
           "scope": "conversation",
@@ -13,14 +13,14 @@
         },
         {
           "content": "My Acme 500 arrived damaged. Please refund order A-1042 and have it picked up.",
-          "timestamp": "2026-11-09T13:08:23.083734Z",
+          "timestamp": "2026-11-09T14:34:39.299766Z",
           "part_kind": "user-prompt"
         }
       ],
-      "timestamp": "2026-11-09T13:08:23.083900Z",
+      "timestamp": "2026-11-09T14:34:39.299886Z",
       "instructions": null,
       "kind": "request",
-      "run_id": "01a1c06c-91a7-725d-9bb2-bffe00c23250",
+      "run_id": "01a1c0bb-8d43-7504-9952-bfc81687cb51",
       "conversation_id": "returns-a-1042",
       "metadata": null,
       "state": "complete"
@@ -56,7 +56,7 @@
       },
       "model_name": "demo-model-1",
       "model_id": "function:demo-model-1",
-      "timestamp": "2026-11-09T13:08:23.085257Z",
+      "timestamp": "2026-11-09T14:34:39.300244Z",
       "kind": "response",
       "provider_name": null,
       "provider_url": null,
@@ -64,7 +64,7 @@
       "provider_details": null,
       "provider_response_id": null,
       "finish_reason": "tool_call",
-      "run_id": "01a1c06c-91a7-725d-9bb2-bffe00c23250",
+      "run_id": "01a1c0bb-8d43-7504-9952-bfc81687cb51",
       "conversation_id": "returns-a-1042",
       "metadata": null,
       "workspace_ref": null,
@@ -85,17 +85,17 @@
           "tool_call_id": "call_order_1",
           "tool_kind": null,
           "metadata": null,
-          "timestamp": "2026-11-09T13:08:23.086063Z",
+          "timestamp": "2026-11-09T14:34:39.300723Z",
           "outcome": "success",
           "retry": null,
           "part_kind": "tool-return",
           "content_file_digests": []
         }
       ],
-      "timestamp": "2026-11-09T13:08:23.086287Z",
+      "timestamp": "2026-11-09T14:34:39.300925Z",
       "instructions": null,
       "kind": "request",
-      "run_id": "01a1c06c-91a7-725d-9bb2-bffe00c23250",
+      "run_id": "01a1c0bb-8d43-7504-9952-bfc81687cb51",
       "conversation_id": "returns-a-1042",
       "metadata": null,
       "state": "complete"
@@ -145,7 +145,7 @@
       },
       "model_name": "demo-model-1",
       "model_id": "function:demo-model-1",
-      "timestamp": "2026-11-09T13:08:23.086698Z",
+      "timestamp": "2026-11-09T14:34:39.301269Z",
       "kind": "response",
       "provider_name": null,
       "provider_url": null,
@@ -153,7 +153,7 @@
       "provider_details": null,
       "provider_response_id": null,
       "finish_reason": "tool_call",
-      "run_id": "01a1c06c-91a7-725d-9bb2-bffe00c23250",
+      "run_id": "01a1c0bb-8d43-7504-9952-bfc81687cb51",
       "conversation_id": "returns-a-1042",
       "metadata": null,
       "workspace_ref": null,

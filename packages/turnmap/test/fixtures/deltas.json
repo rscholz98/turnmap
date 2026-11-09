@@ -1,0 +1,163 @@
+[
+  {
+    "parts": [
+      {
+        "instructions": [
+          {
+            "id": null,
+            "dynamic": false,
+            "content_hash": "36e6cfee673226b2d59d2df6f28cd08920397a64f560ae707cb415b471c018eb",
+            "part_kind": "instruction-digest"
+          },
+          {
+            "content": "Answer in a friendly tone.",
+            "dynamic": false,
+            "on_change": "append",
+            "name": "tone",
+            "id": "tone",
+            "part_kind": "instruction"
+          }
+        ],
+        "part_kind": "instruction-baseline"
+      },
+      {
+        "content": "Hi, can you check my invoice?",
+        "timestamp": "2026-11-09T14:34:39.339120Z",
+        "part_kind": "user-prompt"
+      }
+    ],
+    "timestamp": null,
+    "instructions": "You are the support assistant for Acme Grills.\n\nAnswer in a friendly tone.",
+    "kind": "request",
+    "run_id": null,
+    "conversation_id": null,
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "Sure, happy to help. Which order is it about?",
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "citations": null,
+        "part_kind": "text"
+      }
+    ],
+    "usage": {
+      "input_tokens": 210,
+      "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 14,
+      "output_reasoning_tokens": 0,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "model_id": null,
+    "timestamp": "2026-11-09T14:34:39.339125Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "canonical_system": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "stop",
+    "run_id": null,
+    "conversation_id": null,
+    "metadata": null,
+    "workspace_ref": null,
+    "history_digest": null,
+    "failed_attempts": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "settings": {
+          "thinking": "high"
+        },
+        "top_level": false,
+        "part_kind": "model-settings-delta"
+      },
+      {
+        "id": "tone",
+        "content": "Answer formally: this is a billing dispute.",
+        "base_hash": null,
+        "part_kind": "instruction-delta"
+      },
+      {
+        "id": "promo",
+        "content": null,
+        "base_hash": null,
+        "part_kind": "instruction-delta"
+      },
+      {
+        "loaded": ["billing"],
+        "tool_call_id": null,
+        "part_kind": "capability-load-delta"
+      },
+      {
+        "content": "Order A-1042. I was charged twice.",
+        "timestamp": "2026-11-09T14:34:39.339130Z",
+        "part_kind": "user-prompt"
+      }
+    ],
+    "timestamp": null,
+    "instructions": null,
+    "kind": "request",
+    "run_id": null,
+    "conversation_id": null,
+    "metadata": null,
+    "state": "complete"
+  },
+  {
+    "parts": [
+      {
+        "content": "I have opened a billing review for order A-1042. You will hear from us within two days.",
+        "id": null,
+        "provider_name": null,
+        "provider_details": null,
+        "citations": null,
+        "part_kind": "text"
+      }
+    ],
+    "usage": {
+      "input_tokens": 340,
+      "cache_write_tokens": 0,
+      "cache_write_1h_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 26,
+      "output_reasoning_tokens": 0,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0.0,
+      "details": {},
+      "cost": null
+    },
+    "model_name": "demo-model-1",
+    "model_id": null,
+    "timestamp": "2026-11-09T14:34:39.339132Z",
+    "kind": "response",
+    "provider_name": null,
+    "provider_url": null,
+    "canonical_system": null,
+    "provider_details": null,
+    "provider_response_id": null,
+    "finish_reason": "stop",
+    "run_id": null,
+    "conversation_id": null,
+    "metadata": null,
+    "workspace_ref": null,
+    "history_digest": null,
+    "failed_attempts": null,
+    "state": "complete"
+  }
+]
