@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-label="turnmap: see what your Pydantic AI agent actually did">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#27214f"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="320" rx="28" fill="url(#bg)"/>
+
+  <!-- a small turn: prompt, tool call beside it, response below -->
+  <g fill="none" stroke-width="3" stroke-linecap="round">
+    <path d="M196 86 C226 86 196 160 226 160" stroke="#a78bfa" stroke-dasharray="7 6"/>
+    <path d="M291 184 C291 236 232 234 196 234" stroke="#94a3b8"/>
+    <path d="M128 110 L128 210" stroke="#64748b"/>
+  </g>
+  <g>
+    <rect x="60" y="62" width="136" height="48" rx="10" fill="#f8fafc"/>
+    <rect x="60" y="62" width="8" height="48" rx="4" fill="#3b82f6"/>
+    <circle cx="88" cy="86" r="9" fill="#3b82f6" fill-opacity="0.25"/>
+    <rect x="106" y="76" width="64" height="8" rx="4" fill="#334155"/>
+    <rect x="106" y="90" width="44" height="6" rx="3" fill="#cbd5e1"/>
+
+    <rect x="226" y="136" width="130" height="48" rx="10" fill="#f8fafc"/>
+    <rect x="226" y="136" width="8" height="48" rx="4" fill="#8b5cf6"/>
+    <circle cx="254" cy="160" r="9" fill="#8b5cf6" fill-opacity="0.25"/>
+    <rect x="272" y="150" width="56" height="8" rx="4" fill="#334155"/>
+    <rect x="272" y="164" width="38" height="6" rx="3" fill="#cbd5e1"/>
+
+    <rect x="60" y="210" width="136" height="48" rx="10" fill="#f8fafc"/>
+    <rect x="60" y="210" width="8" height="48" rx="4" fill="#22a55b"/>
+    <circle cx="88" cy="234" r="9" fill="#22a55b" fill-opacity="0.25"/>
+    <rect x="106" y="224" width="70" height="8" rx="4" fill="#334155"/>
+    <rect x="106" y="238" width="50" height="6" rx="3" fill="#cbd5e1"/>
+  </g>
+
+  <!-- title -->
+  <text x="412" y="146" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="68" font-weight="700" fill="#f8fafc">turnmap</text>
+  <text x="414" y="194" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="27" fill="#cbd5e1">See what your Pydantic AI agent actually did</text>
+
+  <!-- what it shows -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="600" text-anchor="middle">
+    <rect x="414" y="222" width="118" height="40" rx="20" fill="#3b82f6" fill-opacity="0.16" stroke="#3b82f6" stroke-opacity="0.6"/>
+    <text x="473" y="249" fill="#93c5fd">prompts</text>
+    <rect x="546" y="222" width="130" height="40" rx="20" fill="#8b5cf6" fill-opacity="0.16" stroke="#8b5cf6" stroke-opacity="0.6"/>
+    <text x="611" y="249" fill="#c4b5fd">tool calls</text>
+    <rect x="690" y="222" width="108" height="40" rx="20" fill="#f43f5e" fill-opacity="0.16" stroke="#f43f5e" stroke-opacity="0.6"/>
+    <text x="744" y="249" fill="#fda4af">retries</text>
+    <rect x="812" y="222" width="126" height="40" rx="20" fill="#fbbf24" fill-opacity="0.16" stroke="#fbbf24" stroke-opacity="0.6"/>
+    <text x="875" y="249" fill="#fcd34d">branches</text>
+  </g>
+</svg>

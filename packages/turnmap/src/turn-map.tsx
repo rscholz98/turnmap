@@ -290,6 +290,23 @@ interface CanvasProps {
 
 const PANEL_WIDTH = 520
 
+/**
+ * How the viewport travels to a node on keyboard and control navigation:
+ * short and decelerating, so a step reads as movement without slowing a run
+ * of key presses down (each press retargets the glide in flight). Instant for
+ * people who ask for reduced motion.
+ */
+function glide() {
+  const reduced =
+    typeof window !== "undefined" &&
+    !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+  return {
+    duration: reduced ? 0 : 160,
+    ease: (t: number) => 1 - (1 - t) ** 3,
+    interpolate: "linear" as const,
+  }
+}
+
 function Canvas({
   graph,
   mode,
@@ -408,6 +425,7 @@ function Canvas({
             : 0
       void setCenter(node.position.x + w / 2 + shift, node.position.y + h / 2, {
         zoom,
+        ...glide(),
       })
     },
     [getNode, setCenter, getZoom]
@@ -464,7 +482,7 @@ function Canvas({
       }
       if (dx !== 0) {
         const vp = getViewport()
-        void setViewport({ ...vp, x: vp.x + dx })
+        void setViewport({ ...vp, x: vp.x + dx }, glide())
       }
     },
     [nodeBox, getViewport, setViewport]

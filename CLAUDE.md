@@ -38,7 +38,7 @@ npm run lint && npm run typecheck && npm run format:check
   entries add `conversation`, `entryIds` and `branches` to its result; `buildGraph` takes
   them as options, and `ConversationBar` (`src/conversation-bar.tsx`) draws them. Store
   entries are ordered by `parent_id`, never by input position. The shapes are listed in
-  `README.md` ("Conversations"); change that table with the parser.
+  `README.md` ("Input"); change that table with the parser.
 - The site keeps a session's input whole (`Session.messages` is the pasted JSON value, not
   the parsed messages), so the component sees the conversation. Count messages with
   `messageCount`.

@@ -56,8 +56,8 @@ export function EmbedDialog() {
         <Code code={USAGE} language="tsx" className="max-h-[50vh]" />
         <p className="text-xs text-muted-foreground">
           Props: <code>messages</code>, <code>layout</code> (spine, TB or LR),{" "}
-          <code>theme</code>, <code>palette</code>,{" "}
-          <code>collapseThreshold</code>, <code>onSelect</code>,{" "}
+          <code>theme</code>, <code>palette</code>, <code>onSelect</code>,{" "}
+          <code>showConversation</code>, <code>showNavigation</code>,{" "}
           <code>showMinimap</code>, <code>showControls</code>. Full docs in the{" "}
           <a
             className="underline"
